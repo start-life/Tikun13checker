@@ -148,13 +148,81 @@
                 </div>
 
                 <div class="checker-box" id="checker-box">
-                    <h3 id="checker-title">בדיקת התאמה חינמית</h3>
-                    <form id="checker-form" role="form" aria-label="טופס בדיקת אתר">
-                        <div class="input-group">
-                            <input type="text" id="website-url" placeholder="הכנס כתובת אתר (לדוגמה: example.co.il)" aria-label="כתובת אתר לבדיקה" aria-required="true">
-                            <button type="submit" class="btn-primary" id="scan-button" aria-label="התחל בדיקת אתר">בדוק עכשיו</button>
+                    <h3 id="checker-title">בדיקת התאמה חינמית - 100% פרטי</h3>
+                    
+                    <!-- Privacy Notice -->
+                    <div class="privacy-notice">
+                        <span class="privacy-badge">🔒 100% פרטי</span>
+                        <p>כל העיבוד מתבצע בדפדפן שלך. שום מידע לא נשלח לשרתים חיצוניים.</p>
+                    </div>
+                    
+                    <!-- Input Mode Selector -->
+                    <div class="input-mode-selector">
+                        <button type="button" class="mode-btn active" onclick="setInputMode('manual')">
+                            <span>📋</span> הזנת HTML ידנית
+                        </button>
+                        <button type="button" class="mode-btn" onclick="showInstructions()">
+                            <span>❓</span> איך להשיג HTML
+                        </button>
+                    </div>
+                    
+                    <!-- Manual HTML Input Mode -->
+                    <div id="manual-input-mode">
+                        <form id="checker-form" role="form" aria-label="טופס בדיקת אתר">
+                            <div class="url-input-section">
+                                <label for="website-url">כתובת האתר לניתוח:</label>
+                                <input type="text" id="website-url" placeholder="https://example.co.il" aria-label="כתובת אתר" aria-required="true">
+                            </div>
+                            
+                            <div class="html-input-section">
+                                <label for="html-input">הדבק את קוד ה-HTML של האתר:</label>
+                                <textarea id="html-input" placeholder="הדבק כאן את קוד ה-HTML של האתר (View Source)..." rows="10" aria-label="קוד HTML לניתוח" aria-required="true"></textarea>
+                                <div class="html-input-help">
+                                    <small>💡 לחץ Ctrl+U (או Cmd+Option+U במק) באתר היעד, סמן הכל (Ctrl+A), העתק (Ctrl+C) והדבק כאן</small>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn-primary" id="scan-button" aria-label="התחל בדיקת אתר">נתח עכשיו</button>
+                        </form>
+                    </div>
+                    
+                    <!-- Instructions Modal -->
+                    <div id="instructions-modal" class="modal" style="display: none;">
+                        <div class="modal-content">
+                            <span class="close" onclick="closeInstructions()">&times;</span>
+                            <h3>🔍 איך להשיג את קוד ה-HTML של אתר?</h3>
+                            
+                            <div class="instructions-steps">
+                                <div class="step">
+                                    <h4>שיטה 1: View Source (מומלץ)</h4>
+                                    <ol>
+                                        <li>פתח את האתר שברצונך לבדוק</li>
+                                        <li>לחץ <strong>Ctrl+U</strong> (Windows/Linux) או <strong>Cmd+Option+U</strong> (Mac)</li>
+                                        <li>סמן הכל עם <strong>Ctrl+A</strong> (או Cmd+A במק)</li>
+                                        <li>העתק עם <strong>Ctrl+C</strong> (או Cmd+C במק)</li>
+                                        <li>חזור לכאן והדבק בשדה הטקסט</li>
+                                    </ol>
+                                </div>
+                                
+                                <div class="step">
+                                    <h4>שיטה 2: Developer Tools</h4>
+                                    <ol>
+                                        <li>פתח את האתר שברצונך לבדוק</li>
+                                        <li>לחץ <strong>F12</strong> או לחץ ימני → "Inspect"</li>
+                                        <li>בלשונית Elements, לחץ ימני על <code>&lt;html&gt;</code></li>
+                                        <li>בחר "Copy" → "Copy outerHTML"</li>
+                                        <li>חזור לכאן והדבק בשדה הטקסט</li>
+                                    </ol>
+                                </div>
+                            </div>
+                            
+                            <div class="privacy-emphasis">
+                                <strong>🔒 למה זה פרטי?</strong>
+                                <p>על ידי הדבקת ה-HTML ישירות, המידע נשאר בדפדפן שלך בלבד. אנחנו לא שולחים שום נתון לשרתים חיצוניים!</p>
+                            </div>
                         </div>
-                    </form>
+                    </div>
+                    
                     <p class="helper-text">הבדיקה כוללת: עוגיות, SSL, מדיניות פרטיות, ודרישות תיקון 13</p>
                     <div class="scan-controls" id="scan-controls" style="display: none;">
                         <button class="btn-secondary" onclick="rescanWebsite()" aria-label="סרוק שוב את אותו אתר">🔄 סרוק שוב</button>

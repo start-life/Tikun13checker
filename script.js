@@ -287,10 +287,9 @@ async function handleWebsiteCheck(e) {
     }
     
     const urlInput = document.getElementById('website-url');
+    const htmlInput = document.getElementById('html-input');
     let url = urlInput.value.trim();
-    
-    // Track if the original URL had a protocol
-    const hadProtocol = url.match(/^https?:\/\//i);
+    const htmlContent = htmlInput ? htmlInput.value.trim() : '';
     
     // Normalize and validate URL
     url = normalizeAndValidateUrl(url);
@@ -300,11 +299,14 @@ async function handleWebsiteCheck(e) {
         return;
     }
     
+    // Check if HTML content is provided
+    if (!htmlContent) {
+        alert('אנא הדבק את קוד ה-HTML של האתר. לחץ על "איך להשיג HTML" להוראות.');
+        return;
+    }
+    
     // Update input with normalized URL
     urlInput.value = url;
-    
-    // Store whether to check both protocols (when user didn't specify protocol)
-    window.lastScanHadProtocol = hadProtocol;
     
     // Create progress tracker
     const progressTracker = new ProgressTracker();
@@ -314,10 +316,10 @@ async function handleWebsiteCheck(e) {
     progressTracker.start(url);
     
     try {
-        // Pass progress callback to compliance check
+        // Pass HTML content and progress callback to compliance check
         const results = await checkWebsiteCompliance(url, (step, details) => {
             progressTracker.updateStep(step, 'active', details);
-        });
+        }, htmlContent);
         
         console.log('Scan results:', results); // Debug log
         
@@ -460,11 +462,11 @@ function showLoadingOverlay(show) {
     }
 }
 
-async function checkWebsiteCompliance(url, progressCallback) {
+async function checkWebsiteCompliance(url, progressCallback, htmlContent = null) {
     try {
-        // Use the real scanner with progress callback
+        // Use the real scanner with HTML content and progress callback
         const scanner = new RealWebsiteScanner();
-        const results = await scanner.scanWebsite(url, progressCallback);
+        const results = await scanner.scanWebsite(url, progressCallback, htmlContent);
         
         // Map the results to the expected format
         return {
@@ -1536,6 +1538,29 @@ window.cancelScan = function() {
         currentScan = null;
     }
     showLoadingOverlay(false);
+};
+
+// UI Helper functions for manual input mode
+window.showInstructions = function() {
+    const modal = document.getElementById('instructions-modal');
+    if (modal) {
+        modal.style.display = 'block';
+    }
+};
+
+window.closeInstructions = function() {
+    const modal = document.getElementById('instructions-modal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+};
+
+window.setInputMode = function(mode) {
+    // Currently only manual mode is supported for privacy
+    const manualMode = document.getElementById('manual-input-mode');
+    if (manualMode) {
+        manualMode.style.display = 'block';
+    }
 };
 
 // Scan Control Functions

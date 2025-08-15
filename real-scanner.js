@@ -1,60 +1,28 @@
-// Real Website Scanner - No Mock Data
+// Real Website Scanner - Privacy First, No External Services
 class RealWebsiteScanner {
     constructor() {
-        // CORS proxy services (fallback options)
-        this.corsProxies = [
-            url => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
-            url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
-            url => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`
-        ];
-        this.currentProxyIndex = 0;
+        // No proxy services - 100% privacy
+        this.isManualMode = false;
     }
 
-    async fetchWebsite(url) {
-        let lastError = null;
+    // Process manually provided HTML content
+    async processHTML(htmlContent, url) {
+        this.isManualMode = true;
+        const urlObj = new URL(url);
         
-        // Try different proxy services if one fails
-        for (let i = 0; i < this.corsProxies.length; i++) {
-            try {
-                const proxyUrl = this.corsProxies[this.currentProxyIndex](url);
-                const response = await fetch(proxyUrl, {
-                    method: 'GET',
-                    headers: {
-                        'Accept': 'text/html,application/xhtml+xml'
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const data = await response.json();
-                const html = data.contents || data.data || data;
-                
-                // Check if there's redirect information in the response
-                const finalUrl = data.status?.url || data.url || null;
-                
-                if (typeof html === 'string' && html.length > 0) {
-                    return { html, finalUrl };
-                }
-                throw new Error('Empty response');
-            } catch (error) {
-                lastError = error;
-                this.currentProxyIndex = (this.currentProxyIndex + 1) % this.corsProxies.length;
-                console.warn(`Proxy ${i + 1} failed, trying next...`, error);
-            }
-        }
-        
-        throw new Error(`Failed to fetch website: ${lastError?.message}`);
+        return {
+            html: htmlContent,
+            finalUrl: url,
+            protocol: urlObj.protocol,
+            hostname: urlObj.hostname,
+            isManual: true
+        };
     }
 
-    async scanWebsite(url, progressCallback = null) {
+    async scanWebsite(url, progressCallback = null, htmlContent = null) {
         const startTime = Date.now();
         let finalUrl = url;
         let urlObj = new URL(url);
-        
-        // Check if we should test both protocols (when user didn't specify protocol)
-        const shouldCheckBothProtocols = !window.lastScanHadProtocol;
         
         // Helper function to report progress
         const reportProgress = (step, details = '') => {
@@ -71,7 +39,7 @@ class RealWebsiteScanner {
                 domain: urlObj.hostname,
                 protocol: urlObj.protocol,
                 path: urlObj.pathname,
-                bothProtocolsChecked: shouldCheckBothProtocols
+                isManualInput: !!htmlContent
             },
             extractedData: {},
             compliance: {},
@@ -81,122 +49,33 @@ class RealWebsiteScanner {
         };
 
         try {
-            // Report connection start
-            reportProgress('connect', 'מתחבר לאתר...');
-            
-            // Try to fetch the website HTML
-            console.log('Fetching website content...');
             let html = null;
-            let fetchError = null;
             
-            // Check protocol
-            reportProgress('protocol', `בודק פרוטוקול ${urlObj.protocol.toUpperCase()}`);
-            
-            // First try with the given URL (usually HTTPS)
-            let httpRedirectsToHttps = false;
-            try {
-                reportProgress('fetch', 'טוען תוכן מהאתר...');
-                const result = await this.fetchWebsite(finalUrl);
-                html = result.html;
-                if (result.finalUrl) {
-                    finalUrl = result.finalUrl;
-                    urlObj = new URL(finalUrl);
-                }
-                console.log('Successfully fetched with:', finalUrl);
-                reportProgress('fetch', `נטען בהצלחה - ${(html.length / 1024).toFixed(1)}KB`);
-            } catch (httpsError) {
-                fetchError = httpsError;
-                console.warn('HTTPS fetch failed, trying HTTP fallback...');
-                reportProgress('protocol', 'HTTPS נכשל, מנסה HTTP...');
+            // Check if HTML content was provided manually
+            if (htmlContent) {
+                // Manual input mode - privacy first!
+                reportProgress('connect', 'מעבד HTML שהוזן ידנית...');
+                reportProgress('fetch', 'משתמש בתוכן שסופק...');
+                html = htmlContent;
+                console.log('Using manually provided HTML content');
+                reportProgress('fetch', `התקבל HTML - ${(html.length / 1024).toFixed(1)}KB`);
                 
-                // If HTTPS fails and URL started with HTTPS, try HTTP
-                if (urlObj.protocol === 'https:') {
-                    const httpUrl = finalUrl.replace('https://', 'http://');
-                    try {
-                        reportProgress('fetch', 'טוען דרך HTTP...');
-                        const result = await this.fetchWebsite(httpUrl);
-                        html = result.html;
-                        
-                        // Check if HTTP redirected to HTTPS
-                        if (result.finalUrl && result.finalUrl.startsWith('https://')) {
-                            httpRedirectsToHttps = true;
-                            finalUrl = result.finalUrl;
-                            urlObj = new URL(finalUrl);
-                            console.log('HTTP redirects to HTTPS:', result.finalUrl);
-                            reportProgress('fetch', `HTTP מפנה ל-HTTPS - ${(html.length / 1024).toFixed(1)}KB`);
-                        } else {
-                            finalUrl = httpUrl;
-                            urlObj = new URL(httpUrl);
-                            console.log('Successfully fetched with HTTP:', httpUrl);
-                            reportProgress('fetch', `נטען דרך HTTP - ${(html.length / 1024).toFixed(1)}KB`);
-                            
-                            // Add a note about HTTP-only access (no redirect to HTTPS)
-                            scanResult.websiteContext.httpOnly = true;
-                            scanResult.recommendations.push({
-                                priority: 'high',
-                                message: 'האתר זמין רק דרך HTTP ולא HTTPS. מומלץ מאוד להוסיף אישור SSL.'
-                            });
-                        }
-                    } catch (httpError) {
-                        // Both failed, throw the original error
-                        throw fetchError;
-                    }
-                } else {
-                    throw fetchError;
-                }
+                // Add note about manual input
+                scanResult.recommendations.push({
+                    priority: 'info',
+                    message: '📌 הניתוח מבוסס על HTML שהוזן ידנית. חלק מהבדיקות (כמו HTTPS) מבוססות על הכתובת שצוינה.'
+                });
+            } else {
+                // No automatic fetching - privacy first approach
+                reportProgress('error', 'נדרש קוד HTML לניתוח');
+                throw new Error('לא סופק תוכן HTML. השתמש במצב הזנה ידנית לשמירה על פרטיות מלאה.');
             }
             
-            // Comprehensive protocol check when user didn't specify protocol
-            if (shouldCheckBothProtocols) {
-                reportProgress('protocol', 'בודק את שני הפרוטוקולים...');
-                
-                // If we got here with HTTPS, also check HTTP
-                if (finalUrl.startsWith('https://')) {
-                    try {
-                        const httpUrl = finalUrl.replace('https://', 'http://');
-                        reportProgress('protocol', 'בודק התנהגות HTTP...');
-                        const httpResult = await this.fetchWebsite(httpUrl);
-                        
-                        if (httpResult.finalUrl && httpResult.finalUrl.startsWith('https://')) {
-                            httpRedirectsToHttps = true;
-                            scanResult.recommendations.push({
-                                priority: 'success',
-                                message: '✅ מצוין! האתר מפנה אוטומטית מ-HTTP ל-HTTPS.'
-                            });
-                        } else {
-                            scanResult.recommendations.push({
-                                priority: 'medium',
-                                message: 'האתר תומך ב-HTTPS אך HTTP לא מפנה אוטומטית. מומלץ להגדיר הפניה מ-HTTP ל-HTTPS.'
-                            });
-                        }
-                    } catch (e) {
-                        // HTTP check failed, but we have HTTPS so it's ok
-                        console.log('HTTP check failed but HTTPS works');
-                    }
-                }
-                // If we're on HTTP (HTTPS failed), we already checked if HTTPS is available above
-            }
-            // Original logic for when user specified HTTP
-            else if (url.startsWith('http://') && !url.startsWith('https://')) {
-                try {
-                    const httpsUrl = url.replace('http://', 'https://');
-                    reportProgress('protocol', 'בודק אם קיים HTTPS...');
-                    const result = await this.fetchWebsite(httpsUrl);
-                    if (result.html) {
-                        // HTTPS is available
-                        httpRedirectsToHttps = true;
-                        scanResult.recommendations.push({
-                            priority: 'low',
-                            message: 'האתר תומך ב-HTTPS. מומלץ להגדיר הפניה אוטומטית מ-HTTP ל-HTTPS.'
-                        });
-                    }
-                } catch (e) {
-                    // HTTPS not available, that's ok if we already have HTTP
-                }
-            }
+            // Check protocol from URL for SSL assessment
+            reportProgress('protocol', `בודק פרוטוקול מהכתובת: ${urlObj.protocol.toUpperCase()}`);
             
-            // Store redirect status for SSL check
-            scanResult.websiteContext.httpRedirectsToHttps = httpRedirectsToHttps;
+            // Store protocol information
+            scanResult.websiteContext.httpRedirectsToHttps = false; // Can't check redirects in manual mode
             
             // Update the final URL in results
             scanResult.url = finalUrl;
