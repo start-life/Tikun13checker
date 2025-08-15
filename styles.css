@@ -2321,3 +2321,134 @@ footer {
         padding: 1.5rem;
     }
 }
+
+/* Scan Mode Selector Styles */
+.scan-mode-selector {
+    margin: 30px 0;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 10px;
+}
+
+.scan-mode-selector h4 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+    font-size: 18px;
+}
+
+.mode-options {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.mode-option {
+    flex: 1;
+    min-width: 200px;
+    max-width: 250px;
+}
+
+.mode-option input[type="radio"] {
+    display: none;
+}
+
+.mode-option label {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.mode-option input[type="radio"]:checked + label {
+    background: #e3f2fd;
+    border-color: #2196f3;
+    box-shadow: 0 2px 8px rgba(33, 150, 243, 0.2);
+}
+
+.mode-option label:hover {
+    border-color: #2196f3;
+}
+
+.mode-icon {
+    font-size: 24px;
+    margin-left: 10px;
+}
+
+.mode-details {
+    flex: 1;
+}
+
+.mode-details strong {
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.mode-details small {
+    color: #666;
+    font-size: 12px;
+}
+
+/* Proxy Consent Warning */
+.proxy-consent-warning {
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 20px 0;
+}
+
+.proxy-consent-warning h5 {
+    color: #856404;
+    margin-bottom: 10px;
+}
+
+.proxy-consent-warning ul {
+    color: #856404;
+    margin-right: 20px;
+}
+
+/* Bookmarklet Instructions */
+.bookmarklet-instructions {
+    background: #e8f5e9;
+    border: 1px solid #4caf50;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+}
+
+.bookmarklet-instructions h5 {
+    color: #2e7d32;
+    margin-bottom: 15px;
+}
+
+.bookmarklet-instructions ol {
+    color: #2e7d32;
+    margin-right: 20px;
+}
+
+.bookmarklet-link {
+    display: inline-block;
+    padding: 10px 20px;
+    background: #4caf50;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    margin: 10px 0;
+    font-weight: bold;
+}
+
+.bookmarklet-link:hover {
+    background: #45a049;
+}
+
+/* Scan mode content areas */
+.scan-mode-content {
+    transition: all 0.3s ease;
+}

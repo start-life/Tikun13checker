@@ -1,8 +1,92 @@
-// Real Website Scanner - Privacy First, No External Services
+// Real Website Scanner - Privacy First with Optional Proxy Mode
 class RealWebsiteScanner {
     constructor() {
-        // No proxy services - 100% privacy
+        // Proxy services (only used when user explicitly consents)
+        this.corsProxies = [
+            url => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
+            url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+            url => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`
+        ];
+        this.currentProxyIndex = 0;
         this.isManualMode = false;
+        this.useProxy = false;
+    }
+
+    // Enable proxy mode (requires user consent)
+    enableProxyMode() {
+        this.useProxy = true;
+    }
+
+    // Disable proxy mode (default)
+    disableProxyMode() {
+        this.useProxy = false;
+    }
+
+    // Fetch website using proxy (only when enabled and consented)
+    async fetchWebsiteViaProxy(url) {
+        if (!this.useProxy) {
+            throw new Error('Proxy mode is disabled. Please use manual input mode or enable proxy with consent.');
+        }
+
+        let lastError = null;
+        
+        // Try different proxy services if one fails
+        for (let i = 0; i < this.corsProxies.length; i++) {
+            try {
+                const proxyUrl = this.corsProxies[this.currentProxyIndex](url);
+                const response = await fetch(proxyUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'text/html,application/xhtml+xml'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                // Get response as text first to check format
+                const responseText = await response.text();
+                
+                let html = '';
+                let finalUrl = null;
+                
+                // Check if response is JSON or HTML
+                const trimmedResponse = responseText.trim();
+                if (trimmedResponse.startsWith('{') || trimmedResponse.startsWith('[')) {
+                    // It's JSON - parse it
+                    try {
+                        const data = JSON.parse(responseText);
+                        html = data.contents || data.data || data;
+                        finalUrl = data.status?.url || data.url || null;
+                    } catch (jsonError) {
+                        console.warn('Failed to parse JSON response:', jsonError);
+                        html = responseText;
+                    }
+                } else if (trimmedResponse.startsWith('<') || trimmedResponse.includes('<!DOCTYPE')) {
+                    // It's HTML directly
+                    html = responseText;
+                } else {
+                    // Unknown format, try to use as is
+                    html = responseText;
+                }
+                
+                if (typeof html === 'string' && html.length > 0) {
+                    // Check if we got an error page
+                    if (html.includes('error') && html.includes('proxy') && html.length < 5000) {
+                        throw new Error('Proxy service error page detected');
+                    }
+                    return { html, finalUrl };
+                }
+                throw new Error('Empty or invalid response');
+            } catch (error) {
+                lastError = error;
+                this.currentProxyIndex = (this.currentProxyIndex + 1) % this.corsProxies.length;
+                console.warn(`Proxy ${i + 1} failed, trying next...`, error.message);
+            }
+        }
+        
+        throw new Error(`Failed to fetch website via proxy: ${lastError?.message}`);
     }
 
     // Process manually provided HTML content

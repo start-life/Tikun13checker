@@ -148,26 +148,55 @@
                 </div>
 
                 <div class="checker-box" id="checker-box">
-                    <h3 id="checker-title">בדיקת התאמה חינמית - 100% פרטי</h3>
+                    <h3 id="checker-title">בדיקת התאמה לתיקון 13</h3>
                     
-                    <!-- Privacy Notice -->
-                    <div class="privacy-notice">
+                    <!-- Scanning Mode Selector -->
+                    <div class="scan-mode-selector">
+                        <h4>בחר שיטת סריקה:</h4>
+                        <div class="mode-options">
+                            <div class="mode-option">
+                                <input type="radio" id="private-mode" name="scan-mode" value="private" checked onchange="switchScanMode('private')">
+                                <label for="private-mode">
+                                    <span class="mode-icon">🔒</span>
+                                    <div class="mode-details">
+                                        <strong>מצב פרטי 100%</strong>
+                                        <small>העתק והדבק HTML - שום מידע לא יוצא מהדפדפן</small>
+                                    </div>
+                                </label>
+                            </div>
+                            
+                            <div class="mode-option">
+                                <input type="radio" id="proxy-mode" name="scan-mode" value="proxy" onchange="switchScanMode('proxy')">
+                                <label for="proxy-mode">
+                                    <span class="mode-icon">⚡</span>
+                                    <div class="mode-details">
+                                        <strong>מצב אוטומטי</strong>
+                                        <small>סריקה מהירה - משתמש בשירותי proxy (פחות פרטי)</small>
+                                    </div>
+                                </label>
+                            </div>
+                            
+                            <div class="mode-option">
+                                <input type="radio" id="bookmarklet-mode" name="scan-mode" value="bookmarklet" onchange="switchScanMode('bookmarklet')">
+                                <label for="bookmarklet-mode">
+                                    <span class="mode-icon">🔖</span>
+                                    <div class="mode-details">
+                                        <strong>Bookmarklet</strong>
+                                        <small>סריקה פרטית דרך סימניה - ללא התקנה</small>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Privacy Notice (dynamic based on mode) -->
+                    <div class="privacy-notice" id="privacy-notice">
                         <span class="privacy-badge">🔒 100% פרטי</span>
                         <p>כל העיבוד מתבצע בדפדפן שלך. שום מידע לא נשלח לשרתים חיצוניים.</p>
                     </div>
                     
-                    <!-- Input Mode Selector -->
-                    <div class="input-mode-selector">
-                        <button type="button" class="mode-btn active" onclick="setInputMode('manual')">
-                            <span>📋</span> הזנת HTML ידנית
-                        </button>
-                        <button type="button" class="mode-btn" onclick="showInstructions()">
-                            <span>❓</span> איך להשיג HTML
-                        </button>
-                    </div>
-                    
                     <!-- Manual HTML Input Mode -->
-                    <div id="manual-input-mode">
+                    <div id="manual-input-mode" class="scan-mode-content">
                         <form id="checker-form" role="form" aria-label="טופס בדיקת אתר">
                             <div class="url-input-section">
                                 <label for="website-url">כתובת האתר לניתוח:</label>
@@ -184,6 +213,58 @@
                             
                             <button type="submit" class="btn-primary" id="scan-button" aria-label="התחל בדיקת אתר">נתח עכשיו</button>
                         </form>
+                    </div>
+                    
+                    <!-- Proxy Mode -->
+                    <div id="proxy-input-mode" class="scan-mode-content" style="display: none;">
+                        <div class="proxy-consent-warning">
+                            <h4>⚠️ אזהרת פרטיות</h4>
+                            <p>במצב זה, כתובת האתר תישלח לשירותי Proxy חיצוניים:</p>
+                            <ul>
+                                <li>api.allorigins.win</li>
+                                <li>corsproxy.io</li>
+                                <li>api.codetabs.com</li>
+                            </ul>
+                            <label class="consent-checkbox">
+                                <input type="checkbox" id="proxy-consent">
+                                <span>אני מבין ומסכים שהכתובת תישלח לשירותים חיצוניים</span>
+                            </label>
+                        </div>
+                        <form id="proxy-form" role="form" aria-label="טופס סריקה אוטומטית">
+                            <div class="input-group">
+                                <input type="text" id="proxy-url" placeholder="הכנס כתובת אתר (לדוגמה: example.co.il)" aria-label="כתובת אתר">
+                                <button type="submit" class="btn-primary" id="proxy-scan-button" disabled>סרוק אוטומטית</button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Bookmarklet Mode -->
+                    <div id="bookmarklet-mode" class="scan-mode-content" style="display: none;">
+                        <div class="bookmarklet-instructions">
+                            <h4>📌 התקנת Bookmarklet - סריקה פרטית בלחיצה אחת</h4>
+                            <ol>
+                                <li>גרור את הכפתור הבא לסרגל הסימניות שלך:</li>
+                                <li>
+                                    <a href="#" id="bookmarklet-link" 
+                                       class="bookmarklet-link" 
+                                       onclick="alert('גרור אותי לסרגל הסימניות!'); return false;">
+                                        🔍 סרוק עם Tikun13
+                                    </a>
+                                </li>
+                                <li>בקר באתר שברצונך לסרוק</li>
+                                <li>לחץ על הסימניה "סרוק עם Tikun13"</li>
+                                <li>הניתוח יתבצע באופן פרטי לחלוטין!</li>
+                            </ol>
+                            <div class="bookmarklet-benefits">
+                                <h5>✅ יתרונות:</h5>
+                                <ul>
+                                    <li>100% פרטי - אין שליחת מידע לשרתים</li>
+                                    <li>סריקה בלחיצה אחת</li>
+                                    <li>עובד על כל אתר</li>
+                                    <li>ללא צורך בהתקנה</li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
                     
                     <!-- Instructions Modal -->

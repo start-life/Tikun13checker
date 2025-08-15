@@ -2,6 +2,8 @@
 let latestScanResults = null;
 let lastScannedUrl = null;
 let currentScan = null;
+let currentScanMode = 'private'; // Default to private mode
+let proxyConsentGiven = false;
 
 // Progress Tracker Class
 class ProgressTracker {
@@ -185,6 +187,9 @@ document.addEventListener('DOMContentLoaded', function() {
     initCountdown();
     initFormHandlers();
     initResourceDownloads();
+    
+    // Initialize default scan mode (private)
+    switchScanMode('private');
 });
 
 // Consent Management
@@ -265,14 +270,222 @@ function initCountdown() {
 
 function initFormHandlers() {
     const checkerForm = document.getElementById('checker-form');
+    const proxyForm = document.getElementById('proxy-form');
     const newsletterForm = document.getElementById('newsletter-form');
     
     if (checkerForm) {
         checkerForm.addEventListener('submit', handleWebsiteCheck);
     }
     
+    if (proxyForm) {
+        proxyForm.addEventListener('submit', handleProxyCheck);
+    }
+    
     if (newsletterForm) {
         newsletterForm.addEventListener('submit', handleNewsletterSignup);
+    }
+}
+
+// Function to switch between scan modes
+function switchScanMode(mode) {
+    currentScanMode = mode;
+    
+    // Get the correct elements
+    const manualInputMode = document.getElementById('manual-input-mode');
+    const proxyInputMode = document.getElementById('proxy-input-mode');
+    const bookmarkletMode = document.getElementById('bookmarklet-mode');
+    const privacyNotice = document.getElementById('privacy-notice');
+    
+    // Hide all mode content areas first
+    if (manualInputMode) manualInputMode.style.display = 'none';
+    if (proxyInputMode) proxyInputMode.style.display = 'none';
+    if (bookmarkletMode) bookmarkletMode.style.display = 'none';
+    
+    // Update privacy notice based on mode
+    if (privacyNotice) {
+        switch(mode) {
+            case 'private':
+                privacyNotice.innerHTML = `
+                    <span class="privacy-badge">🔒 100% פרטי</span>
+                    <p>כל העיבוד מתבצע בדפדפן שלך. שום מידע לא נשלח לשרתים חיצוניים.</p>
+                `;
+                break;
+            case 'proxy':
+                privacyNotice.innerHTML = `
+                    <span class="privacy-badge" style="background: #ff9800;">⚠️ מצב Proxy</span>
+                    <p>כתובת האתר תישלח לשירותי צד שלישי. נדרשת הסכמה מפורשת.</p>
+                `;
+                break;
+            case 'bookmarklet':
+                privacyNotice.innerHTML = `
+                    <span class="privacy-badge">🔖 מצב Bookmarklet</span>
+                    <p>סריקה פרטית באמצעות Bookmarklet - הנתונים נשארים בדפדפן שלך.</p>
+                `;
+                break;
+        }
+    }
+    
+    // Show the appropriate mode content
+    switch(mode) {
+        case 'private':
+            if (manualInputMode) manualInputMode.style.display = 'block';
+            break;
+            
+        case 'proxy':
+            if (proxyInputMode) proxyInputMode.style.display = 'block';
+            
+            // Setup proxy consent checkbox handler
+            const proxyConsentCheckbox = document.getElementById('proxy-consent');
+            const proxyScanButton = document.getElementById('proxy-scan-button');
+            
+            if (proxyConsentCheckbox && proxyScanButton) {
+                // Check if consent was previously given
+                if (localStorage.getItem('tikun13_proxy_consent')) {
+                    proxyConsentCheckbox.checked = true;
+                    proxyScanButton.disabled = false;
+                }
+                
+                // Add event listener for consent checkbox
+                proxyConsentCheckbox.onchange = function() {
+                    if (this.checked) {
+                        proxyConsentGiven = true;
+                        localStorage.setItem('tikun13_proxy_consent', 'true');
+                        proxyScanButton.disabled = false;
+                    } else {
+                        proxyConsentGiven = false;
+                        localStorage.removeItem('tikun13_proxy_consent');
+                        proxyScanButton.disabled = true;
+                    }
+                };
+            }
+            break;
+            
+        case 'bookmarklet':
+            if (bookmarkletMode) bookmarkletMode.style.display = 'block';
+            generateBookmarklet();
+            break;
+    }
+}
+
+// Generate bookmarklet code
+function generateBookmarklet() {
+    const bookmarkletCode = `javascript:(function(){
+        var html = document.documentElement.outerHTML;
+        var url = window.location.href;
+        var tikun13Window = window.open('${window.location.origin}${window.location.pathname}', 'tikun13');
+        setTimeout(function() {
+            tikun13Window.postMessage({
+                type: 'tikun13_scan',
+                html: html,
+                url: url
+            }, '*');
+        }, 1000);
+    })();`;
+    
+    const bookmarkletLink = document.getElementById('bookmarklet-link');
+    if (bookmarkletLink) {
+        bookmarkletLink.href = bookmarkletCode;
+    }
+}
+
+// Listen for bookmarklet messages
+window.addEventListener('message', function(event) {
+    if (event.data && event.data.type === 'tikun13_scan') {
+        // Fill in the URL and HTML content
+        const urlInput = document.getElementById('website-url');
+        const htmlInput = document.getElementById('html-input');
+        
+        if (urlInput) urlInput.value = event.data.url;
+        if (htmlInput) htmlInput.value = event.data.html;
+        
+        // Trigger scan
+        document.getElementById('checker-form').dispatchEvent(new Event('submit'));
+    }
+});
+
+// Handle proxy form submission
+async function handleProxyCheck(e) {
+    e.preventDefault();
+    
+    // Check consent first
+    if (!localStorage.getItem('tikun13_consent')) {
+        alert('יש לקבל את תנאי השימוש לפני השימוש בכלי');
+        initConsent();
+        return;
+    }
+    
+    // Check proxy consent
+    if (!proxyConsentGiven && !localStorage.getItem('tikun13_proxy_consent')) {
+        alert('יש לאשר את השימוש במצב Proxy לפני הסריקה.');
+        return;
+    }
+    
+    const proxyUrlInput = document.getElementById('proxy-url');
+    let url = proxyUrlInput.value.trim();
+    
+    // Normalize and validate URL
+    url = normalizeAndValidateUrl(url);
+    
+    if (!url) {
+        alert('אנא הכנס כתובת אתר תקינה (לדוגמה: example.co.il או https://example.com)');
+        return;
+    }
+    
+    // Update input with normalized URL
+    proxyUrlInput.value = url;
+    
+    // Create progress tracker
+    const progressTracker = new ProgressTracker();
+    currentScan = progressTracker;
+    
+    showLoadingOverlay(true);
+    progressTracker.start(url);
+    
+    try {
+        // For proxy mode, pass null as htmlContent to trigger proxy fetching
+        const results = await checkWebsiteCompliance(url, (step, details) => {
+            progressTracker.updateStep(step, 'active', details);
+        }, null);
+        
+        if (!results) {
+            throw new Error('No results returned from scan');
+        }
+        
+        // Check if scan had errors
+        if (results.error) {
+            console.error('Scan completed with error:', results.error);
+            progressTracker.error('הסריקה הושלמה עם שגיאות');
+            
+            await new Promise(resolve => setTimeout(resolve, 500));
+            displayError({ message: results.error }, url);
+            lastScannedUrl = url;
+        } else {
+            // Complete the progress successfully
+            progressTracker.complete();
+            
+            latestScanResults = results;
+            lastScannedUrl = url;
+            
+            await new Promise(resolve => setTimeout(resolve, 500));
+            displayResults(results);
+            
+            document.getElementById('checker-title').textContent = `תוצאות עבור: ${new URL(url).hostname}`;
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        
+        document.getElementById('scan-controls').style.display = 'flex';
+        
+    } catch (error) {
+        console.error('Error checking website:', error);
+        progressTracker.error(error.message || 'אירעה שגיאה בבדיקת האתר');
+        
+        await new Promise(resolve => setTimeout(resolve, 500));
+        displayError(error, url);
+        lastScannedUrl = url;
+        document.getElementById('scan-controls').style.display = 'flex';
+    } finally {
+        showLoadingOverlay(false);
+        currentScan = null;
     }
 }
 
@@ -289,7 +502,7 @@ async function handleWebsiteCheck(e) {
     const urlInput = document.getElementById('website-url');
     const htmlInput = document.getElementById('html-input');
     let url = urlInput.value.trim();
-    const htmlContent = htmlInput ? htmlInput.value.trim() : '';
+    let htmlContent = htmlInput ? htmlInput.value.trim() : '';
     
     // Normalize and validate URL
     url = normalizeAndValidateUrl(url);
@@ -299,10 +512,25 @@ async function handleWebsiteCheck(e) {
         return;
     }
     
-    // Check if HTML content is provided
-    if (!htmlContent) {
-        alert('אנא הדבק את קוד ה-HTML של האתר. לחץ על "איך להשיג HTML" להוראות.');
-        return;
+    // Handle different scan modes
+    if (currentScanMode === 'private' || currentScanMode === 'bookmarklet') {
+        // Check if HTML content is provided for private/bookmarklet modes
+        if (!htmlContent) {
+            if (currentScanMode === 'private') {
+                alert('אנא הדבק את קוד ה-HTML של האתר. לחץ על "איך להשיג HTML" להוראות.');
+            } else {
+                alert('אנא השתמש ב-Bookmarklet כדי לסרוק את האתר.');
+            }
+            return;
+        }
+    } else if (currentScanMode === 'proxy') {
+        // For proxy mode, we'll fetch the HTML via proxy
+        if (!proxyConsentGiven && !localStorage.getItem('tikun13_proxy_consent')) {
+            alert('יש לאשר את השימוש במצב Proxy לפני הסריקה.');
+            return;
+        }
+        // HTML content will be fetched by the scanner in proxy mode
+        htmlContent = null;
     }
     
     // Update input with normalized URL
@@ -466,6 +694,15 @@ async function checkWebsiteCompliance(url, progressCallback, htmlContent = null)
     try {
         // Use the real scanner with HTML content and progress callback
         const scanner = new RealWebsiteScanner();
+        
+        // Enable proxy mode if selected and consented (when htmlContent is null)
+        if (currentScanMode === 'proxy' && !htmlContent && (proxyConsentGiven || localStorage.getItem('tikun13_proxy_consent'))) {
+            scanner.enableProxyMode();
+            // For proxy mode, fetch the HTML
+            const proxyResult = await scanner.fetchWebsiteViaProxy(url);
+            htmlContent = proxyResult.html;
+        }
+        
         const results = await scanner.scanWebsite(url, progressCallback, htmlContent);
         
         // Map the results to the expected format
