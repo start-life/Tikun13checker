@@ -31,8 +31,11 @@ class RealWebsiteScanner {
                 const data = await response.json();
                 const html = data.contents || data.data || data;
                 
+                // Check if there's redirect information in the response
+                const finalUrl = data.status?.url || data.url || null;
+                
                 if (typeof html === 'string' && html.length > 0) {
-                    return html;
+                    return { html, finalUrl };
                 }
                 throw new Error('Empty response');
             } catch (error) {
@@ -50,6 +53,9 @@ class RealWebsiteScanner {
         let finalUrl = url;
         let urlObj = new URL(url);
         
+        // Check if we should test both protocols (when user didn't specify protocol)
+        const shouldCheckBothProtocols = !window.lastScanHadProtocol;
+        
         // Helper function to report progress
         const reportProgress = (step, details = '') => {
             if (progressCallback && typeof progressCallback === 'function') {
@@ -64,7 +70,8 @@ class RealWebsiteScanner {
             websiteContext: {
                 domain: urlObj.hostname,
                 protocol: urlObj.protocol,
-                path: urlObj.pathname
+                path: urlObj.pathname,
+                bothProtocolsChecked: shouldCheckBothProtocols
             },
             extractedData: {},
             compliance: {},
@@ -86,9 +93,15 @@ class RealWebsiteScanner {
             reportProgress('protocol', `בודק פרוטוקול ${urlObj.protocol.toUpperCase()}`);
             
             // First try with the given URL (usually HTTPS)
+            let httpRedirectsToHttps = false;
             try {
                 reportProgress('fetch', 'טוען תוכן מהאתר...');
-                html = await this.fetchWebsite(finalUrl);
+                const result = await this.fetchWebsite(finalUrl);
+                html = result.html;
+                if (result.finalUrl) {
+                    finalUrl = result.finalUrl;
+                    urlObj = new URL(finalUrl);
+                }
                 console.log('Successfully fetched with:', finalUrl);
                 reportProgress('fetch', `נטען בהצלחה - ${(html.length / 1024).toFixed(1)}KB`);
             } catch (httpsError) {
@@ -101,18 +114,29 @@ class RealWebsiteScanner {
                     const httpUrl = finalUrl.replace('https://', 'http://');
                     try {
                         reportProgress('fetch', 'טוען דרך HTTP...');
-                        html = await this.fetchWebsite(httpUrl);
-                        finalUrl = httpUrl;
-                        urlObj = new URL(httpUrl);
-                        console.log('Successfully fetched with HTTP:', httpUrl);
-                        reportProgress('fetch', `נטען דרך HTTP - ${(html.length / 1024).toFixed(1)}KB`);
+                        const result = await this.fetchWebsite(httpUrl);
+                        html = result.html;
                         
-                        // Add a note about HTTP-only access
-                        scanResult.websiteContext.httpOnly = true;
-                        scanResult.recommendations.push({
-                            priority: 'high',
-                            message: 'האתר זמין רק דרך HTTP ולא HTTPS. מומלץ מאוד להוסיף אישור SSL.'
-                        });
+                        // Check if HTTP redirected to HTTPS
+                        if (result.finalUrl && result.finalUrl.startsWith('https://')) {
+                            httpRedirectsToHttps = true;
+                            finalUrl = result.finalUrl;
+                            urlObj = new URL(finalUrl);
+                            console.log('HTTP redirects to HTTPS:', result.finalUrl);
+                            reportProgress('fetch', `HTTP מפנה ל-HTTPS - ${(html.length / 1024).toFixed(1)}KB`);
+                        } else {
+                            finalUrl = httpUrl;
+                            urlObj = new URL(httpUrl);
+                            console.log('Successfully fetched with HTTP:', httpUrl);
+                            reportProgress('fetch', `נטען דרך HTTP - ${(html.length / 1024).toFixed(1)}KB`);
+                            
+                            // Add a note about HTTP-only access (no redirect to HTTPS)
+                            scanResult.websiteContext.httpOnly = true;
+                            scanResult.recommendations.push({
+                                priority: 'high',
+                                message: 'האתר זמין רק דרך HTTP ולא HTTPS. מומלץ מאוד להוסיף אישור SSL.'
+                            });
+                        }
                     } catch (httpError) {
                         // Both failed, throw the original error
                         throw fetchError;
@@ -121,6 +145,58 @@ class RealWebsiteScanner {
                     throw fetchError;
                 }
             }
+            
+            // Comprehensive protocol check when user didn't specify protocol
+            if (shouldCheckBothProtocols) {
+                reportProgress('protocol', 'בודק את שני הפרוטוקולים...');
+                
+                // If we got here with HTTPS, also check HTTP
+                if (finalUrl.startsWith('https://')) {
+                    try {
+                        const httpUrl = finalUrl.replace('https://', 'http://');
+                        reportProgress('protocol', 'בודק התנהגות HTTP...');
+                        const httpResult = await this.fetchWebsite(httpUrl);
+                        
+                        if (httpResult.finalUrl && httpResult.finalUrl.startsWith('https://')) {
+                            httpRedirectsToHttps = true;
+                            scanResult.recommendations.push({
+                                priority: 'success',
+                                message: '✅ מצוין! האתר מפנה אוטומטית מ-HTTP ל-HTTPS.'
+                            });
+                        } else {
+                            scanResult.recommendations.push({
+                                priority: 'medium',
+                                message: 'האתר תומך ב-HTTPS אך HTTP לא מפנה אוטומטית. מומלץ להגדיר הפניה מ-HTTP ל-HTTPS.'
+                            });
+                        }
+                    } catch (e) {
+                        // HTTP check failed, but we have HTTPS so it's ok
+                        console.log('HTTP check failed but HTTPS works');
+                    }
+                }
+                // If we're on HTTP (HTTPS failed), we already checked if HTTPS is available above
+            }
+            // Original logic for when user specified HTTP
+            else if (url.startsWith('http://') && !url.startsWith('https://')) {
+                try {
+                    const httpsUrl = url.replace('http://', 'https://');
+                    reportProgress('protocol', 'בודק אם קיים HTTPS...');
+                    const result = await this.fetchWebsite(httpsUrl);
+                    if (result.html) {
+                        // HTTPS is available
+                        httpRedirectsToHttps = true;
+                        scanResult.recommendations.push({
+                            priority: 'low',
+                            message: 'האתר תומך ב-HTTPS. מומלץ להגדיר הפניה אוטומטית מ-HTTP ל-HTTPS.'
+                        });
+                    }
+                } catch (e) {
+                    // HTTPS not available, that's ok if we already have HTTP
+                }
+            }
+            
+            // Store redirect status for SSL check
+            scanResult.websiteContext.httpRedirectsToHttps = httpRedirectsToHttps;
             
             // Update the final URL in results
             scanResult.url = finalUrl;
@@ -143,7 +219,7 @@ class RealWebsiteScanner {
             // Perform compliance checks with real data
             reportProgress('ssl', 'בודק אישור SSL...');
             scanResult.compliance = {};
-            scanResult.compliance.ssl = this.checkSSL(urlObj);
+            scanResult.compliance.ssl = this.checkSSL(urlObj, scanResult);
             
             reportProgress('cookies', 'מנתח עוגיות...');
             scanResult.compliance.cookies = this.analyzeCookies(doc, html);
@@ -335,14 +411,29 @@ class RealWebsiteScanner {
         return totalChars > 0 ? Math.round((hebrewChars / totalChars) * 100) : 0;
     }
 
-    checkSSL(urlObj) {
+    checkSSL(urlObj, scanResult) {
         const isHTTPS = urlObj.protocol === 'https:';
+        const httpRedirectsToHttps = scanResult?.websiteContext?.httpRedirectsToHttps || false;
+        
+        // Consider compliant if: 
+        // 1. Currently using HTTPS, OR
+        // 2. HTTP redirects to HTTPS
+        const isCompliant = isHTTPS || httpRedirectsToHttps;
+        
+        let recommendation = null;
+        if (!isCompliant) {
+            recommendation = 'האתר חייב להשתמש ב-HTTPS להצפנת התקשורת';
+        } else if (!isHTTPS && httpRedirectsToHttps) {
+            recommendation = 'האתר מפנה מ-HTTP ל-HTTPS, זה טוב! המשיכו כך.';
+        }
+        
         return {
-            status: isHTTPS ? 'compliant' : 'non-compliant',
+            status: isCompliant ? 'compliant' : 'non-compliant',
             details: {
                 protocol: urlObj.protocol,
                 encrypted: isHTTPS,
-                recommendation: isHTTPS ? null : 'האתר חייב להשתמש ב-HTTPS להצפנת התקשורת'
+                httpRedirectsToHttps: httpRedirectsToHttps,
+                recommendation: recommendation
             }
         };
     }

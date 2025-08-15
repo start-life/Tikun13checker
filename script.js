@@ -289,6 +289,9 @@ async function handleWebsiteCheck(e) {
     const urlInput = document.getElementById('website-url');
     let url = urlInput.value.trim();
     
+    // Track if the original URL had a protocol
+    const hadProtocol = url.match(/^https?:\/\//i);
+    
     // Normalize and validate URL
     url = normalizeAndValidateUrl(url);
     
@@ -299,6 +302,9 @@ async function handleWebsiteCheck(e) {
     
     // Update input with normalized URL
     urlInput.value = url;
+    
+    // Store whether to check both protocols (when user didn't specify protocol)
+    window.lastScanHadProtocol = hadProtocol;
     
     // Create progress tracker
     const progressTracker = new ProgressTracker();
