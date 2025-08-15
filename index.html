@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>בדיקת תיקון 13 - בודק התאמה לחוק הגנת הפרטיות הישראלי</title>
+    <meta name="description" content="כלי חינמי לבדיקת התאמת האתר שלך לתיקון 13 לחוק הגנת הפרטיות. בדיקת עוגיות, SSL, ומדיניות פרטיות בהתאם לדרישות החוק הישראלי.">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="accessibility.css">
+</head>
+<body>
+    <!-- Consent Modal -->
+    <div id="consent-modal" class="consent-modal">
+        <div class="consent-content">
+            <h2>⚖️ תנאי שימוש והסכמה מדעת</h2>
+            
+            <div class="consent-text">
+                <h3>חשוב לדעת לפני השימוש בכלי:</h3>
+                
+                <div class="disclaimer-section">
+                    <h4>🔓 פרויקט קוד פתוח</h4>
+                    <p>כלי זה הוא פרויקט קוד פתוח שפותח על ידי IONSEC.IO לטובת הקהילה הישראלית, במטרה לסייע בהיערכות ראשונית לתיקון 13 לחוק הגנת הפרטיות.</p>
+                </div>
+
+                <div class="disclaimer-section">
+                    <h4>⚠️ הגבלת אחריות</h4>
+                    <p><strong>IONSEC.IO ומפתחי הכלי אינם לוקחים כל אחריות על השימוש בכלי או על תוצאותיו.</strong> הכלי מספק הערכה ראשונית בלבד ואינו מהווה תחליף לייעוץ משפטי מקצועי.</p>
+                </div>
+
+                <div class="disclaimer-section">
+                    <h4>👨‍⚖️ ייעוץ משפטי מקצועי</h4>
+                    <p><strong>לצורך עמידה בדרישות תיקון 13 או כל דין ישראלי אחר בנושא הגנת הפרטיות, חובה להיוועץ בעורך דין המתמחה בתחום.</strong></p>
+                    <p>התוצאות המוצגות בכלי זה הן אינדיקטיביות בלבד ואינן מהוות חוות דעת משפטית מחייבת.</p>
+                </div>
+
+                <div class="disclaimer-section">
+                    <h4>📊 מטרת הכלי</h4>
+                    <ul>
+                        <li>סיוע בהערכה ראשונית של מצב האתר</li>
+                        <li>זיהוי נושאים הדורשים תשומת לב</li>
+                        <li>מתן כיוון כללי להיערכות</li>
+                        <li>חינוך והעלאת מודעות לדרישות החוק</li>
+                    </ul>
+                </div>
+
+                <div class="disclaimer-section">
+                    <h4>🔒 פרטיות</h4>
+                    <p>הכלי פועל בצד הלקוח בלבד. כתובות האתרים שנבדקות אינן נשמרות או נשלחות לשרתים חיצוניים, למעט שימוש בשירותי proxy לצורך עקיפת מגבלות CORS.</p>
+                </div>
+            </div>
+
+            <div class="consent-footer">
+                <label class="consent-checkbox">
+                    <input type="checkbox" id="consent-agree">
+                    <span>קראתי, הבנתי ואני מסכים/ה לתנאי השימוש. אני מבין/ה שזהו כלי עזר בלבד ושלצורך עמידה בחוק עלי להיוועץ בעורך דין מומחה בתחום הגנת הפרטיות.</span>
+                </label>
+                
+                <div class="consent-buttons">
+                    <button id="accept-consent" class="btn-primary" disabled onclick="acceptConsent()">
+                        אני מסכים/ה - המשך לכלי
+                    </button>
+                    <button class="btn-secondary" onclick="declineConsent()">
+                        איני מסכים/ה - יציאה
+                    </button>
+                </div>
+                
+                <p class="consent-note">
+                    לשאלות או הבהרות: <a href="mailto:info@ionsec.io">info@ionsec.io</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <header role="banner">
+        <nav class="nav-gradient" role="navigation" aria-label="ניווט ראשי">
+            <div class="container">
+                <div class="logo-section">
+                    <div class="nav-logo">
+                        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" class="logo-svg">
+                            <defs>
+                                <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+                                </linearGradient>
+                            </defs>
+                            <rect width="64" height="64" rx="12" fill="white"/>
+                            <path d="M 32 12 C 22 14, 14 16, 12 18 L 12 32 C 12 47, 22 57, 32 60 C 42 57, 52 47, 52 32 L 52 18 C 50 16, 42 14, 32 12 Z" 
+                                  fill="url(#logoGrad)" opacity="0.9"/>
+                            <text x="32" y="37" font-family="Arial Black" font-size="20" font-weight="900" text-anchor="middle" fill="white">13</text>
+                            <circle cx="44" cy="44" r="8" fill="#4CAF50"/>
+                            <path d="M 40 44 L 43 47 L 48 41" stroke="white" stroke-width="2" stroke-linecap="round" fill="none"/>
+                        </svg>
+                        <div class="logo-text">
+                            <h1>תיקון13 Checker</h1>
+                            <span class="tagline">בודק התאמה לחוק הגנת הפרטיות</span>
+                        </div>
+                    </div>
+                    <div class="powered-by">
+                        <span>By</span>
+                        <a href="https://ionsec.io" target="_blank" class="ionsec-badge">
+                            <strong>IONSEC.IO</strong>
+                        </a>
+                    </div>
+                </div>
+                <ul class="nav-links" role="list">
+                    <li><a href="#features">יכולות</a></li>
+                    <li><a href="#requirements">דרישות החוק</a></li>
+                    <li><a href="#resources">משאבים</a></li>
+                    <li><a href="https://github.com/ionsec" target="_blank">GitHub</a></li>
+                    <li><a href="https://ionsec.io" target="_blank">IONSEC.IO</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main role="main" id="main-content">
+        <section class="hero">
+            <div class="container">
+                <h2>בדוק את התאמת האתר שלך לתיקון 13</h2>
+                <p class="hero-subtitle">תיקון 13 לחוק הגנת הפרטיות נכנס לתוקף ב-15 באוגוסט 2025</p>
+                
+                <div class="deadline-banner">
+                    <div class="deadline-content">
+                        <span class="deadline-icon">⏰</span>
+                        <div>
+                            <strong>זמן שנותר להיערכות:</strong>
+                            <span id="countdown"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checker-box" id="checker-box">
+                    <h3 id="checker-title">בדיקת התאמה חינמית</h3>
+                    <form id="checker-form" role="form" aria-label="טופס בדיקת אתר">
+                        <div class="input-group">
+                            <input type="text" id="website-url" placeholder="הכנס כתובת אתר (לדוגמה: example.co.il)" aria-label="כתובת אתר לבדיקה" aria-required="true">
+                            <button type="submit" class="btn-primary" id="scan-button" aria-label="התחל בדיקת אתר">בדוק עכשיו</button>
+                        </div>
+                    </form>
+                    <p class="helper-text">הבדיקה כוללת: עוגיות, SSL, מדיניות פרטיות, ודרישות תיקון 13</p>
+                    <div class="scan-controls" id="scan-controls" style="display: none;">
+                        <button class="btn-secondary" onclick="rescanWebsite()" aria-label="סרוק שוב את אותו אתר">🔄 סרוק שוב</button>
+                        <button class="btn-primary" onclick="newScan()" aria-label="התחל בדיקה חדשה">🆕 בדיקה חדשה</button>
+                        <button class="btn-secondary" onclick="clearForm()" aria-label="נקה טופס">🗑️ נקה</button>
+                    </div>
+                </div>
+
+                <div id="results" class="results-container" style="display: none;" role="region" aria-label="תוצאות בדיקה" aria-live="polite">
+                    <h3>תוצאות הבדיקה</h3>
+                    <div class="results-grid">
+                        <div class="result-item" id="ssl-result">
+                            <span class="result-icon"></span>
+                            <div class="result-content">
+                                <h4>אישור SSL</h4>
+                                <p class="result-status"></p>
+                            </div>
+                        </div>
+                        <div class="result-item" id="cookies-result">
+                            <span class="result-icon"></span>
+                            <div class="result-content">
+                                <h4>עוגיות</h4>
+                                <p class="result-status"></p>
+                            </div>
+                        </div>
+                        <div class="result-item" id="privacy-result">
+                            <span class="result-icon"></span>
+                            <div class="result-content">
+                                <h4>מדיניות פרטיות</h4>
+                                <p class="result-status"></p>
+                            </div>
+                        </div>
+                        <div class="result-item" id="hebrew-result">
+                            <span class="result-icon"></span>
+                            <div class="result-content">
+                                <h4>תוכן בעברית</h4>
+                                <p class="result-status"></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="recommendations" id="recommendations">
+                        <h4>המלצות לשיפור</h4>
+                        <ul id="recommendations-list"></ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="features" class="features" role="region" aria-label="תכונות הבדיקה">
+            <div class="container">
+                <h2>מה אנחנו בודקים?</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🔒</div>
+                        <h3>אבטחת מידע</h3>
+                        <p>בדיקת הצפנת SSL, אמצעי אבטחה, ובקרות גישה בהתאם לתקנות אבטחת מידע</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🍪</div>
+                        <h3>ניהול עוגיות</h3>
+                        <p>זיהוי עוגיות, בדיקת הסכמה מדעת, ועמידה בדרישות השקיפות</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📄</div>
+                        <h3>מדיניות פרטיות</h3>
+                        <p>וידוא קיום מדיניות פרטיות בעברית הכוללת את כל המידע הנדרש</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">👤</div>
+                        <h3>זכויות נושאי מידע</h3>
+                        <p>בדיקת מנגנונים למימוש זכות עיון, תיקון ומחיקת מידע אישי</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📊</div>
+                        <h3>מסמכי הגדרת מאגר</h3>
+                        <p>בדיקת דרישה לתיעוד פעילויות עיבוד מידע ורישום מאגרים</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🛡️</div>
+                        <h3>ממונה הגנת פרטיות</h3>
+                        <p>הערכת הצורך במינוי ממונה הגנת פרטיות בהתאם לסוג הארגון</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="requirements" class="requirements" role="region" aria-label="דרישות תיקון 13">
+            <div class="container">
+                <h2>דרישות עיקריות של תיקון 13</h2>
+                
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-date">15 באוגוסט 2025</div>
+                        <div class="timeline-content">
+                            <h3>כניסה לתוקף</h3>
+                            <p>תיקון 13 נכנס לתוקף באופן מלא. כל הארגונים חייבים לעמוד בדרישות החוק.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="requirements-grid">
+                    <div class="requirement-card">
+                        <h3>1. מסמכי הגדרת מאגר</h3>
+                        <ul>
+                            <li>מיפוי וותיעוד פעילויות עיבוד מידע</li>
+                            <li>סקירה שנתית של התיעוד</li>
+                            <li>עדכון שוטף בהתאם לשינויים</li>
+                        </ul>
+                    </div>
+                    <div class="requirement-card">
+                        <h3>2. ממונה הגנת פרטיות</h3>
+                        <ul>
+                            <li>חובת מינוי לגופים ציבוריים</li>
+                            <li>חובה לארגונים גדולים ורגישים</li>
+                            <li>אחריות על יישום והטמעת החוק</li>
+                        </ul>
+                    </div>
+                    <div class="requirement-card">
+                        <h3>3. הודעות לנושאי מידע</h3>
+                        <ul>
+                            <li>שם ופרטי הקשר של בעל המאגר</li>
+                            <li>מטרות איסוף המידע</li>
+                            <li>זכות עיון ותיקון (סעיפים 13-14)</li>
+                        </ul>
+                    </div>
+                    <div class="requirement-card">
+                        <h3>4. אבטחת מידע מוגברת</h3>
+                        <ul>
+                            <li>הצפנת מידע רגיש</li>
+                            <li>בקרות גישה מחמירות</li>
+                            <li>ביקורות אבטחה תקופתיות</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="penalties-section">
+                    <h3>סנקציות וקנסות</h3>
+                    <div class="warning-box">
+                        <p><strong>שימו לב:</strong> הרשות להגנת הפרטיות קיבלה סמכויות אכיפה מורחבות וסמכות להטיל קנסות משמעותיים בהתאם לחומרת ההפרה, מספר נושאי המידע שנפגעו, ומחזור הארגון.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="resources" class="resources">
+            <div class="container">
+                <h2>משאבים חינמיים</h2>
+                <div class="resources-grid">
+                    <div class="resource-card">
+                        <h3>📋 רשימת תיוג להיערכות</h3>
+                        <p>רשימה מקיפה של כל הצעדים הנדרשים לעמידה בתיקון 13</p>
+                        <button class="btn-secondary" onclick="downloadChecklist()" aria-label="הורד רשימת תיוג להיערכות">הורד רשימה</button>
+                    </div>
+                    <div class="resource-card">
+                        <h3>📝 תבנית מדיניות פרטיות</h3>
+                        <p>תבנית בעברית המותאמת לדרישות החוק הישראלי</p>
+                        <button class="btn-secondary" onclick="downloadTemplate()" aria-label="הורד תבנית מדיניות פרטיות">הורד תבנית</button>
+                    </div>
+                    <div class="resource-card">
+                        <h3>🍪 באנר הסכמה לעוגיות</h3>
+                        <p>קוד מוכן להטמעה של באנר הסכמה בעברית</p>
+                        <button class="btn-secondary" onclick="downloadBanner()" aria-label="הורד קוד באנר הסכמה לעוגיות">הורד קוד</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="target-audience" class="target-audience">
+            <div class="container">
+                <h2>למי מיועד השירות?</h2>
+                <div class="audience-grid">
+                    <div class="audience-card">
+                        <h3>🏢 לארגונים</h3>
+                        <ul>
+                            <li>חברות פרטיות וציבוריות</li>
+                            <li>גופים ממשלתיים ועירוניים</li>
+                            <li>מוסדות חינוך ובריאות</li>
+                            <li>עמותות וארגונים ללא כוונת רווח</li>
+                        </ul>
+                    </div>
+                    <div class="audience-card">
+                        <h3>💻 לבעלי אתרים</h3>
+                        <ul>
+                            <li>אתרי מסחר אלקטרוני</li>
+                            <li>פלטפורמות דיגיטליות</li>
+                            <li>אפליקציות מובייל</li>
+                            <li>שירותי SaaS</li>
+                        </ul>
+                    </div>
+                    <div class="audience-card">
+                        <h3>👥 למשתמשים</h3>
+                        <ul>
+                            <li>הבנת זכויותיך לפי החוק</li>
+                            <li>דרכים למימוש הזכויות</li>
+                            <li>הגנה על הפרטיות שלך</li>
+                            <li>דיווח על הפרות</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="contact">
+            <div class="container">
+                <h2>צור קשר</h2>
+                <div class="contact-content">
+                    <p>יש לך שאלות? רוצה ייעוץ מקצועי? נשמח לעזור!</p>
+                    <div class="contact-info">
+                        <a href="mailto:info@ionsec.io" class="contact-link">
+                            <span>📧</span> info@ionsec.io
+                        </a>
+                    </div>
+                    <div class="disclaimer">
+                        <p><strong>הבהרה:</strong> כלי זה מספק הערכה ראשונית בלבד ואינו מהווה תחליף לייעוץ משפטי מקצועי. לקבלת ייעוץ מלא, מומלץ לפנות לעורך דין המתמחה בדיני פרטיות ומידע.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer role="contentinfo" id="footer">
+        <div class="container">
+            <div class="ionsec-cta">
+                <h3>🚀 פרויקט קוד פתוח מבית IONSEC.IO</h3>
+                <p>מומחים באבטחת מידע, הגנת פרטיות וציות לרגולציה</p>
+                <div class="cta-buttons">
+                    <a href="https://ionsec.io/contact" target="_blank" class="btn-primary">קבל ייעוץ מקצועי</a>
+                    <a href="https://github.com/ionsec/tikun13-checker" target="_blank" class="btn-secondary">תרום לפרויקט</a>
+                </div>
+            </div>
+            
+            <div class="footer-content">
+                <div class="footer-section about-ionsec">
+                    <h4>אודות IONSEC.IO</h4>
+                    <div class="about-subsections">
+                        <div class="about-item">
+                            <h5>🎯 התמחות</h5>
+                            <p>החברה מתמחה בזיהוי איומי סייבר, חקירות דיגיטליות, אבטחת מידע, ומתן פתרונות הגנה מפני התקפות מגוונות, כגון תוכנות כופר, תוכנות ריגול, וניסיונות השתלטות על מכשירים.</p>
+                        </div>
+                        <div class="about-item">
+                            <h5>💼 שירותים</h5>
+                            <p>איונסק מציעה שירותים כמו חקירות סייבר, בדיקות חדירה, ניטור איומים, ייעוץ בנושאי אבטחת מידע, וכן פיתוח והתאמה אישית של אמצעי אבטחה.</p>
+                        </div>
+                        <div class="about-item">
+                            <h5>👥 צוות</h5>
+                            <p>החברה מנוהלת על ידי צוות מומחים יוצאי יחידות ביטחוניות מובחרות, המתמחים בתחומים כמו חקירות, סייבר ואבטחת מידע.</p>
+                        </div>
+                    </div>
+                    <div class="social-links">
+                        <a href="https://linkedin.com/company/ionsec" target="_blank" title="LinkedIn">🔗</a>
+                        <a href="https://github.com/ionsec" target="_blank" title="GitHub">💻</a>
+                        <a href="https://twitter.com/ionsec_io" target="_blank" title="Twitter">🐦</a>
+                        <a href="mailto:info@ionsec.io" title="Email">📧</a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>שירותי IONSEC</h4>
+                    <ul>
+                        <li><a href="https://ionsec.io#cyber-investigations" target="_blank">🔍 חקירות סייבר</a></li>
+                        <li><a href="https://ionsec.io#penetration-testing" target="_blank">🛠️ בדיקות חדירה</a></li>
+                        <li><a href="https://ionsec.io#threat-monitoring" target="_blank">📡 ניטור איומים</a></li>
+                        <li><a href="https://ionsec.io#security-consulting" target="_blank">💡 ייעוץ אבטחת מידע</a></li>
+                        <li><a href="https://ionsec.io#custom-solutions" target="_blank">🔧 פיתוח והתאמה אישית של אמצעי אבטחה</a></li>
+                        <li><a href="https://ionsec.io#privacy-compliance" target="_blank">🛡️ ייעוץ פרטיות ותיקון 13</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>משאבים</h4>
+                    <ul>
+                        <li><a href="https://www.gov.il/he/departments/the_privacy_protection_authority" target="_blank">הרשות להגנת הפרטיות</a></li>
+                        <li><a href="https://github.com/ionsec/tikun13-checker" target="_blank">קוד המקור ב-GitHub</a></li>
+                        <li><a href="#" onclick="showTerms()">תנאי שימוש</a></li>
+                        <li><a href="#" onclick="showPrivacy()">מדיניות פרטיות</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 IONSEC.IO | פותח כפרויקט קוד פתוח לטובת הקהילה הישראלית</p>
+                <p>כלי זה מסופק כמות שהוא ואינו מהווה תחליף לייעוץ משפטי או מקצועי</p>
+            </div>
+        </div>
+    </footer>
+
+    <div id="loading-overlay" class="loading-overlay" style="display: none;">
+        <div class="progress-container">
+            <div class="progress-header">
+                <h2>🔍 מבצע סריקה מעמיקה</h2>
+                <button class="progress-close" onclick="cancelScan()" aria-label="בטל סריקה">✕</button>
+            </div>
+            
+            <div class="progress-info">
+                <span class="progress-url"></span>
+                <span class="progress-percentage">0%</span>
+            </div>
+            
+            <!-- Main progress bar -->
+            <div class="progress-bar-main">
+                <div class="progress-fill"></div>
+                <div class="progress-glow"></div>
+            </div>
+            
+            <!-- Current step indicator -->
+            <div class="progress-current-step">
+                <span class="step-icon">⏳</span>
+                <span class="step-text">מתחיל סריקה...</span>
+                <span class="step-timer"></span>
+            </div>
+            
+            <!-- Individual check items -->
+            <div class="progress-steps">
+                <div class="step-item" data-step="connect">
+                    <span class="step-status">⏳</span>
+                    <span class="step-name">חיבור לאתר</span>
+                    <span class="step-time"></span>
+                </div>
+                <div class="step-item" data-step="protocol">
+                    <span class="step-status">⏳</span>
+                    <span class="step-name">בדיקת פרוטוקול</span>
+                    <span class="step-time"></span>
+                </div>
+                <div class="step-item" data-step="fetch">
+                    <span class="step-status">⏳</span>
+                    <span class="step-name">טעינת תוכן</span>
+                    <span class="step-time"></span>
+                </div>
+                <div class="step-item" data-step="parse">
+                    <span class="step-status">⏳</span>
+                    <span class="step-name">ניתוח HTML</span>
+                    <span class="step-time"></span>
+                </div>
+                <div class="step-item" data-step="extract">
+                    <span class="step-status">⏳</span>
+                    <span class="step-name">חילוץ נתונים</span>
+                    <span class="step-time"></span>
+                </div>
+                <div class="step-item" data-step="ssl">
+                    <span class="step-status">⏳</span>
+                    <span class="step-name">בדיקת SSL</span>
+                    <span class="step-time"></span>
+                </div>
+                <div class="step-item" data-step="cookies">
+                    <span class="step-status">⏳</span>
+                    <span class="step-name">ניתוח עוגיות</span>
+                    <span class="step-time"></span>
+                </div>
+                <div class="step-item" data-step="privacy">
+                    <span class="step-status">⏳</span>
+                    <span class="step-name">מדיניות פרטיות</span>
+                    <span class="step-time"></span>
+                </div>
+                <div class="step-item" data-step="hebrew">
+                    <span class="step-status">⏳</span>
+                    <span class="step-name">תוכן בעברית</span>
+                    <span class="step-time"></span>
+                </div>
+                <div class="step-item" data-step="security">
+                    <span class="step-status">⏳</span>
+                    <span class="step-name">אבטחת מידע</span>
+                    <span class="step-time"></span>
+                </div>
+                <div class="step-item" data-step="score">
+                    <span class="step-status">⏳</span>
+                    <span class="step-name">חישוב ציון</span>
+                    <span class="step-time"></span>
+                </div>
+                <div class="step-item" data-step="complete">
+                    <span class="step-status">⏳</span>
+                    <span class="step-name">סיום</span>
+                    <span class="step-time"></span>
+                </div>
+            </div>
+            
+            <div class="progress-footer">
+                <span class="progress-elapsed">זמן שעבר: <span id="elapsed-time">0:00</span></span>
+                <span class="progress-status">סטטוס: <span id="scan-status">פעיל</span></span>
+            </div>
+        </div>
+    </div>
+
+    <script src="real-scanner.js"></script>
+    <script src="script.js"></script>
+    <script src="accessibility.js"></script>
+</body>
+</html>
