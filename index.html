@@ -7,6 +7,7 @@
     <meta name="description" content="כלי חינמי לבדיקת התאמת האתר שלך לתיקון 13 לחוק הגנת הפרטיות. בדיקת עוגיות, SSL, ומדיניות פרטיות בהתאם לדרישות החוק הישראלי.">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="accessibility.css">
+    <link rel="stylesheet" href="assessment/assessment.css">
 </head>
 <body>
     <!-- Consent Modal -->
@@ -103,6 +104,8 @@
                     </div>
                 </div>
                 <ul class="nav-links" role="list">
+                    <li><a href="#" onclick="showScannerSection(); return false;">סריקת אתר</a></li>
+                    <li><a href="#" onclick="showAssessmentSection(); return false;" class="nav-highlight">הערכה עצמית</a></li>
                     <li><a href="#features">יכולות</a></li>
                     <li><a href="#requirements">דרישות החוק</a></li>
                     <li><a href="#resources">משאבים</a></li>
@@ -114,6 +117,21 @@
     </header>
 
     <main role="main" id="main-content">
+        <!-- Section Switcher -->
+        <div class="section-switcher">
+            <button class="switch-btn active" onclick="showScannerSection()">
+                <span class="switch-icon">🔍</span>
+                <span>סריקת אתר</span>
+            </button>
+            <button class="switch-btn highlight" onclick="showAssessmentSection()">
+                <span class="switch-icon">📋</span>
+                <span>הערכה עצמית</span>
+                <span class="badge-new">חדש!</span>
+            </button>
+        </div>
+        
+        <!-- Scanner Section -->
+        <div id="scanner-section">
         <section class="hero">
             <div class="container">
                 <h2>בדוק את התאמת האתר שלך לתיקון 13</h2>
@@ -355,6 +373,22 @@
                 </div>
             </div>
         </section>
+        </div>
+        <!-- End Scanner Section -->
+        
+        <!-- Assessment Section -->
+        <section id="assessment" class="assessment-section" style="display: none;">
+            <div class="container">
+                <div class="assessment-header">
+                    <h2>הערכה עצמית לעמידה בתיקון 13</h2>
+                    <p>כלי אינטראקטיבי להערכת מוכנות הארגון שלכם לדרישות החוק</p>
+                </div>
+                <div id="assessment-container">
+                    <!-- Assessment content will be dynamically loaded here -->
+                </div>
+            </div>
+        </section>
+        <!-- End Assessment Section -->
     </main>
 
     <footer role="contentinfo" id="footer">
@@ -519,5 +553,10 @@
     <script src="real-scanner.js"></script>
     <script src="script.js"></script>
     <script src="accessibility.js"></script>
+    <!-- Assessment Module Scripts -->
+    <script src="assessment/questions-db.js"></script>
+    <script src="assessment/scoring-engine.js"></script>
+    <script src="assessment/report-generator.js"></script>
+    <script src="assessment/assessment.js"></script>
 </body>
 </html>

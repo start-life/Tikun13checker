@@ -206,6 +206,184 @@ header {
     width: 100%;
 }
 
+.nav-links a.active {
+    opacity: 1;
+    font-weight: 600;
+}
+
+.nav-highlight {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 8px 16px !important;
+    border-radius: 20px;
+    font-weight: 600 !important;
+    position: relative;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.nav-highlight::after {
+    content: '🔥 חדש';
+    position: absolute;
+    top: -12px;
+    right: -10px;
+    background: #ff6b6b;
+    color: white;
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-weight: bold;
+    animation: bounce 1s ease-in-out infinite;
+    -webkit-text-fill-color: initial;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+}
+
+/* Section Switcher Styles */
+.section-switcher {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 30px 0;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+    margin: -20px 0 30px 0;
+    position: relative;
+    animation: fadeInDown 0.5s ease;
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.section-switcher::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 3px;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    border-radius: 2px;
+}
+
+.switch-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px 30px;
+    background: white;
+    border: 2px solid transparent;
+    border-radius: 30px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--text-dark);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    position: relative;
+    overflow: hidden;
+}
+
+.switch-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    transition: left 0.3s ease;
+}
+
+.switch-btn:hover::before {
+    left: 0;
+}
+
+.switch-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.switch-btn.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 8px 30px rgba(102, 126, 234, 0.4);
+}
+
+.switch-btn.highlight {
+    border: 2px solid #667eea;
+    position: relative;
+    animation: highlight-pulse 2s ease-in-out infinite;
+}
+
+@keyframes highlight-pulse {
+    0%, 100% { 
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08), 0 0 0 0 rgba(102, 126, 234, 0.4);
+    }
+    50% { 
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08), 0 0 0 10px rgba(102, 126, 234, 0);
+    }
+}
+
+.switch-icon {
+    font-size: 1.3rem;
+}
+
+.badge-new {
+    background: linear-gradient(135deg, #ff6b6b, #ff4757);
+    color: white;
+    padding: 3px 10px;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    margin-right: 5px;
+    animation: badge-glow 2s ease-in-out infinite;
+    box-shadow: 0 2px 8px rgba(255, 107, 107, 0.4);
+}
+
+@keyframes badge-glow {
+    0%, 100% { 
+        transform: scale(1);
+        box-shadow: 0 2px 8px rgba(255, 107, 107, 0.4);
+    }
+    50% { 
+        transform: scale(1.1);
+        box-shadow: 0 4px 12px rgba(255, 107, 107, 0.6);
+    }
+}
+
+/* Section Animations */
+#scanner-section,
+#assessment {
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 .hero {
     padding: 4rem 0;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -343,15 +521,25 @@ header {
     font-size: 0.875rem;
 }
 
-/* Scan Controls */
+/* Scan Controls - Always Visible */
 .scan-controls {
-    display: flex;
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
     gap: 1rem;
     justify-content: center;
-    margin-top: 1.5rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--border-color);
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     flex-wrap: wrap;
+    transition: all 0.3s ease;
+}
+
+.scan-controls:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
 }
 
 .scan-controls button {
@@ -380,7 +568,8 @@ header {
     background: var(--bg-white);
     border-radius: 16px;
     padding: 2rem;
-    margin-top: 2rem;
+    margin: 2rem auto;
+    max-width: 1200px;
     color: var(--text-dark);
     box-shadow: var(--shadow-lg);
 }
@@ -1207,6 +1396,24 @@ footer {
     
     .progress-header h2 {
         font-size: 1.25rem;
+    }
+    
+    /* Section Switcher Mobile */
+    .section-switcher {
+        flex-direction: column;
+        padding: 20px 15px;
+        gap: 15px;
+    }
+    
+    .switch-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 12px 20px;
+    }
+    
+    .badge-new {
+        position: static;
+        margin-right: 10px;
     }
 }
 

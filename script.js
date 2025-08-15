@@ -1451,6 +1451,78 @@ function getStatusText(status) {
     return statuses[status] || status;
 }
 
+// Section Navigation Functions
+window.showScannerSection = function() {
+    // Show scanner section
+    const scannerSection = document.getElementById('scanner-section');
+    const assessmentSection = document.getElementById('assessment');
+    
+    if (scannerSection) scannerSection.style.display = 'block';
+    if (assessmentSection) assessmentSection.style.display = 'none';
+    
+    // Update button states
+    const scannerBtn = document.querySelector('.switch-btn:first-child');
+    const assessmentBtn = document.querySelector('.switch-btn:last-child');
+    if (scannerBtn) {
+        scannerBtn.classList.add('active');
+        scannerBtn.classList.remove('highlight');
+    }
+    if (assessmentBtn) {
+        assessmentBtn.classList.remove('active');
+        assessmentBtn.classList.add('highlight');
+    }
+    
+    // Update nav active state
+    document.querySelectorAll('.nav-links a').forEach(link => {
+        link.classList.remove('active');
+        if (link.textContent.includes('סריקת')) {
+            link.classList.add('active');
+        }
+    });
+    
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+window.showAssessmentSection = function(scrollToTop = true) {
+    // Show assessment section
+    const scannerSection = document.getElementById('scanner-section');
+    const assessmentSection = document.getElementById('assessment');
+    
+    if (scannerSection) scannerSection.style.display = 'none';
+    if (assessmentSection) assessmentSection.style.display = 'block';
+    
+    // Update button states
+    const scannerBtn = document.querySelector('.switch-btn:first-child');
+    const assessmentBtn = document.querySelector('.switch-btn:last-child');
+    if (scannerBtn) {
+        scannerBtn.classList.remove('active');
+        scannerBtn.classList.remove('highlight');
+    }
+    if (assessmentBtn) {
+        assessmentBtn.classList.add('active');
+        assessmentBtn.classList.remove('highlight');
+    }
+    
+    // Update nav active state
+    document.querySelectorAll('.nav-links a').forEach(link => {
+        link.classList.remove('active');
+        if (link.textContent.includes('הערכה')) {
+            link.classList.add('active');
+        }
+    });
+    
+    // Initialize assessment if needed
+    if (!window.assessmentEngine && document.getElementById('assessment-container')) {
+        window.assessmentEngine = new AssessmentEngine();
+    }
+    
+    // Scroll to top
+    if (scrollToTop) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+};
+
 // Cancel scan function
 window.cancelScan = function() {
     if (currentScan) {
