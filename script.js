@@ -240,7 +240,7 @@ window.declineConsent = function() {
 };
 
 function initCountdown() {
-    const deadlineDate = new Date('2025-08-15T00:00:00');
+    const deadlineDate = new Date('2025-08-14T00:00:00');
     const countdownElement = document.getElementById('countdown');
     
     function updateCountdown() {
@@ -1064,7 +1064,7 @@ function initResourceDownloads() {
 □ הטמעת זכויות נושאי מידע
 □ הכשרת עובדים
 
-תאריך יעד: 15 באוגוסט 2025`;
+תאריך יעד: 14 באוגוסט 2025`;
         
         downloadTextFile('tikun13-checklist.txt', checklist);
     };
