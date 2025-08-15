@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>בדיקת תיקון 13 - כלי בדיקת התאמה לחוק הגנת הפרטיות</title>
+    <meta name="description" content="כלי חינמי לבדיקת התאמת האתר שלך לתיקון 13 לחוק הגנת הפרטיות. בדיקה מקיפה של SSL, עוגיות ומדיניות פרטיות.">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%234F46E5'/%3E%3Ctext x='32' y='40' font-family='Arial' font-size='28' font-weight='bold' text-anchor='middle' fill='white'%3E13%3C/text%3E%3C/svg%3E">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="בדיקת תיקון 13 - כלי בדיקת התאמה">
+    <meta property="og:description" content="כלי חינמי לבדיקת התאמת האתר שלך לתיקון 13 לחוק הגנת הפרטיות">
+    <meta property="og:type" content="website">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles-redesign.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Simple Disclaimer Bar -->
+    <div class="disclaimer-bar" id="disclaimerBar">
+        <div class="disclaimer-content">
+            <svg class="disclaimer-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                <line x1="12" y1="9" x2="12" y2="13"></line>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+            <span class="disclaimer-text">
+                <strong>שים לב:</strong> כלי זה מספק הערכה ראשונית בלבד. לקבלת ייעוץ מלא, פנה לעורך דין מומחה בהגנת הפרטיות.
+            </span>
+        </div>
+        <div class="disclaimer-actions">
+            <button class="disclaimer-btn" onclick="acceptDisclaimer()">הבנתי</button>
+            <a href="#legal-info" class="disclaimer-btn">מידע משפטי</a>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-container">
+                <a href="/" class="header-logo">
+                    <svg width="40" height="40" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="64" height="64" rx="12" fill="#4F46E5"/>
+                        <text x="32" y="40" font-family="Arial" font-size="28" font-weight="bold" text-anchor="middle" fill="white">13</text>
+                    </svg>
+                    <span>תיקון13 Checker</span>
+                </a>
+                
+                <nav class="header-nav">
+                    <ul class="nav-links">
+                        <li><a href="#scanner" class="nav-link active">בדיקה</a></li>
+                        <li><a href="#features" class="nav-link">יכולות</a></li>
+                        <li><a href="#requirements" class="nav-link">דרישות</a></li>
+                        <li><a href="#resources" class="nav-link">משאבים</a></li>
+                    </ul>
+                    
+                    <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="תפריט">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="3" y1="12" x2="21" y2="12"></line>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <line x1="3" y1="18" x2="21" y2="18"></line>
+                        </svg>
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">בדיקת התאמה לתיקון 13</h1>
+                <p class="hero-subtitle">כלי חכם לבדיקת עמידה בדרישות חוק הגנת הפרטיות</p>
+                
+                <div class="hero-countdown">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    <span class="countdown-label">זמן שנותר להיערכות:</span>
+                    <span class="countdown-time" id="countdown">מחשב...</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Scanner Section -->
+    <section id="scanner">
+        <div class="scanner-container">
+            <div class="scanner-card">
+                <div class="scanner-header">
+                    <h2 class="scanner-title">בדוק את האתר שלך</h2>
+                    <p class="scanner-description">הכנס את כתובת האתר וקוד ה-HTML לבדיקה מקיפה</p>
+                </div>
+                
+                <form class="scanner-form" id="scannerForm">
+                    <!-- Scanner Mode Toggle -->
+                    <div class="scanner-mode">
+                        <div class="mode-option active" data-mode="private">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
+                            מצב פרטי
+                        </div>
+                        <div class="mode-option" data-mode="auto">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                            </svg>
+                            סריקה אוטומטית
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="websiteUrl" class="form-label">כתובת האתר</label>
+                        <input 
+                            type="url" 
+                            id="websiteUrl" 
+                            class="form-input" 
+                            placeholder="https://example.co.il"
+                            required
+                        >
+                    </div>
+                    
+                    <div class="form-group" id="htmlInputGroup">
+                        <label for="htmlCode" class="form-label">
+                            קוד HTML
+                            <small>(לחץ Ctrl+U באתר, העתק והדבק כאן)</small>
+                        </label>
+                        <textarea 
+                            id="htmlCode" 
+                            class="form-input form-textarea" 
+                            placeholder="<!DOCTYPE html>..."
+                            required
+                        ></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-large btn-full">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                        התחל בדיקה
+                    </button>
+                </form>
+                
+                <!-- Results will appear here -->
+                <div id="results" class="results-container hidden">
+                    <!-- Dynamic results -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">מה אנחנו בודקים?</h2>
+                <p class="section-subtitle">בדיקה מקיפה של כל הדרישות העיקריות</p>
+            </div>
+            
+            <div class="card-grid">
+                <div class="card">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                    <h3>אבטחת SSL</h3>
+                    <p>בדיקת הצפנה ואישורי אבטחה תקפים</p>
+                </div>
+                
+                <div class="card">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M16 8l-8 8M8 8l8 8"></path>
+                    </svg>
+                    <h3>ניהול עוגיות</h3>
+                    <p>זיהוי עוגיות ובדיקת מנגנון הסכמה</p>
+                </div>
+                
+                <div class="card">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                    </svg>
+                    <h3>מדיניות פרטיות</h3>
+                    <p>וידוא קיום מדיניות מלאה בעברית</p>
+                </div>
+                
+                <div class="card">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    </svg>
+                    <h3>זכויות משתמשים</h3>
+                    <p>בדיקת מימוש זכויות עיון ומחיקה</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Requirements Section -->
+    <section id="requirements" class="section" style="background: var(--bg-primary);">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">דרישות תיקון 13</h2>
+                <p class="section-subtitle">כניסה לתוקף: 14 באוגוסט 2025</p>
+            </div>
+            
+            <div class="card-grid">
+                <div class="card">
+                    <h3>📋 מסמכי הגדרת מאגר</h3>
+                    <ul>
+                        <li>מיפוי פעילויות עיבוד מידע</li>
+                        <li>תיעוד מטרות ובסיס חוקי</li>
+                        <li>סקירה שנתית</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>👤 ממונה הגנת פרטיות</h3>
+                    <ul>
+                        <li>חובה לגופים ציבוריים</li>
+                        <li>ארגונים מעל 250 עובדים</li>
+                        <li>עיבוד מידע רגיש</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>🔒 אבטחת מידע</h3>
+                    <ul>
+                        <li>הצפנת מידע רגיש</li>
+                        <li>בקרות גישה</li>
+                        <li>תוכנית התמודדות עם אירועים</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Resources Section -->
+    <section id="resources" class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">משאבים שימושיים</h2>
+            </div>
+            
+            <div class="card-grid">
+                <a href="https://www.gov.il/he/pages/guide_tikon13_professional" target="_blank" class="card" style="text-decoration: none;">
+                    <h3>📚 המדריך הרשמי</h3>
+                    <p>מדריך מקיף מרשות הגנת הפרטיות</p>
+                </a>
+                
+                <a href="#" class="card" style="text-decoration: none;" onclick="downloadTemplate(); return false;">
+                    <h3>📝 תבנית מדיניות</h3>
+                    <p>תבנית מוכנה בעברית</p>
+                </a>
+                
+                <a href="#" class="card" style="text-decoration: none;" onclick="startAssessment(); return false;">
+                    <h3>✅ הערכה עצמית</h3>
+                    <p>שאלון מקיף לבדיקת מוכנות</p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Legal Info Section -->
+    <section id="legal-info" class="section" style="background: var(--bg-tertiary);">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">מידע משפטי חשוב</h2>
+            </div>
+            
+            <div class="card">
+                <h3>הגבלת אחריות</h3>
+                <p>כלי זה מספק הערכה ראשונית בלבד ואינו מהווה תחליף לייעוץ משפטי מקצועי. התוצאות הן אינדיקטיביות בלבד.</p>
+                
+                <h3>המלצות</h3>
+                <ul>
+                    <li>היוועץ בעורך דין מומחה בהגנת הפרטיות</li>
+                    <li>בצע הערכת השפעה על פרטיות (DPIA) מקיפה</li>
+                    <li>הכן תוכנית יישום מפורטת</li>
+                    <li>מנה ממונה הגנת פרטיות אם נדרש</li>
+                </ul>
+                
+                <h3>קוד פתוח</h3>
+                <p>פרויקט זה הוא קוד פתוח ומפותח על ידי IONSEC.IO לטובת הקהילה.</p>
+                <a href="https://github.com/ionsec/Tikun13checker" target="_blank" class="btn btn-secondary">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                    </svg>
+                    View on GitHub
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>אודות</h3>
+                    <div class="footer-links">
+                        <a href="https://ionsec.io" target="_blank" class="footer-link">IONSEC.IO</a>
+                        <a href="https://github.com/ionsec" target="_blank" class="footer-link">GitHub</a>
+                        <a href="mailto:info@ionsec.io" class="footer-link">צור קשר</a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>משאבים</h3>
+                    <div class="footer-links">
+                        <a href="https://www.gov.il/he/departments/the_privacy_protection_authority" target="_blank" class="footer-link">רשות הגנת הפרטיות</a>
+                        <a href="#" class="footer-link">מדריך למשתמש</a>
+                        <a href="#" class="footer-link">שאלות נפוצות</a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>משפטי</h3>
+                    <div class="footer-links">
+                        <a href="#" class="footer-link">תנאי שימוש</a>
+                        <a href="#" class="footer-link">מדיניות פרטיות</a>
+                        <a href="#legal-info" class="footer-link">הגבלת אחריות</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>© 2025 IONSEC.IO | פותח כפרויקט קוד פתוח לטובת הקהילה</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="app-redesign.js"></script>
+</body>
+</html>

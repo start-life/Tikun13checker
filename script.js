@@ -296,13 +296,11 @@ function switchScanMode(mode) {
     // Get the correct elements
     const manualInputMode = document.getElementById('manual-input-mode');
     const proxyInputMode = document.getElementById('proxy-input-mode');
-    const bookmarkletMode = document.getElementById('bookmarklet-mode');
     const privacyNotice = document.getElementById('privacy-notice');
     
     // Hide all mode content areas first
     if (manualInputMode) manualInputMode.style.display = 'none';
     if (proxyInputMode) proxyInputMode.style.display = 'none';
-    if (bookmarkletMode) bookmarkletMode.style.display = 'none';
     
     // Update privacy notice based on mode
     if (privacyNotice) {
@@ -317,12 +315,6 @@ function switchScanMode(mode) {
                 privacyNotice.innerHTML = `
                     <span class="privacy-badge" style="background: #ff9800;">⚠️ מצב Proxy</span>
                     <p>כתובת האתר תישלח לשירותי צד שלישי. נדרשת הסכמה מפורשת.</p>
-                `;
-                break;
-            case 'bookmarklet':
-                privacyNotice.innerHTML = `
-                    <span class="privacy-badge">🔖 מצב Bookmarklet</span>
-                    <p>סריקה פרטית באמצעות Bookmarklet - הנתונים נשארים בדפדפן שלך.</p>
                 `;
                 break;
         }
@@ -363,84 +355,9 @@ function switchScanMode(mode) {
             }
             break;
             
-        case 'bookmarklet':
-            if (bookmarkletMode) bookmarkletMode.style.display = 'block';
-            generateBookmarklet();
-            break;
     }
 }
 
-// Generate bookmarklet code
-function generateBookmarklet() {
-    // Create a more robust bookmarklet code
-    const bookmarkletCode = `javascript:(function(){
-        try {
-            var html = document.documentElement.outerHTML;
-            var url = window.location.href;
-            var title = document.title;
-            
-            /* Try to find an existing Tikun13 window or open a new one */
-            var tikun13Url = '${window.location.origin}${window.location.pathname}';
-            var tikun13Window = window.open(tikun13Url, 'tikun13checker');
-            
-            if (!tikun13Window) {
-                alert('לא ניתן לפתוח את כלי הבדיקה. אנא בדוק את חוסם החלונות הקופצים.');
-                return;
-            }
-            
-            /* Wait for the window to load and send the data */
-            var attempts = 0;
-            var interval = setInterval(function() {
-                attempts++;
-                if (attempts > 20) {
-                    clearInterval(interval);
-                    alert('תם הזמן הקצוב. אנא נסה שוב.');
-                    return;
-                }
-                
-                try {
-                    tikun13Window.postMessage({
-                        type: 'tikun13_scan',
-                        html: html,
-                        url: url,
-                        title: title,
-                        timestamp: new Date().toISOString()
-                    }, '*');
-                    
-                    /* Show success indication */
-                    if (attempts === 1) {
-                        var div = document.createElement('div');
-                        div.innerHTML = '✅ הנתונים נשלחו לבדיקה';
-                        div.style.cssText = 'position:fixed;top:20px;right:20px;background:#4caf50;color:white;padding:15px;border-radius:5px;z-index:999999;font-family:Arial;';
-                        document.body.appendChild(div);
-                        setTimeout(function() { 
-                            if (div.parentNode) div.parentNode.removeChild(div); 
-                        }, 3000);
-                    }
-                } catch(e) {
-                    /* Keep trying */
-                }
-            }, 500);
-        } catch(error) {
-            alert('שגיאה בקריאת נתוני העמוד: ' + error.message);
-        }
-    })();`;
-    
-    // Minify the code for the bookmarklet
-    const minifiedCode = bookmarkletCode.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\s+/g, ' ').trim();
-    
-    // Set the bookmarklet link href
-    const bookmarkletLink = document.getElementById('bookmarklet-link');
-    if (bookmarkletLink) {
-        bookmarkletLink.href = minifiedCode;
-    }
-    
-    // Also populate the manual code textarea
-    const codeTextarea = document.getElementById('bookmarklet-code');
-    if (codeTextarea) {
-        codeTextarea.value = minifiedCode;
-    }
-}
 
 // Initialize disclaimer banner
 function initDisclaimerBanner() {
@@ -546,66 +463,7 @@ function showBrowserInstructions(browser) {
     event.target.classList.add('active');
 }
 
-// Copy bookmarklet code to clipboard
-function copyBookmarkletCode() {
-    const codeTextarea = document.getElementById('bookmarklet-code');
-    if (codeTextarea) {
-        codeTextarea.select();
-        document.execCommand('copy');
-        
-        // Show success message
-        const button = event.target;
-        const originalText = button.textContent;
-        button.textContent = '✅ הועתק!';
-        button.style.background = '#4caf50';
-        button.style.color = 'white';
-        
-        setTimeout(() => {
-            button.textContent = originalText;
-            button.style.background = '';
-            button.style.color = '';
-        }, 2000);
-    }
-}
 
-// Listen for bookmarklet messages
-window.addEventListener('message', function(event) {
-    if (event.data && event.data.type === 'tikun13_scan') {
-        console.log('Received bookmarklet data from:', event.data.url);
-        
-        // Switch to private mode to handle the data
-        currentScanMode = 'private';
-        switchScanMode('private');
-        
-        // Fill in the URL and HTML content
-        const urlInput = document.getElementById('website-url');
-        const htmlInput = document.getElementById('html-input');
-        
-        if (urlInput) urlInput.value = event.data.url;
-        if (htmlInput) {
-            htmlInput.value = event.data.html;
-            // Show a success message
-            const successDiv = document.createElement('div');
-            successDiv.innerHTML = `✅ התקבלו נתונים מ: ${event.data.title || event.data.url}`;
-            successDiv.style.cssText = 'position:fixed;top:80px;right:20px;background:#4caf50;color:white;padding:15px;border-radius:8px;z-index:10000;box-shadow:0 4px 6px rgba(0,0,0,0.1);';
-            document.body.appendChild(successDiv);
-            
-            setTimeout(() => {
-                if (successDiv.parentNode) {
-                    successDiv.parentNode.removeChild(successDiv);
-                }
-            }, 3000);
-        }
-        
-        // Trigger scan automatically after a short delay
-        setTimeout(() => {
-            const form = document.getElementById('checker-form');
-            if (form) {
-                form.dispatchEvent(new Event('submit'));
-            }
-        }, 500);
-    }
-});
 
 // Handle proxy form submission
 async function handleProxyCheck(e) {
@@ -723,14 +581,10 @@ async function handleWebsiteCheck(e) {
     }
     
     // Handle different scan modes
-    if (currentScanMode === 'private' || currentScanMode === 'bookmarklet') {
-        // Check if HTML content is provided for private/bookmarklet modes
+    if (currentScanMode === 'private') {
+        // Check if HTML content is provided for private mode
         if (!htmlContent) {
-            if (currentScanMode === 'private') {
-                alert('אנא הדבק את קוד ה-HTML של האתר. לחץ על "איך להשיג HTML" להוראות.');
-            } else {
-                alert('אנא השתמש ב-Bookmarklet כדי לסרוק את האתר.');
-            }
+            alert('אנא הדבק את קוד ה-HTML של האתר. לחץ על "איך להשיג HTML" להוראות.');
             return;
         }
     } else if (currentScanMode === 'proxy') {

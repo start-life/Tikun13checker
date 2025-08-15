@@ -156,6 +156,7 @@
     background: #f8f9fa;
     border-radius: 12px;
     transition: all 0.3s ease;
+    position: relative;
 }
 
 .question-block:hover {
@@ -167,11 +168,17 @@
     background: #fef2f2;
 }
 
+.question-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
 .question-label {
-    display: block;
+    flex: 1;
     font-weight: 600;
     color: #333;
-    margin-bottom: 15px;
     font-size: 1.1rem;
 }
 
@@ -230,6 +237,158 @@
 .checkbox-label span {
     flex: 1;
     color: #444;
+}
+
+/* Tooltip Styles */
+.help-icon,
+.option-help-icon {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    color: #667eea;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.help-icon:hover,
+.option-help-icon:hover {
+    color: #764ba2;
+    transform: scale(1.1);
+}
+
+.help-icon svg,
+.option-help-icon svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* Option-specific tooltip styles */
+.option-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+}
+
+.option-wrapper .checkbox-label {
+    flex: 1;
+}
+
+.select-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.select-wrapper .form-select {
+    flex: 1;
+}
+
+.select-option-help {
+    display: inline-block;
+    position: relative;
+}
+
+.tooltip-content {
+    position: absolute;
+    z-index: 1000;
+    background: white;
+    border: 2px solid #667eea;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    max-width: 400px;
+    animation: tooltipFadeIn 0.3s ease;
+}
+
+.tooltip-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #e0e0e0;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    border-radius: 10px 10px 0 0;
+}
+
+.tooltip-header h4 {
+    margin: 0;
+    color: #333;
+    font-size: 1.1rem;
+}
+
+.tooltip-close {
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #999;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+}
+
+.tooltip-close:hover {
+    color: #333;
+}
+
+.tooltip-body {
+    padding: 20px;
+    color: #555;
+    line-height: 1.6;
+}
+
+.tooltip-requirements {
+    margin-top: 15px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.tooltip-requirements strong {
+    display: block;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.tooltip-requirements ul {
+    margin: 0;
+    padding-right: 20px;
+    list-style-type: disc;
+}
+
+.tooltip-requirements li {
+    margin-bottom: 8px;
+    color: #666;
+}
+
+.tooltip-reference {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.tooltip-reference small {
+    color: #999;
+    font-style: italic;
+}
+
+@keyframes tooltipFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Section Navigation */

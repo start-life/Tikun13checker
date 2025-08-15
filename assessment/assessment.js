@@ -195,10 +195,44 @@ class AssessmentEngine {
             
             html += `
                 <div class="question-block" data-question-id="${question.id}">
-                    <label class="question-label">
-                        ${question.required ? '<span class="required">*</span>' : ''}
-                        ${index + 1}. ${question.text}
-                    </label>
+                    <div class="question-header">
+                        <label class="question-label">
+                            ${question.required ? '<span class="required">*</span>' : ''}
+                            ${index + 1}. ${question.text}
+                        </label>
+                        ${question.helpText ? `
+                            <button class="help-icon" onclick="assessmentEngine.toggleTooltip('${question.id}')" aria-label="עזרה">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                    <path d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 14c-3.3 0-6-2.7-6-6s2.7-6 6-6 6 2.7 6 6-2.7 6-6 6z"/>
+                                    <path d="M8 11c-.6 0-1 .4-1 1s.4 1 1 1 1-.4 1-1-.4-1-1-1zM8 3C6.3 3 5 4.3 5 6h2c0-.6.4-1 1-1s1 .4 1 1c0 .3-.1.5-.3.7l-.7.7c-.5.5-.7.9-.7 1.6v.5h2V9c0-.3.1-.5.3-.7l.7-.7c.5-.5.7-1.1.7-1.6 0-1.7-1.3-3-3-3z"/>
+                                </svg>
+                            </button>
+                        ` : ''}
+                    </div>
+                    ${question.helpText ? `
+                        <div class="tooltip-content" id="tooltip-${question.id}" style="display: none;">
+                            <div class="tooltip-header">
+                                <h4>${question.helpText.title}</h4>
+                                <button class="tooltip-close" onclick="assessmentEngine.closeTooltip('${question.id}')">&times;</button>
+                            </div>
+                            <div class="tooltip-body">
+                                ${question.helpText.description}
+                                ${question.helpText.requirements ? `
+                                    <div class="tooltip-requirements">
+                                        <strong>דרישות:</strong>
+                                        <ul>
+                                            ${question.helpText.requirements.map(req => `<li>${req}</li>`).join('')}
+                                        </ul>
+                                    </div>
+                                ` : ''}
+                                ${question.helpText.reference ? `
+                                    <div class="tooltip-reference">
+                                        <small>מקור: ${question.helpText.reference}</small>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    ` : ''}
             `;
             
             if (question.type === 'select') {
@@ -214,7 +248,10 @@ class AssessmentEngine {
     }
 
     renderSelectQuestion(question) {
-        let html = `
+        let html = `<div class="select-wrapper">`;
+        
+        // Add select element
+        html += `
             <select class="form-select" data-question-id="${question.id}" 
                     onchange="assessmentEngine.handleAnswer('${question.id}', this.value)">
                 <option value="">בחר תשובה...</option>
@@ -226,21 +263,115 @@ class AssessmentEngine {
         });
         
         html += '</select>';
+        
+        // Add help tooltips for options that have helpText
+        question.options.forEach(option => {
+            if (option.helpText) {
+                const optionId = `${question.id}-${option.value}`;
+                html += `
+                    <div class="select-option-help" data-option-value="${option.value}" style="display: none;">
+                        <button class="option-help-icon" onclick="assessmentEngine.toggleTooltip('${optionId}')" aria-label="עזרה עבור ${option.label}">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                <path d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 14c-3.3 0-6-2.7-6-6s2.7-6 6-6 6 2.7 6 6-2.7 6-6 6z"/>
+                                <path d="M8 11c-.6 0-1 .4-1 1s.4 1 1 1 1-.4 1-1-.4-1-1-1zM8 3C6.3 3 5 4.3 5 6h2c0-.6.4-1 1-1s1 .4 1 1c0 .3-.1.5-.3.7l-.7.7c-.5.5-.7.9-.7 1.6v.5h2V9c0-.3.1-.5.3-.7l.7-.7c.5-.5.7-1.1.7-1.6 0-1.7-1.3-3-3-3z"/>
+                            </svg>
+                        </button>
+                        <div class="tooltip-content option-tooltip" id="tooltip-${optionId}" style="display: none;">
+                            <div class="tooltip-header">
+                                <h4>${option.helpText.title}</h4>
+                                <button class="tooltip-close" onclick="assessmentEngine.closeTooltip('${optionId}')">&times;</button>
+                            </div>
+                            <div class="tooltip-body">
+                                ${option.helpText.description || option.helpText.content || ''}
+                                ${option.helpText.requirements ? `
+                                    <div class="tooltip-requirements">
+                                        <strong>דרישות:</strong>
+                                        <ul>
+                                            ${option.helpText.requirements.map(req => `<li>${req}</li>`).join('')}
+                                        </ul>
+                                    </div>
+                                ` : ''}
+                                ${option.helpText.reference ? `
+                                    <div class="tooltip-reference">
+                                        <small>מקור: ${option.helpText.reference}</small>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        });
+        
+        // Add script to show help icon for selected option
+        html += `
+            <script>
+                (function() {
+                    const select = document.querySelector('select[data-question-id="${question.id}"]');
+                    const updateHelpIcon = () => {
+                        const helpIcons = select.parentElement.querySelectorAll('.select-option-help');
+                        helpIcons.forEach(icon => {
+                            icon.style.display = icon.dataset.optionValue === select.value ? 'inline-block' : 'none';
+                        });
+                    };
+                    if (select) {
+                        select.addEventListener('change', updateHelpIcon);
+                        updateHelpIcon();
+                    }
+                })();
+            </script>
+        `;
+        
+        html += '</div>';
         return html;
     }
 
     renderMultiselectQuestion(question) {
         let html = '<div class="checkbox-group">';
         
-        question.options.forEach(option => {
+        question.options.forEach((option, index) => {
             const checked = (this.answers[question.id] || []).includes(option.value) ? 'checked' : '';
+            const optionId = `${question.id}-${option.value}`;
+            
             html += `
-                <label class="checkbox-label">
-                    <input type="checkbox" value="${option.value}" ${checked}
-                           data-question-id="${question.id}"
-                           onchange="assessmentEngine.handleMultiselectAnswer('${question.id}', this)">
-                    <span>${option.label}</span>
-                </label>
+                <div class="option-wrapper">
+                    <label class="checkbox-label">
+                        <input type="checkbox" value="${option.value}" ${checked}
+                               data-question-id="${question.id}"
+                               onchange="assessmentEngine.handleMultiselectAnswer('${question.id}', this)">
+                        <span>${option.label}</span>
+                    </label>
+                    ${option.helpText ? `
+                        <button class="option-help-icon" onclick="assessmentEngine.toggleTooltip('${optionId}')" aria-label="עזרה">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                <path d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 14c-3.3 0-6-2.7-6-6s2.7-6 6-6 6 2.7 6 6-2.7 6-6 6z"/>
+                                <path d="M8 11c-.6 0-1 .4-1 1s.4 1 1 1 1-.4 1-1-.4-1-1-1zM8 3C6.3 3 5 4.3 5 6h2c0-.6.4-1 1-1s1 .4 1 1c0 .3-.1.5-.3.7l-.7.7c-.5.5-.7.9-.7 1.6v.5h2V9c0-.3.1-.5.3-.7l.7-.7c.5-.5.7-1.1.7-1.6 0-1.7-1.3-3-3-3z"/>
+                            </svg>
+                        </button>
+                        <div class="tooltip-content option-tooltip" id="tooltip-${optionId}" style="display: none;">
+                            <div class="tooltip-header">
+                                <h4>${option.helpText.title}</h4>
+                                <button class="tooltip-close" onclick="assessmentEngine.closeTooltip('${optionId}')">&times;</button>
+                            </div>
+                            <div class="tooltip-body">
+                                ${option.helpText.description || option.helpText.content || ''}
+                                ${option.helpText.requirements ? `
+                                    <div class="tooltip-requirements">
+                                        <strong>דרישות:</strong>
+                                        <ul>
+                                            ${option.helpText.requirements.map(req => `<li>${req}</li>`).join('')}
+                                        </ul>
+                                    </div>
+                                ` : ''}
+                                ${option.helpText.reference ? `
+                                    <div class="tooltip-reference">
+                                        <small>מקור: ${option.helpText.reference}</small>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
             `;
         });
         
@@ -564,6 +695,57 @@ class AssessmentEngine {
         link.click();
         URL.revokeObjectURL(url);
     }
+    
+    // Tooltip management
+    toggleTooltip(questionId) {
+        const tooltip = document.getElementById(`tooltip-${questionId}`);
+        if (!tooltip) return;
+        
+        // Close all other tooltips first
+        document.querySelectorAll('.tooltip-content').forEach(t => {
+            if (t.id !== `tooltip-${questionId}`) {
+                t.style.display = 'none';
+            }
+        });
+        
+        // Toggle current tooltip
+        if (tooltip.style.display === 'none' || !tooltip.style.display) {
+            tooltip.style.display = 'block';
+            // Position tooltip near the help icon
+            const helpIcon = tooltip.previousElementSibling.querySelector('.help-icon');
+            if (helpIcon) {
+                const rect = helpIcon.getBoundingClientRect();
+                const tooltipRect = tooltip.getBoundingClientRect();
+                
+                // Position to the right of the icon, or below if not enough space
+                if (rect.right + tooltipRect.width + 20 < window.innerWidth) {
+                    tooltip.style.position = 'absolute';
+                    tooltip.style.left = '30px';
+                    tooltip.style.top = '-10px';
+                } else {
+                    tooltip.style.position = 'absolute';
+                    tooltip.style.left = '0';
+                    tooltip.style.top = '30px';
+                }
+            }
+        } else {
+            tooltip.style.display = 'none';
+        }
+    }
+    
+    closeTooltip(questionId) {
+        const tooltip = document.getElementById(`tooltip-${questionId}`);
+        if (tooltip) {
+            tooltip.style.display = 'none';
+        }
+    }
+    
+    // Close tooltips when clicking outside
+    closeAllTooltips() {
+        document.querySelectorAll('.tooltip-content').forEach(tooltip => {
+            tooltip.style.display = 'none';
+        });
+    }
 }
 
 // Initialize when DOM is ready
@@ -571,6 +753,17 @@ document.addEventListener('DOMContentLoaded', function() {
     // Only initialize if we're on the assessment page
     if (document.getElementById('assessment-container')) {
         window.assessmentEngine = new AssessmentEngine();
+        
+        // Close tooltips when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.help-icon') && 
+                !event.target.closest('.option-help-icon') && 
+                !event.target.closest('.tooltip-content')) {
+                if (window.assessmentEngine) {
+                    window.assessmentEngine.closeAllTooltips();
+                }
+            }
+        });
     }
 });
 
