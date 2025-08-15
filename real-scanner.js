@@ -108,6 +108,9 @@ class RealWebsiteScanner {
         let finalUrl = url;
         let urlObj = new URL(url);
         
+        // Set manual mode flag based on whether HTML content was provided and proxy is not enabled
+        this.isManualMode = !!htmlContent && !this.useProxy;
+        
         // Helper function to report progress
         const reportProgress = (step, details = '') => {
             if (progressCallback && typeof progressCallback === 'function') {
@@ -123,7 +126,7 @@ class RealWebsiteScanner {
                 domain: urlObj.hostname,
                 protocol: urlObj.protocol,
                 path: urlObj.pathname,
-                isManualInput: !!htmlContent
+                isManualInput: this.isManualMode
             },
             extractedData: {},
             compliance: {},
@@ -135,24 +138,38 @@ class RealWebsiteScanner {
         try {
             let html = null;
             
-            // Check if HTML content was provided manually
+            // Check if HTML content was provided manually or via proxy
             if (htmlContent) {
-                // Manual input mode - privacy first!
-                reportProgress('connect', 'מעבד HTML שהוזן ידנית...');
-                reportProgress('fetch', 'משתמש בתוכן שסופק...');
+                // Manual input mode or proxy mode with fetched content
+                if (this.isManualMode) {
+                    reportProgress('connect', 'מעבד HTML שהוזן ידנית...');
+                    reportProgress('fetch', 'משתמש בתוכן שסופק...');
+                    console.log('Using manually provided HTML content');
+                    
+                    // Add note about manual input
+                    scanResult.recommendations.push({
+                        priority: 'info',
+                        message: '📌 הניתוח מבוסס על HTML שהוזן ידנית. חלק מהבדיקות (כמו HTTPS) מבוססות על הכתובת שצוינה.'
+                    });
+                } else if (this.useProxy) {
+                    reportProgress('connect', 'מעבד HTML שהתקבל מ-Proxy...');
+                    reportProgress('fetch', 'משתמש בתוכן שהתקבל...');
+                    console.log('Using proxy-fetched HTML content');
+                    
+                    // Add note about proxy usage
+                    scanResult.recommendations.push({
+                        priority: 'info',
+                        message: '🌐 הניתוח מבוסס על תוכן שהתקבל דרך שירות Proxy.'
+                    });
+                }
+                
                 html = htmlContent;
-                console.log('Using manually provided HTML content');
                 reportProgress('fetch', `התקבל HTML - ${(html.length / 1024).toFixed(1)}KB`);
                 
-                // Add note about manual input
-                scanResult.recommendations.push({
-                    priority: 'info',
-                    message: '📌 הניתוח מבוסס על HTML שהוזן ידנית. חלק מהבדיקות (כמו HTTPS) מבוססות על הכתובת שצוינה.'
-                });
             } else {
-                // No automatic fetching - privacy first approach
+                // No HTML content provided at all
                 reportProgress('error', 'נדרש קוד HTML לניתוח');
-                throw new Error('לא סופק תוכן HTML. השתמש במצב הזנה ידנית לשמירה על פרטיות מלאה.');
+                throw new Error('לא סופק תוכן HTML. השתמש במצב הזנה ידנית או במצב Proxy לקבלת התוכן.');
             }
             
             // Check protocol from URL for SSL assessment

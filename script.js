@@ -407,6 +407,9 @@ window.addEventListener('message', function(event) {
 async function handleProxyCheck(e) {
     e.preventDefault();
     
+    // Ensure we're in proxy mode
+    currentScanMode = 'proxy';
+    
     // Check consent first
     if (!localStorage.getItem('tikun13_consent')) {
         alert('יש לקבל את תנאי השימוש לפני השימוש בכלי');
@@ -491,6 +494,9 @@ async function handleProxyCheck(e) {
 
 async function handleWebsiteCheck(e) {
     e.preventDefault();
+    
+    // Ensure we're in private mode when using this form
+    currentScanMode = 'private';
     
     // Check consent first
     if (!localStorage.getItem('tikun13_consent')) {
