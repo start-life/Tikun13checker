@@ -454,15 +454,18 @@ function initDisclaimerBanner() {
     if (banner) {
         if (isAccepted) {
             // Hide banner if already accepted
+            banner.style.display = 'block'; // Ensure display is set
             banner.classList.add('hidden');
             body.classList.remove('disclaimer-visible');
             
             // Show side tab
             if (sideTab) {
                 sideTab.classList.add('visible');
+                sideTab.style.display = 'block';
             }
         } else {
             // Show banner on first visit
+            banner.style.display = 'block'; // Ensure display is set
             banner.classList.remove('hidden');
             body.classList.add('disclaimer-visible');
             
@@ -496,6 +499,7 @@ function acceptDisclaimer() {
         // Show side tab after delay
         setTimeout(() => {
             if (sideTab) {
+                sideTab.style.display = 'block';
                 sideTab.classList.add('visible');
             }
         }, 500);

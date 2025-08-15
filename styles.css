@@ -2662,7 +2662,7 @@ footer {
 
 /* Disclaimer Banner Styles */
 .disclaimer-banner {
-    display: block; /* Show by default on first visit */
+    display: block;
     position: fixed;
     top: 0;
     left: 0;
@@ -2671,14 +2671,19 @@ footer {
     color: white;
     z-index: 9999;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-    animation: slideDown 0.5s ease;
     max-height: 100vh;
     overflow-y: auto;
+    transform: translateY(0);
     transition: transform 0.3s ease;
+}
+
+.disclaimer-banner:not(.hidden) {
+    animation: slideDown 0.5s ease;
 }
 
 .disclaimer-banner.hidden {
     transform: translateY(-100%);
+    pointer-events: none;
 }
 
 /* Add padding to body when banner is visible */
@@ -2734,9 +2739,11 @@ body.disclaimer-visible {
 @keyframes slideDown {
     from {
         transform: translateY(-100%);
+        opacity: 0;
     }
     to {
         transform: translateY(0);
+        opacity: 1;
     }
 }
 
