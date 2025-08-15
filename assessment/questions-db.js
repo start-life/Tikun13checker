@@ -64,11 +64,16 @@ const assessmentQuestions = {
                         { value: "genetic", label: "מידע גנטי" },
                         { value: "sexual", label: "נטייה מינית" },
                         { value: "criminal", label: "מידע פלילי" },
-                        { value: "personality", label: "הערכות אישיות" },
+                        { value: "personality", label: "הערכות אישיות/פרופילינג" },
+                        { value: "political", label: "דעות פוליטיות" },
+                        { value: "religious", label: "אמונות דתיות" },
+                        { value: "ethnic", label: "מוצא/אתניות" },
+                        { value: "financial_activity", label: "נתוני שכר/פעילות פיננסית" },
+                        { value: "location_comm", label: "נתוני מיקום/תקשורת" },
                         { value: "none", label: "לא מעבדים מידע רגיש" }
                     ],
                     weight: 3,
-                    calculateRisk: (selected) => selected.includes("none") ? 1 : selected.length * 2
+                    calculateRisk: (selected) => (selected && selected.includes("none")) ? 1 : (selected ? Math.min(5, selected.length * 2) : 5)
                 },
                 {
                     id: "annual_revenue",
@@ -131,7 +136,7 @@ const assessmentQuestions = {
                     calculateRisk: (selected) => {
                         // All first 3 are mandatory per Amendment 13
                         const mandatory = ["privacy_law_deep", "tech_security", "org_activities"];
-                        const hasMandatory = mandatory.every(req => selected.includes(req));
+                        const hasMandatory = mandatory.every(req => selected && selected.includes(req));
                         return hasMandatory ? Math.max(0, 4 - selected.length) : 5;
                     }
                 },
@@ -443,6 +448,22 @@ const assessmentQuestions = {
                     }
                 },
                 {
+                    id: "privacy_notice_contents",
+                    text: "מה כלול בהודעת הפרטיות? (השלימו את כל הדרישות)",
+                    type: "multiselect",
+                    required: false,
+                    options: [
+                        { value: "purpose", label: "מטרות איסוף ועיבוד" },
+                        { value: "legal_basis_or_obligation", label: "חובה חוקית/וולונטרית ותוצאת סירוב" },
+                        { value: "recipients", label: "למי יימסר המידע ולשם מה" },
+                        { value: "rights_access", label: "זכות עיון (ס'13)" },
+                        { value: "rights_correction", label: "זכות תיקון/מחיקה (ס'14)" },
+                        { value: "contact_dpo", label: "פרטי יצירת קשר/פרטי ה-DPO" }
+                    ],
+                    weight: 2,
+                    calculateRisk: (selected) => Math.max(0, 6 - ((selected && selected.length) || 0))
+                },
+                {
                     id: "access_requests",
                     text: "האם קיים תהליך לטיפול בבקשות גישה למידע?",
                     type: "select",
@@ -460,6 +481,42 @@ const assessmentQuestions = {
                     }
                 },
                 {
+                    id: "correction_process",
+                    text: "האם קיים תהליך מובנה לתיקון/מחיקה של מידע שגוי לבקשת נושא המידע?",
+                    type: "select",
+                    required: true,
+                    options: [
+                        { value: "yes", label: "כן, תהליך מלא כולל SLA" },
+                        { value: "partial", label: "תהליך חלקי" },
+                        { value: "no", label: "אין תהליך" }
+                    ],
+                    weight: 3,
+                    riskFactor: {
+                        yes: 0,
+                        partial: 2,
+                        no: 5
+                    }
+                },
+                {
+                    id: "refusal_notification",
+                    text: "במקרה של סירוב לתקן/למחוק – האם נשלחת הודעה מנומקת לאדם?",
+                    type: "select",
+                    required: false,
+                    options: [
+                        { value: "always", label: "כן, תמיד" },
+                        { value: "sometimes", label: "לפעמים" },
+                        { value: "never", label: "לא" },
+                        { value: "na", label: "לא סירבנו מעולם" }
+                    ],
+                    weight: 2,
+                    riskFactor: {
+                        always: 0,
+                        sometimes: 2,
+                        never: 4,
+                        na: 1
+                    }
+                },
+                {
                     id: "consent_management",
                     text: "האם מנוהלות הסכמות כדין?",
                     type: "select",
@@ -474,6 +531,25 @@ const assessmentQuestions = {
                         yes: 0,
                         partial: 2,
                         no: 4
+                    }
+                },
+                {
+                    id: "direct_marketing_optout",
+                    text: "האם קיימת יכולת הסרה (opt-out) ממאגרי דיוור ישיר ומימוש בקשות בזמן סביר?",
+                    type: "select",
+                    required: false,
+                    options: [
+                        { value: "yes", label: "כן, בממשק ברור" },
+                        { value: "partial", label: "חלקית/ידני" },
+                        { value: "no", label: "אין מנגנון" },
+                        { value: "na", label: "לא עוסקים בדיוור ישיר" }
+                    ],
+                    weight: 2,
+                    riskFactor: {
+                        yes: 0,
+                        partial: 2,
+                        no: 4,
+                        na: 0
                     }
                 },
                 {
@@ -521,7 +597,7 @@ const assessmentQuestions = {
                     }
                 },
                 {
-                    id: "purpose_limitation",
+                    id: "purpose_limitation_general",
                     text: "האם מקפידים על הגבלת מטרה?",
                     type: "select",
                     required: true,
@@ -574,6 +650,61 @@ const assessmentQuestions = {
                         no: 5,
                         na: 0
                     }
+                },
+                {
+                    id: "indirect_collection_notice",
+                    text: "כאשר המידע נאסף לא ישירות מהאדם – האם נמסרת הודעת פרטיות יזומה?",
+                    type: "select",
+                    required: false,
+                    options: [
+                        { value: "always", label: "כן, תמיד" },
+                        { value: "sometimes", label: "לעיתים" },
+                        { value: "never", label: "לא" },
+                        { value: "na", label: "לא אוספים מידע עקיף" }
+                    ],
+                    weight: 2,
+                    riskFactor: {
+                        always: 0,
+                        sometimes: 2,
+                        never: 4,
+                        na: 0
+                    }
+                },
+                {
+                    id: "data_accuracy_governance",
+                    text: "האם קיימים מנגנונים לשמירה על דיוק ועדכניות המידע?",
+                    type: "select",
+                    required: false,
+                    options: [
+                        { value: "yes", label: "כן, מנגנון סדיר" },
+                        { value: "partial", label: "חלקי" },
+                        { value: "no", label: "לא" }
+                    ],
+                    weight: 2,
+                    riskFactor: {
+                        yes: 0,
+                        partial: 2,
+                        no: 3
+                    }
+                },
+                {
+                    id: "third_party_correction_propagation",
+                    text: "בעת תיקון מידע – האם נמסרת הודעה לגורמים שקיבלו את המידע?",
+                    type: "select",
+                    required: false,
+                    options: [
+                        { value: "always", label: "כן, תמיד" },
+                        { value: "sometimes", label: "לעיתים" },
+                        { value: "never", label: "לא" },
+                        { value: "na", label: "לא מעבירים לצדדים שלישיים" }
+                    ],
+                    weight: 2,
+                    riskFactor: {
+                        always: 0,
+                        sometimes: 2,
+                        never: 4,
+                        na: 0
+                    }
                 }
             ]
         },
@@ -619,6 +750,23 @@ const assessmentQuestions = {
                         must_register_public: 1,
                         must_register_databroker: 1,
                         notification_only: 1
+                    }
+                },
+                {
+                    id: "public_body_interchange_notice",
+                    text: "האם גוף ציבורי שמקבל מידע באופן קבוע דיווח לרשות כנדרש?",
+                    type: "select",
+                    required: false,
+                    options: [
+                        { value: "yes", label: "כן" },
+                        { value: "no", label: "לא" },
+                        { value: "na", label: "לא רלוונטי/לא גוף ציבורי" }
+                    ],
+                    weight: 2,
+                    riskFactor: {
+                        yes: 0,
+                        no: 3,
+                        na: 0
                     }
                 },
                 {
@@ -689,7 +837,7 @@ const assessmentQuestions = {
                     }
                 },
                 {
-                    id: "purpose_limitation",
+                    id: "purpose_limitation_prohibitions",
                     text: "האם המידע מעובד אך ורק למטרה שלשמה נאסף?",
                     type: "select",
                     required: true,
