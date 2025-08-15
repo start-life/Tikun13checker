@@ -369,37 +369,156 @@ function switchScanMode(mode) {
 
 // Generate bookmarklet code
 function generateBookmarklet() {
+    // Create a more robust bookmarklet code
     const bookmarkletCode = `javascript:(function(){
-        var html = document.documentElement.outerHTML;
-        var url = window.location.href;
-        var tikun13Window = window.open('${window.location.origin}${window.location.pathname}', 'tikun13');
-        setTimeout(function() {
-            tikun13Window.postMessage({
-                type: 'tikun13_scan',
-                html: html,
-                url: url
-            }, '*');
-        }, 1000);
+        try {
+            var html = document.documentElement.outerHTML;
+            var url = window.location.href;
+            var title = document.title;
+            
+            /* Try to find an existing Tikun13 window or open a new one */
+            var tikun13Url = '${window.location.origin}${window.location.pathname}';
+            var tikun13Window = window.open(tikun13Url, 'tikun13checker');
+            
+            if (!tikun13Window) {
+                alert('לא ניתן לפתוח את כלי הבדיקה. אנא בדוק את חוסם החלונות הקופצים.');
+                return;
+            }
+            
+            /* Wait for the window to load and send the data */
+            var attempts = 0;
+            var interval = setInterval(function() {
+                attempts++;
+                if (attempts > 20) {
+                    clearInterval(interval);
+                    alert('תם הזמן הקצוב. אנא נסה שוב.');
+                    return;
+                }
+                
+                try {
+                    tikun13Window.postMessage({
+                        type: 'tikun13_scan',
+                        html: html,
+                        url: url,
+                        title: title,
+                        timestamp: new Date().toISOString()
+                    }, '*');
+                    
+                    /* Show success indication */
+                    if (attempts === 1) {
+                        var div = document.createElement('div');
+                        div.innerHTML = '✅ הנתונים נשלחו לבדיקה';
+                        div.style.cssText = 'position:fixed;top:20px;right:20px;background:#4caf50;color:white;padding:15px;border-radius:5px;z-index:999999;font-family:Arial;';
+                        document.body.appendChild(div);
+                        setTimeout(function() { 
+                            if (div.parentNode) div.parentNode.removeChild(div); 
+                        }, 3000);
+                    }
+                } catch(e) {
+                    /* Keep trying */
+                }
+            }, 500);
+        } catch(error) {
+            alert('שגיאה בקריאת נתוני העמוד: ' + error.message);
+        }
     })();`;
     
+    // Minify the code for the bookmarklet
+    const minifiedCode = bookmarkletCode.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\s+/g, ' ').trim();
+    
+    // Set the bookmarklet link href
     const bookmarkletLink = document.getElementById('bookmarklet-link');
     if (bookmarkletLink) {
-        bookmarkletLink.href = bookmarkletCode;
+        bookmarkletLink.href = minifiedCode;
+    }
+    
+    // Also populate the manual code textarea
+    const codeTextarea = document.getElementById('bookmarklet-code');
+    if (codeTextarea) {
+        codeTextarea.value = minifiedCode;
+    }
+}
+
+// Show browser-specific instructions
+function showBrowserInstructions(browser) {
+    // Hide all browser content
+    document.querySelectorAll('.browser-content').forEach(content => {
+        content.style.display = 'none';
+    });
+    
+    // Remove active class from all tabs
+    document.querySelectorAll('.browser-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    // Show selected browser content
+    const selectedContent = document.getElementById(`${browser}-instructions`);
+    if (selectedContent) {
+        selectedContent.style.display = 'block';
+    }
+    
+    // Add active class to selected tab
+    event.target.classList.add('active');
+}
+
+// Copy bookmarklet code to clipboard
+function copyBookmarkletCode() {
+    const codeTextarea = document.getElementById('bookmarklet-code');
+    if (codeTextarea) {
+        codeTextarea.select();
+        document.execCommand('copy');
+        
+        // Show success message
+        const button = event.target;
+        const originalText = button.textContent;
+        button.textContent = '✅ הועתק!';
+        button.style.background = '#4caf50';
+        button.style.color = 'white';
+        
+        setTimeout(() => {
+            button.textContent = originalText;
+            button.style.background = '';
+            button.style.color = '';
+        }, 2000);
     }
 }
 
 // Listen for bookmarklet messages
 window.addEventListener('message', function(event) {
     if (event.data && event.data.type === 'tikun13_scan') {
+        console.log('Received bookmarklet data from:', event.data.url);
+        
+        // Switch to private mode to handle the data
+        currentScanMode = 'private';
+        switchScanMode('private');
+        
         // Fill in the URL and HTML content
         const urlInput = document.getElementById('website-url');
         const htmlInput = document.getElementById('html-input');
         
         if (urlInput) urlInput.value = event.data.url;
-        if (htmlInput) htmlInput.value = event.data.html;
+        if (htmlInput) {
+            htmlInput.value = event.data.html;
+            // Show a success message
+            const successDiv = document.createElement('div');
+            successDiv.innerHTML = `✅ התקבלו נתונים מ: ${event.data.title || event.data.url}`;
+            successDiv.style.cssText = 'position:fixed;top:80px;right:20px;background:#4caf50;color:white;padding:15px;border-radius:8px;z-index:10000;box-shadow:0 4px 6px rgba(0,0,0,0.1);';
+            document.body.appendChild(successDiv);
+            
+            setTimeout(() => {
+                if (successDiv.parentNode) {
+                    successDiv.parentNode.removeChild(successDiv);
+                }
+            }, 3000);
+        }
         
-        // Trigger scan
-        document.getElementById('checker-form').dispatchEvent(new Event('submit'));
+        // Trigger scan automatically after a short delay
+        setTimeout(() => {
+            const form = document.getElementById('checker-form');
+            if (form) {
+                form.dispatchEvent(new Event('submit'));
+            }
+        }, 500);
     }
 });
 

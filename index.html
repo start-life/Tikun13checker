@@ -241,28 +241,117 @@
                     <!-- Bookmarklet Mode -->
                     <div id="bookmarklet-mode" class="scan-mode-content" style="display: none;">
                         <div class="bookmarklet-instructions">
-                            <h4>📌 התקנת Bookmarklet - סריקה פרטית בלחיצה אחת</h4>
-                            <ol>
-                                <li>גרור את הכפתור הבא לסרגל הסימניות שלך:</li>
-                                <li>
+                            <h4>📌 מה זה Bookmarklet?</h4>
+                            <div class="bookmarklet-explanation">
+                                <p>Bookmarklet הוא כלי קטן שנשמר כסימניה בדפדפן שלך. בלחיצה אחת על כל אתר, הוא מעביר את תוכן העמוד לכלי הסריקה שלנו - <strong>100% פרטי, ללא שרתים חיצוניים!</strong></p>
+                            </div>
+                            
+                            <div class="bookmarklet-install">
+                                <h5>🚀 התקנה מהירה:</h5>
+                                <div class="bookmarklet-button-container">
                                     <a href="#" id="bookmarklet-link" 
-                                       class="bookmarklet-link" 
-                                       onclick="alert('גרור אותי לסרגל הסימניות!'); return false;">
-                                        🔍 סרוק עם Tikun13
+                                       class="bookmarklet-button" 
+                                       onclick="alert('גרור אותי לסרגל הסימניות שלך!'); return false;">
+                                        🔍 Tikun13 Scanner
                                     </a>
-                                </li>
-                                <li>בקר באתר שברצונך לסרוק</li>
-                                <li>לחץ על הסימניה "סרוק עם Tikun13"</li>
-                                <li>הניתוח יתבצע באופן פרטי לחלוטין!</li>
-                            </ol>
+                                    <span class="drag-instruction">👆 גרור אותי לסרגל הסימניות</span>
+                                </div>
+                            </div>
+                            
+                            <div class="browser-instructions">
+                                <h5>📖 הוראות התקנה לפי דפדפן:</h5>
+                                <div class="browser-tabs">
+                                    <button class="browser-tab active" onclick="showBrowserInstructions('chrome')">Chrome</button>
+                                    <button class="browser-tab" onclick="showBrowserInstructions('firefox')">Firefox</button>
+                                    <button class="browser-tab" onclick="showBrowserInstructions('safari')">Safari</button>
+                                    <button class="browser-tab" onclick="showBrowserInstructions('edge')">Edge</button>
+                                </div>
+                                
+                                <div id="chrome-instructions" class="browser-content">
+                                    <ol>
+                                        <li>ודא שסרגל הסימניות מוצג (Ctrl+Shift+B או Cmd+Shift+B)</li>
+                                        <li>גרור את הכפתור "Tikun13 Scanner" לסרגל הסימניות</li>
+                                        <li>אם הגרירה לא עובדת: לחץ ימני על סרגל הסימניות ← "הוסף עמוד"</li>
+                                        <li>בשם הקלד: Tikun13 Scanner</li>
+                                        <li>בכתובת URL הדבק את הקוד שיופיע למטה</li>
+                                    </ol>
+                                </div>
+                                
+                                <div id="firefox-instructions" class="browser-content" style="display: none;">
+                                    <ol>
+                                        <li>ודא שסרגל הסימניות מוצג (Ctrl+Shift+B או Cmd+Shift+B)</li>
+                                        <li>גרור את הכפתור "Tikun13 Scanner" לסרגל הסימניות</li>
+                                        <li>אם הגרירה לא עובדת: לחץ ימני על סרגל הסימניות ← "סימניה חדשה"</li>
+                                        <li>בשם הקלד: Tikun13 Scanner</li>
+                                        <li>בכתובת הדבק את הקוד שיופיע למטה</li>
+                                    </ol>
+                                </div>
+                                
+                                <div id="safari-instructions" class="browser-content" style="display: none;">
+                                    <ol>
+                                        <li>הצג את סרגל המועדפים: View ← Show Favorites Bar</li>
+                                        <li>גרור את הכפתור "Tikun13 Scanner" לסרגל המועדפים</li>
+                                        <li>אם הגרירה לא עובדת: Bookmarks ← Add Bookmark</li>
+                                        <li>בשם הקלד: Tikun13 Scanner</li>
+                                        <li>בכתובת הדבק את הקוד שיופיע למטה</li>
+                                    </ol>
+                                </div>
+                                
+                                <div id="edge-instructions" class="browser-content" style="display: none;">
+                                    <ol>
+                                        <li>הצג את סרגל המועדפים (Ctrl+Shift+B או Cmd+Shift+B)</li>
+                                        <li>גרור את הכפתור "Tikun13 Scanner" לסרגל המועדפים</li>
+                                        <li>אם הגרירה לא עובדת: לחץ ימני על הסרגל ← "הוסף מועדף חדש"</li>
+                                        <li>בשם הקלד: Tikun13 Scanner</li>
+                                        <li>בכתובת URL הדבק את הקוד שיופיע למטה</li>
+                                    </ol>
+                                </div>
+                            </div>
+                            
+                            <div class="manual-install">
+                                <h5>⚙️ התקנה ידנית (אם הגרירה לא עובדת):</h5>
+                                <p>העתק את הקוד הבא:</p>
+                                <div class="code-container">
+                                    <textarea id="bookmarklet-code" readonly rows="3" onclick="this.select()"></textarea>
+                                    <button onclick="copyBookmarkletCode()" class="btn-secondary">📋 העתק קוד</button>
+                                </div>
+                            </div>
+                            
+                            <div class="how-to-use">
+                                <h5>🎯 איך להשתמש:</h5>
+                                <ol>
+                                    <li>גלוש לאתר שברצונך לסרוק</li>
+                                    <li>לחץ על הסימניה "Tikun13 Scanner" בסרגל הסימניות</li>
+                                    <li>הכלי ייפתח אוטומטית עם נתוני האתר</li>
+                                    <li>הסריקה תתחיל מיידית!</li>
+                                </ol>
+                            </div>
+                            
                             <div class="bookmarklet-benefits">
                                 <h5>✅ יתרונות:</h5>
                                 <ul>
-                                    <li>100% פרטי - אין שליחת מידע לשרתים</li>
-                                    <li>סריקה בלחיצה אחת</li>
-                                    <li>עובד על כל אתר</li>
-                                    <li>ללא צורך בהתקנה</li>
+                                    <li>🔒 100% פרטי - כל הנתונים נשארים בדפדפן שלך</li>
+                                    <li>⚡ סריקה מהירה בלחיצה אחת</li>
+                                    <li>🌐 עובד על כל אתר באינטרנט</li>
+                                    <li>📱 תומך בכל הדפדפנים המודרניים</li>
+                                    <li>🚫 ללא צורך בהתקנת תוסף או תוכנה</li>
                                 </ul>
+                            </div>
+                            
+                            <div class="troubleshooting">
+                                <h5>❓ פתרון בעיות:</h5>
+                                <details>
+                                    <summary>הסימניה לא עובדת</summary>
+                                    <p>ודא שהעתקת את כל הקוד כולל javascript: בהתחלה</p>
+                                </details>
+                                <details>
+                                    <summary>החלון לא נפתח</summary>
+                                    <p>בדוק שחוסם פופ-אפים לא חוסם את הפתיחה</p>
+                                </details>
+                                <details>
+                                    <summary>הנתונים לא מועברים</summary>
+                                    <p>רענן את דף הכלי ונסה שוב</p>
+                                </details>
                             </div>
                         </div>
                     </div>
