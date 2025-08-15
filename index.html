@@ -13,14 +13,26 @@
     <!-- Consent Modal -->
     <div id="consent-modal" class="consent-modal">
         <div class="consent-content">
-            <h2>⚖️ תנאי שימוש והסכמה מדעת</h2>
+            <h2>⚠️ אזהרה חשובה - תנאי שימוש והגבלת אחריות ⚠️</h2>
             
             <div class="consent-text">
-                <h3>חשוב לדעת לפני השימוש בכלי:</h3>
+                <h3>🚨 חובה לקרוא לפני השימוש בכלי:</h3>
+                
+                <div class="disclaimer-section critical-warning">
+                    <h4>❌ הגבלות הכלי וטעויות אפשריות</h4>
+                    <p><strong>אזהרה:</strong> כלי זה מספק <strong>הערכה ראשונית בלבד</strong> ועלול להכיל טעויות משמעותיות!</p>
+                    <ul>
+                        <li>הכלי <strong>אינו מכסה</strong> את כל דרישות תיקון 13</li>
+                        <li>התוצאות <strong>אינן מהוות</strong> חוות דעת משפטית</li>
+                        <li>ייתכנו <strong>טעויות וחוסרים</strong> בניתוח</li>
+                        <li><strong>חובה להיוועץ בעורך דין מומחה לפרטיות!</strong></li>
+                    </ul>
+                </div>
                 
                 <div class="disclaimer-section">
-                    <h4>🔓 פרויקט קוד פתוח</h4>
-                    <p>כלי זה הוא פרויקט קוד פתוח שפותח על ידי IONSEC.IO לטובת הקהילה הישראלית, במטרה לסייע בהיערכות ראשונית לתיקון 13 לחוק הגנת הפרטיות.</p>
+                    <h4>🆓 פרויקט קוד פתוח - אפס אחריות</h4>
+                    <p><strong>ZERO LIABILITY:</strong> כלי זה הוא פרויקט קוד פתוח שפותח על ידי IONSEC.IO לטובת הקהילה.</p>
+                    <p><strong>אנו לא נושאים באחריות כלשהי</strong> לתוצאות, לנזקים, לקנסות או לכל השלכה אחרת מהשימוש בכלי!</p>
                 </div>
 
                 <div class="disclaimer-section">
@@ -115,6 +127,92 @@
             </div>
         </nav>
     </header>
+    
+    <!-- Persistent Side Disclaimer Tab -->
+    <div class="disclaimer-side-tab" id="disclaimer-side-tab" onclick="showDisclaimer()">
+        <span>⚠️ אזהרה חשובה</span>
+    </div>
+
+    <!-- IMPORTANT DISCLAIMER BANNER -->
+    <div class="disclaimer-banner" id="disclaimer-banner">
+        <div class="container">
+            <div class="disclaimer-content">
+                <div class="disclaimer-header">
+                    <span class="warning-icon">⚠️</span>
+                    <h2>אזהרה חשובה - קראו לפני השימוש!</h2>
+                    <span class="warning-icon">⚠️</span>
+                </div>
+                
+                <div class="disclaimer-points">
+                    <div class="disclaimer-point">
+                        <span class="point-icon">❌</span>
+                        <p><strong>כלי זה מספק הערכה ראשונית בלבד ועלול להכיל טעויות!</strong></p>
+                    </div>
+                    <div class="disclaimer-point">
+                        <span class="point-icon">📋</span>
+                        <p>הכלי <strong>אינו מכסה</strong> את כל דרישות תיקון 13 לחוק הגנת הפרטיות</p>
+                    </div>
+                    <div class="disclaimer-point">
+                        <span class="point-icon">⚖️</span>
+                        <p><strong>חובה להיוועץ בעורך דין מומחה לפרטיות</strong> ולבצע הערכה מקיפה בהתאם לחוק</p>
+                    </div>
+                    <div class="disclaimer-point">
+                        <span class="point-icon">🆓</span>
+                        <p>זהו פרויקט קוד פתוח - <strong>אנו לא נושאים באחריות כלשהי לתוצאות או לנזקים!</strong></p>
+                    </div>
+                </div>
+                
+                <div class="government-resources">
+                    <h3>📘 מקורות רשמיים מאתר הממשלה - מעודכנים באופן שוטף</h3>
+                    <div class="gov-links">
+                        <a href="https://www.gov.il/he/pages/guide_tikon13_professional" target="_blank" class="gov-link">
+                            🏛️ המדריך המקצועי המלא לתיקון 13
+                            <span class="gov-badge">מידע רשמי ומעודכן</span>
+                        </a>
+                        <a href="https://www.gov.il/he/pages/tikun13_qa?chapterIndex=6" target="_blank" class="gov-link">
+                            ❓ שאלות ותשובות מרשות הגנת הפרטיות
+                            <span class="gov-badge">מתעדכן באופן שוטף</span>
+                        </a>
+                    </div>
+                    <p class="gov-note">
+                        💡 מומלץ לעיין במקורות הרשמיים לקבלת המידע המלא והמעודכן ביותר
+                    </p>
+                </div>
+                
+                <div class="github-cta">
+                    <div class="github-buttons">
+                        <a href="https://github.com/ionsec/Tikun13checker" target="_blank" class="github-btn">
+                            <svg height="20" width="20" viewBox="0 0 16 16" style="fill: currentColor; vertical-align: middle;">
+                                <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
+                            </svg>
+                            <span>View on GitHub</span>
+                        </a>
+                        
+                        <a href="https://github.com/ionsec/Tikun13checker" target="_blank" class="github-star-btn">
+                            ⭐ Star on GitHub
+                        </a>
+                        
+                        <a href="https://github.com/ionsec/Tikun13checker/fork" target="_blank" class="github-fork-btn">
+                            🔱 Fork & Contribute
+                        </a>
+                    </div>
+                    
+                    <p class="contribute-text">
+                        👨‍💻 <strong>מומחי פרטיות ומפתחים:</strong> אנו מעודדים אתכם לשפר את הקוד ולתרום לקהילה!
+                    </p>
+                </div>
+                
+                <div class="disclaimer-footer">
+                    <button onclick="acceptDisclaimer()" class="btn-understand">
+                        ✅ הבנתי ואני מסכים להמשיך על אחריותי בלבד
+                    </button>
+                    <p class="zero-liability">
+                        🚫 <strong>ZERO LIABILITY:</strong> השימוש בכלי זה הוא על אחריותך בלבד. אין לנו אחריות משפטית כלשהי.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <main role="main" id="main-content">
         <!-- Section Switcher -->
@@ -144,6 +242,32 @@
                             <strong>זמן שנותר להיערכות:</strong>
                             <span id="countdown"></span>
                         </div>
+                    </div>
+                </div>
+                
+                <!-- Government Resources Box -->
+                <div class="gov-resources-box">
+                    <h4>🏛️ מידע רשמי ומעודכן מהממשלה</h4>
+                    <div class="gov-resources-grid">
+                        <a href="https://www.gov.il/he/pages/guide_tikon13_professional" target="_blank" class="gov-resource-card">
+                            <div class="gov-card-icon">📚</div>
+                            <div class="gov-card-content">
+                                <h5>המדריך המקצועי לתיקון 13</h5>
+                                <p>מדריך מקיף ומפורט מרשות הגנת הפרטיות</p>
+                                <span class="gov-link-arrow">→</span>
+                            </div>
+                        </a>
+                        <a href="https://www.gov.il/he/pages/tikun13_qa?chapterIndex=6" target="_blank" class="gov-resource-card">
+                            <div class="gov-card-icon">💬</div>
+                            <div class="gov-card-content">
+                                <h5>שאלות ותשובות נפוצות</h5>
+                                <p>תשובות רשמיות לשאלות מרכזיות</p>
+                                <span class="gov-link-arrow">→</span>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="gov-update-notice">
+                        ⚡ המידע באתרים אלו מתעדכן באופן שוטף ע"י רשות הגנת הפרטיות
                     </div>
                 </div>
 

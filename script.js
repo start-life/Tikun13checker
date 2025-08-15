@@ -190,6 +190,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize default scan mode (private)
     switchScanMode('private');
+    
+    // Initialize disclaimer banner and side tab
+    initDisclaimerBanner();
 });
 
 // Consent Management
@@ -436,6 +439,84 @@ function generateBookmarklet() {
     const codeTextarea = document.getElementById('bookmarklet-code');
     if (codeTextarea) {
         codeTextarea.value = minifiedCode;
+    }
+}
+
+// Initialize disclaimer banner
+function initDisclaimerBanner() {
+    const banner = document.getElementById('disclaimer-banner');
+    const sideTab = document.getElementById('disclaimer-side-tab');
+    const body = document.body;
+    
+    // Check if disclaimer was already accepted
+    const isAccepted = localStorage.getItem('disclaimer_accepted');
+    
+    if (banner) {
+        if (isAccepted) {
+            // Hide banner if already accepted
+            banner.classList.add('hidden');
+            body.classList.remove('disclaimer-visible');
+            
+            // Show side tab
+            if (sideTab) {
+                sideTab.classList.add('visible');
+            }
+        } else {
+            // Show banner on first visit
+            banner.classList.remove('hidden');
+            body.classList.add('disclaimer-visible');
+            
+            // Calculate and set body padding
+            setTimeout(() => {
+                const bannerHeight = banner.offsetHeight;
+                body.style.paddingTop = bannerHeight + 'px';
+            }, 100);
+        }
+    }
+}
+
+// Accept disclaimer banner
+function acceptDisclaimer() {
+    const banner = document.getElementById('disclaimer-banner');
+    const sideTab = document.getElementById('disclaimer-side-tab');
+    const body = document.body;
+    
+    if (banner) {
+        // Hide banner with animation
+        banner.classList.add('hidden');
+        
+        // Remove body padding
+        body.classList.remove('disclaimer-visible');
+        body.style.paddingTop = '0';
+        
+        // Store acceptance
+        localStorage.setItem('disclaimer_accepted', 'true');
+        localStorage.setItem('disclaimer_accepted_date', new Date().toISOString());
+        
+        // Show side tab after delay
+        setTimeout(() => {
+            if (sideTab) {
+                sideTab.classList.add('visible');
+            }
+        }, 500);
+    }
+}
+
+// Show disclaimer from side tab
+function showDisclaimer() {
+    const banner = document.getElementById('disclaimer-banner');
+    const body = document.body;
+    
+    if (banner) {
+        // Show banner
+        banner.classList.remove('hidden');
+        body.classList.add('disclaimer-visible');
+        
+        // Calculate and set body padding
+        setTimeout(() => {
+            const bannerHeight = banner.offsetHeight;
+            body.style.paddingTop = bannerHeight + 'px';
+        }, 100);
     }
 }
 
