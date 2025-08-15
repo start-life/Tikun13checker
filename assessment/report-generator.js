@@ -24,13 +24,57 @@ class AssessmentReportGenerator {
     }
 
     generateHeader() {
+        const countdownInfo = this.getCountdownInfo();
         return `
             <div class="results-header">
                 <h1>דוח עמידה בתיקון 13 לחוק הגנת הפרטיות</h1>
                 <p class="report-date">תאריך: ${new Date().toLocaleDateString('he-IL')}</p>
                 <p class="report-organization">${this.getOrganizationDescription()}</p>
+                ${countdownInfo.html}
             </div>
         `;
+    }
+
+    getCountdownInfo() {
+        const implementationDate = new Date('2025-08-14');
+        const today = new Date();
+        const timeDiff = implementationDate.getTime() - today.getTime();
+        const daysUntil = Math.ceil(timeDiff / (1000 * 3600 * 24));
+        
+        if (daysUntil > 0) {
+            const urgencyClass = daysUntil < 30 ? 'countdown-critical' : daysUntil < 90 ? 'countdown-urgent' : 'countdown-normal';
+            const urgencyText = daysUntil < 30 ? '⚠️ קריטי' : daysUntil < 90 ? '⚡ דחוף' : '📅 תכנון';
+            
+            return {
+                daysUntil,
+                html: `
+                    <div class="countdown-banner ${urgencyClass}">
+                        <h3>${urgencyText} נותרו ${daysUntil} ימים לכניסת תיקון 13 לתוקף</h3>
+                        <p>יום היישום: 14 באוגוסט 2025</p>
+                    </div>
+                `
+            };
+        } else if (daysUntil === 0) {
+            return {
+                daysUntil,
+                html: `
+                    <div class="countdown-banner countdown-today">
+                        <h3>🚀 תיקון 13 נכנס לתוקף היום!</h3>
+                        <p>14 באוגוסט 2025</p>
+                    </div>
+                `
+            };
+        } else {
+            return {
+                daysUntil,
+                html: `
+                    <div class="countdown-banner countdown-active">
+                        <h3>✅ תיקון 13 בתוקף</h3>
+                        <p>החוק תקף מאז 14 באוגוסט 2025</p>
+                    </div>
+                `
+            };
+        }
     }
 
     getOrganizationDescription() {
@@ -471,8 +515,41 @@ class AssessmentReportGenerator {
         plan += `• תוכנית זו מבוססת על הערכה עצמית ואינה מהווה ייעוץ משפטי\n`;
         plan += `• מומלץ להיוועץ בעורך דין המתמחה בדיני פרטיות\n`;
         plan += `• יש לעדכן את התוכנית בהתאם להתפתחויות והנחיות הרשות להגנת הפרטיות\n`;
+        plan += `• שקלו לבקש חוות דעת מקדמית מהרשות בנושאים מורכבים\n`;
         
         return plan;
+    }
+
+    generatePreliminaryOpinionInfo() {
+        if (this.answers.ppa_preliminary_opinion === 'not_aware') {
+            return `
+                <div class="info-box" style="background: #e3f2fd; border: 2px solid #2196f3; padding: 15px; margin: 20px 0; border-radius: 8px;">
+                    <h4>💡 טיפ: חוות דעת מקדמית מהרשות</h4>
+                    <p>ידעתם שניתן לפנות לרשות להגנת הפרטיות לקבלת חוות דעת מקדמית בנושאים מורכבים?</p>
+                    <p><strong>יתרונות:</strong></p>
+                    <ul>
+                        <li>הבהרת דרישות החוק בנושאים מורכבים</li>
+                        <li>הפחתת סיכונים משפטיים</li>
+                        <li>קבלת הנחיות ברורות ליישום</li>
+                    </ul>
+                    <p><small>פרטים נוספים באתר הרשות להגנת הפרטיות</small></p>
+                </div>
+            `;
+        } else if (this.answers.ppa_preliminary_opinion === 'considering') {
+            return `
+                <div class="info-box" style="background: #fff3e0; border: 2px solid #ff9800; padding: 15px; margin: 20px 0; border-radius: 8px;">
+                    <h4>📝 מומלץ: חוות דעת מקדמית</h4>
+                    <p>אתם שוקלים לבקש חוות דעת מקדמית - זהו צעד חכם!</p>
+                    <p>מומלץ לפנות במיוחד בנושאים הבאים:</p>
+                    <ul>
+                        <li>עיבוד מידע במצבים גבוליים</li>
+                        <li>יישום טכנולוגיות חדשות</li>
+                        <li>פרשנות דרישות אבטחה מורכבות</li>
+                    </ul>
+                </div>
+            `;
+        }
+        return '';
     }
 }
 

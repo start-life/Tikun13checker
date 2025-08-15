@@ -422,11 +422,12 @@ class RealWebsiteScanner {
         const extractedCookies = this.extractCookiesFromScripts(html);
         const hasTrackingScripts = this.detectTrackingScripts([], html).length > 0;
         
-        // Look for cookie consent elements
+        // Amendment 13 enhanced cookie consent patterns (Hebrew and English)
         const consentPatterns = [
             'cookie-consent', 'cookie-banner', 'cookie-notice',
             'cookieconsent', 'cookie-bar', 'gdpr-consent',
-            'privacy-banner', 'consent-banner'
+            'privacy-banner', 'consent-banner', 'עוגיות',
+            'הסכמה לעוגיות', 'רפה עוגיות', 'מדיניות עוגיות'
         ];
         
         let hasConsentBanner = false;
@@ -437,13 +438,36 @@ class RealWebsiteScanner {
             }
         }
 
-        // Check for opt-out mechanisms
+        // Amendment 13 specific opt-out mechanisms (Hebrew and English)
         const hasOptOut = html.includes('opt-out') || html.includes('refuse') || 
-                          html.includes('reject') || html.includes('סירוב');
+                          html.includes('reject') || html.includes('סירוב') ||
+                          html.includes('דחה') || html.includes('אסרב') ||
+                          html.includes('בטל הסכמה');
 
-        const status = (extractedCookies.length === 0 && !hasTrackingScripts) ? 'compliant' :
-                      (hasConsentBanner && hasOptOut) ? 'compliant' :
-                      hasConsentBanner ? 'partial' : 'non-compliant';
+        // Amendment 13 specific: Check for granular consent (essential vs non-essential)
+        const hasGranularConsent = html.includes('essential cookies') || 
+                                   html.includes('עוגיות חיוניות') ||
+                                   html.includes('marketing cookies') ||
+                                   html.includes('עוגיות שיווק') ||
+                                   html.includes('analytics cookies') ||
+                                   html.includes('עוגיות אנליטיקס');
+
+        // Amendment 13 specific: Check for consent withdrawal mechanism
+        const hasConsentWithdrawal = html.includes('withdraw consent') ||
+                                     html.includes('מחיקת הסכמה') ||
+                                     html.includes('ביטול הסכמה') ||
+                                     html.includes('עדכון העדפות');
+
+        // Amendment 13 compliance scoring
+        let complianceScore = 0;
+        if (extractedCookies.length === 0 && !hasTrackingScripts) complianceScore = 5;
+        else if (hasConsentBanner && hasOptOut && hasGranularConsent && hasConsentWithdrawal) complianceScore = 4;
+        else if (hasConsentBanner && hasOptOut && hasGranularConsent) complianceScore = 3;
+        else if (hasConsentBanner && hasOptOut) complianceScore = 2;
+        else if (hasConsentBanner) complianceScore = 1;
+
+        const status = complianceScore >= 4 ? 'compliant' :
+                      complianceScore >= 2 ? 'partial' : 'non-compliant';
 
         return {
             status,
@@ -453,10 +477,20 @@ class RealWebsiteScanner {
                 hasTrackingScripts,
                 hasConsentBanner,
                 hasOptOut,
-                recommendation: status === 'non-compliant' ? 
-                    'יש להוסיף מנגנון הסכמה מפורשת לעוגיות עם אפשרות סירוב' : null
+                hasGranularConsent,
+                hasConsentWithdrawal,
+                complianceScore,
+                recommendation: this.getCookieRecommendation(complianceScore)
             }
         };
+    }
+
+    getCookieRecommendation(score) {
+        if (score >= 4) return null;
+        if (score >= 3) return 'יש להוסיף מנגנון לביטול הסכמה בהתאם לתיקון 13';
+        if (score >= 2) return 'יש להוסיף בחירה גרנולרית של סוגי עוגיות בהתאם לתיקון 13';
+        if (score >= 1) return 'יש להוסיף אפשרות סירוב ובחירה גרנולרית בהתאם לתיקון 13';
+        return 'יש להוסיף מנגנון הסכמה מלא לעוגיות בהתאם לדרישות תיקון 13';
     }
 
     analyzePrivacyPolicy(doc, html) {
@@ -474,15 +508,22 @@ class RealWebsiteScanner {
             /[\u0590-\u05FF]/.test(a.textContent)
         );
 
-        // Look for required privacy policy sections in the HTML
+        // Look for Amendment 13 required privacy policy sections in the HTML
         const requiredTerms = [
-            { term: 'איסוף מידע', found: false },
-            { term: 'שימוש במידע', found: false },
-            { term: 'אבטחת מידע', found: false },
-            { term: 'זכויות', found: false },
-            { term: 'cookies|עוגיות', found: false },
-            { term: 'צד שלישי|third party', found: false },
-            { term: 'יצירת קשר|contact', found: false }
+            { term: 'איסוף מידע|data collection', found: false, amendment13: true },
+            { term: 'שימוש במידע|use of information', found: false, amendment13: true },
+            { term: 'אבטחת מידע|data security', found: false, amendment13: true },
+            { term: 'זכויות נושא המידע|data subject rights', found: false, amendment13: true },
+            { term: 'זכות עיון|right of access', found: false, amendment13: true },
+            { term: 'זכות תיקון|right to correction', found: false, amendment13: true },
+            { term: 'cookies|עוגיות', found: false, amendment13: false },
+            { term: 'צד שלישי|third party', found: false, amendment13: true },
+            { term: 'מטרות עיבוד|processing purposes', found: false, amendment13: true },
+            { term: 'תוצאות אי הסכמה|consequences of non-consent', found: false, amendment13: true },
+            { term: 'ממונה הגנת פרטיות|data protection officer|DPO', found: false, amendment13: true },
+            { term: 'יצירת קשר|contact information', found: false, amendment13: true },
+            { term: 'תקופת שמירה|retention period', found: false, amendment13: true },
+            { term: 'הרשאת עיבוד|processing authorization', found: false, amendment13: true }
         ];
 
         const lowerHTML = html.toLowerCase();
@@ -614,12 +655,13 @@ class RealWebsiteScanner {
     }
 
     calculateScore(compliance) {
+        // Amendment 13 adjusted weights - higher emphasis on privacy policy and cookies
         const weights = {
             ssl: 15,
-            cookies: 20,
-            privacy: 25,
-            hebrew: 10,
-            dataCollection: 15,
+            cookies: 25,        // Increased: Critical for Amendment 13 consent requirements
+            privacy: 30,        // Increased: Core requirement for transparency
+            hebrew: 15,         // Increased: Accessibility requirement in Israeli law
+            dataCollection: 20, // Increased: Data subject rights importance
             security: 10,
             transparency: 5
         };
@@ -634,8 +676,11 @@ class RealWebsiteScanner {
             if (check.status === 'compliant') {
                 totalScore += weight;
             } else if (check.status === 'partial') {
-                totalScore += weight * 0.5;
+                // Amendment 13 penalty: Partial compliance gets less credit for critical areas
+                const partialMultiplier = (key === 'privacy' || key === 'cookies') ? 0.3 : 0.5;
+                totalScore += weight * partialMultiplier;
             }
+            // Non-compliant gets 0 points (no change)
         }
 
         return Math.round((totalScore / maxScore) * 100);
@@ -664,40 +709,101 @@ class RealWebsiteScanner {
     assessRisks(scanResult) {
         const risks = [];
 
+        // SSL/HTTPS risks with Amendment 13 context
         if (scanResult.compliance.ssl?.status === 'non-compliant') {
             risks.push({
                 level: 'high',
                 category: 'אבטחה',
                 description: 'האתר אינו מוגן בהצפנה',
-                impact: 'חשיפת מידע רגיש בהעברה'
+                impact: 'חשיפת מידע רגיש בהעברה - הפרת תקנות אבטחת מידע תיקון 13',
+                potentialFine: '20,000-320,000 ₪'
             });
         }
 
+        // Privacy policy risks with Amendment 13 specifics
         if (scanResult.compliance.privacy?.status === 'non-compliant') {
             risks.push({
                 level: 'high',
-                category: 'משפטי',
+                category: 'שקיפות',
                 description: 'חסרה מדיניות פרטיות',
-                impact: 'חשיפה לקנסות על פי תיקון 13'
+                impact: 'הפרת חובת היידוע - קנסות חמורים על פי תיקון 13',
+                potentialFine: '30,000-500,000 ₪'
             });
+        } else if (scanResult.compliance.privacy?.status === 'partial') {
+            const missingCount = scanResult.compliance.privacy?.details?.missingSections?.length || 0;
+            if (missingCount > 5) {
+                risks.push({
+                    level: 'medium',
+                    category: 'שקיפות',
+                    description: 'מדיניות פרטיות לא מלאה',
+                    impact: `חסרים ${missingCount} סעיפים נדרשים לתיקון 13`,
+                    potentialFine: '15,000-250,000 ₪'
+                });
+            }
         }
 
+        // Cookie consent risks with Amendment 13 granular requirements
         if (scanResult.compliance.cookies?.status === 'non-compliant' && 
             scanResult.compliance.cookies?.details?.cookieCount > 0) {
             risks.push({
-                level: 'medium',
+                level: 'high',
                 category: 'הסכמה',
-                description: 'שימוש בעוגיות ללא הסכמה',
-                impact: 'הפרה של דרישות השקיפות'
+                description: 'שימוש בעוגיות ללא הסכמה מתאימה',
+                impact: 'הפרת דרישות הסכמה גרנולרית של תיקון 13',
+                potentialFine: '20,000-150,000 ₪'
+            });
+        } else if (scanResult.compliance.cookies?.status === 'partial') {
+            const score = scanResult.compliance.cookies?.details?.complianceScore || 0;
+            if (score < 3) {
+                risks.push({
+                    level: 'medium',
+                    category: 'הסכמה',
+                    description: 'מנגנון הסכמה לעוגיות לא מלא',
+                    impact: 'חסרה בחירה גרנולרית או יכולת ביטול הסכמה',
+                    potentialFine: '10,000-75,000 ₪'
+                });
+            }
+        }
+
+        // Hebrew content risk (Israeli law requirement)
+        if (scanResult.compliance.hebrew?.status === 'non-compliant') {
+            risks.push({
+                level: 'medium',
+                category: 'נגישות',
+                description: 'אתר לא נגיש לציבור הישראלי',
+                impact: 'הפרת דרישת נגישות בעברית לפי החוק הישראלי',
+                potentialFine: 'הליכים משפטיים'
             });
         }
 
-        if (scanResult.score < 40) {
+        // Data collection without proper consent
+        if (scanResult.compliance.dataCollection?.status === 'non-compliant' &&
+            scanResult.compliance.dataCollection?.details?.sensitiveFieldsCount > 0) {
             risks.push({
                 level: 'high',
-                category: 'כללי',
-                description: 'רמת התאמה נמוכה מאוד',
-                impact: 'נדרשת היערכות מקיפה ומיידית'
+                category: 'איסוף מידע',
+                description: 'איסוף מידע רגיש ללא הסכמה',
+                impact: 'הפרת עקרון ההסכמה המפורשת בתיקון 13',
+                potentialFine: '50,000-400,000 ₪'
+            });
+        }
+
+        // Overall compliance risk with Amendment 13 thresholds
+        if (scanResult.score < 30) {
+            risks.push({
+                level: 'critical',
+                category: 'עמידה כללית',
+                description: 'רמת התאמה קריטית לתיקון 13',
+                impact: 'סיכון גבוה לקנסות משמעותיים וצווי עצירה',
+                potentialFine: '100,000-1,000,000 ₪'
+            });
+        } else if (scanResult.score < 60) {
+            risks.push({
+                level: 'high',
+                category: 'עמידה כללית',
+                description: 'רמת התאמה נמוכה לתיקון 13',
+                impact: 'נדרשת פעולה מיידית למניעת הפרות',
+                potentialFine: '20,000-300,000 ₪'
             });
         }
 

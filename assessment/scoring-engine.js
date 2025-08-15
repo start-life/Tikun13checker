@@ -71,8 +71,49 @@ class ComplianceCalculator {
                 : 0;
         }
 
-        this.riskScore += risk * weight;
-        this.totalScore += Math.max(0, (5 - risk)) * weight;
+        // Apply Amendment 13 risk multipliers based on organization context
+        const riskMultiplier = this.calculateRiskMultiplier(question, answers);
+        const adjustedRisk = Math.min(5, risk * riskMultiplier);
+
+        this.riskScore += adjustedRisk * weight;
+        this.totalScore += Math.max(0, (5 - adjustedRisk)) * weight;
+    }
+
+    calculateRiskMultiplier(question, answers) {
+        let multiplier = 1.0;
+        
+        // Organization type multipliers
+        const orgType = answers.org_type;
+        if (orgType === 'public') {
+            multiplier *= 1.3; // Public bodies have higher regulatory scrutiny
+        } else if (orgType === 'databroker') {
+            multiplier *= 1.4; // Data brokers face strictest requirements
+        } else if (orgType === 'financial' || orgType === 'healthcare') {
+            multiplier *= 1.2; // Regulated industries have higher standards
+        }
+        
+        // Sensitive data multiplier
+        const hasSensitiveData = this.hasSensitiveData(answers.sensitive_data);
+        if (hasSensitiveData) {
+            multiplier *= 1.2; // Processing sensitive data increases risk
+        }
+        
+        // Data scale multiplier
+        const dataCount = answers.data_subjects_count;
+        if (dataCount === 'over_1m') {
+            multiplier *= 1.3; // Large scale processing
+        } else if (dataCount === '500k_1m' || dataCount === '100k_500k') {
+            multiplier *= 1.1; // Medium scale processing
+        }
+        
+        // DPO requirement multiplier - if DPO required but not appointed
+        if (question.id && question.id.includes('dpo') && 
+            this.requiresDPO(orgType, dataCount) && 
+            answers.dpo_appointed === 'no') {
+            multiplier *= 1.5; // Critical violation
+        }
+        
+        return multiplier;
     }
 
     calculateMultiselectRisk(selected, question) {
@@ -87,14 +128,15 @@ class ComplianceCalculator {
         if (answers.dpo_appointed === 'no') {
             const orgType = answers.org_type;
             const dataCount = answers.data_subjects_count;
+            const hasSensitiveData = this.hasSensitiveData(answers.sensitive_data);
             
             if (this.requiresDPO(orgType, dataCount)) {
                 this.violations.push({
                     severity: 'high',
                     category: 'dpo',
                     description: 'חובת מינוי ממונה הגנת פרטיות לא מולאה',
-                    fine: this.calculateDPOFine(orgType, dataCount),
-                    law_reference: 'סעיף 17ב לחוק'
+                    fine: this.calculateDPOFine(orgType, dataCount, hasSensitiveData),
+                    law_reference: 'סעיף 17ב1 לחוק'
                 });
             }
         }
@@ -115,35 +157,35 @@ class ComplianceCalculator {
 
         // Privacy notice violations
         if (answers.privacy_notice === 'no') {
+            const hasSensitiveData = this.hasSensitiveData(answers.sensitive_data);
             this.violations.push({
                 severity: 'medium',
                 category: 'transparency',
-                description: 'הודעת פרטיות חסרה',
-                fine: 50000,
+                description: 'הודעת פרטיות חסרה - הפרת חובת היידוע',
+                fine: this.calculateInformationNoticeFine(answers.data_subjects_count, hasSensitiveData),
                 law_reference: 'סעיף 11 לחוק'
             });
         } else if (answers.privacy_notice === 'outdated' || answers.privacy_notice === 'partial') {
+            const hasSensitiveData = this.hasSensitiveData(answers.sensitive_data);
             this.violations.push({
                 severity: 'low',
                 category: 'transparency',
                 description: 'הודעת פרטיות לא מלאה או מעודכנת',
-                fine: 25000,
+                fine: Math.round(this.calculateInformationNoticeFine(answers.data_subjects_count, hasSensitiveData) * 0.5),
                 law_reference: 'סעיף 11 לחוק'
             });
         }
 
         // Security violations
         if (answers.security_level === 'unknown' || answers.security_level === 'basic') {
-            const sensitiveData = answers.sensitive_data || [];
-            if (sensitiveData.length > 0 && !sensitiveData.includes('none')) {
-                this.violations.push({
-                    severity: 'high',
-                    category: 'security',
-                    description: 'רמת אבטחה לא מספקת למידע רגיש',
-                    fine: 100000,
-                    law_reference: 'תקנות אבטחת מידע'
-                });
-            }
+            const hasSensitiveData = this.hasSensitiveData(answers.sensitive_data);
+            this.violations.push({
+                severity: 'high',
+                category: 'security',
+                description: 'רמת אבטחה לא מספקת - הפרת תקנות אבטחת מידע',
+                fine: this.calculateSecurityRegulationFine(answers.security_level, hasSensitiveData),
+                law_reference: 'תקנות אבטחת מידע, תשע״ז-2017'
+            });
         }
 
         // Consent management violations
@@ -163,7 +205,7 @@ class ComplianceCalculator {
                 severity: 'medium',
                 category: 'rights',
                 description: 'אין תהליך למימוש זכות עיון',
-                fine: 50000,
+                fine: this.calculateDataSubjectRightsFine(),
                 law_reference: 'סעיף 13 לחוק'
             });
         }
@@ -177,6 +219,126 @@ class ComplianceCalculator {
                 fine: 60000,
                 law_reference: 'סעיף 17ד לחוק'
             });
+        }
+
+        // New Amendment 13 specific violations
+
+        // Breach notification violations (72 hours reporting)
+        if (answers.breach_notification_timeline === 'no') {
+            const hasSensitiveData = this.hasSensitiveData(answers.sensitive_data);
+            this.violations.push({
+                severity: 'high',
+                category: 'security',
+                description: 'אין נוהל דיווח תוך 72 שעות על אירועי אבטחה חמורים',
+                fine: this.calculateBreachNotificationFine(answers.org_type, hasSensitiveData),
+                law_reference: 'סעיף 23לא לחוק - דיווח על אירועי אבטחה'
+            });
+        } else if (answers.breach_notification_timeline === 'yes_partial') {
+            const hasSensitiveData = this.hasSensitiveData(answers.sensitive_data);
+            this.violations.push({
+                severity: 'medium',
+                category: 'security',
+                description: 'נוהל דיווח אירועי אבטחה קיים אך לא מיושם במלואו',
+                fine: Math.round(this.calculateBreachNotificationFine(answers.org_type, hasSensitiveData) * 0.5),
+                law_reference: 'סעיף 23לא לחוק - דיווח על אירועי אבטחה'
+            });
+        }
+
+        // Large database notification violations  
+        if (answers.large_database_notification === 'no') {
+            const hasSensitiveData = this.hasSensitiveData(answers.sensitive_data);
+            this.violations.push({
+                severity: 'medium',
+                category: 'notification',
+                description: 'הפרת חובת הודעה על מאגר מידע גדול עם מידע רגיש',
+                fine: this.calculateRegistrationFine(answers.org_type, answers.data_subjects_count),
+                law_reference: 'סעיף 8א(ב) לחוק'
+            });
+        }
+
+        // Illegal data source violations
+        if (answers.illegal_data_source === 'no') {
+            const hasSensitiveData = this.hasSensitiveData(answers.sensitive_data);
+            this.violations.push({
+                severity: 'high',
+                category: 'processing',
+                description: 'סיכון לעיבוד מידע שנאסף באופן לא חוקי',
+                fine: this.calculateDataProcessingFine(answers.data_subjects_count, hasSensitiveData),
+                law_reference: 'סעיף 8(ד) לחוק - איסור עיבוד מידע בלתי חוקי'
+            });
+        }
+
+        // Unauthorized processing violations
+        if (answers.unauthorized_processing === 'no' || answers.unauthorized_processing === 'partial') {
+            const hasSensitiveData = this.hasSensitiveData(answers.sensitive_data);
+            const severity = answers.unauthorized_processing === 'no' ? 'high' : 'medium';
+            this.violations.push({
+                severity,
+                category: 'processing',
+                description: 'עיבוד מידע ללא הרשאה מבעל השליטה במאגר',
+                fine: this.calculateDataProcessingFine(answers.data_subjects_count, hasSensitiveData),
+                law_reference: 'סעיף 8(ג) לחוק - איסור עיבוד ללא הרשאה'
+            });
+        }
+
+        // Purpose limitation violations
+        if (answers.purpose_limitation === 'no' || answers.purpose_limitation === 'sometimes') {
+            const hasSensitiveData = this.hasSensitiveData(answers.sensitive_data);
+            const severity = answers.purpose_limitation === 'no' ? 'high' : 'medium';
+            this.violations.push({
+                severity,
+                category: 'processing',
+                description: 'עיבוד מידע שלא למטרה שלשמה נאסף',
+                fine: this.calculateDataProcessingFine(answers.data_subjects_count, hasSensitiveData),
+                law_reference: 'סעיף 8(ב) לחוק - עיבוד בניגוד למטרה'
+            });
+        }
+
+        // Criminal offense risk violations
+        if (answers.criminal_prevention_measures && answers.criminal_prevention_measures.length < 2) {
+            this.violations.push({
+                severity: 'high',
+                category: 'criminal',
+                description: 'סיכון גבוה לביצוע עבירות פליליות - אמצעי מניעה לא מספקים',
+                fine: 0, // Criminal penalties are handled separately by authorities
+                law_reference: 'פרק ה1 לחוק - עבירות פליליות'
+            });
+        }
+
+        // EU data transfer violations
+        if (answers.receives_eu_data === 'yes') {
+            // EU data deletion mechanism violations
+            if (answers.eu_data_deletion_mechanism === 'no') {
+                this.violations.push({
+                    severity: 'medium',
+                    category: 'eu_transfer',
+                    description: 'חסר מנגנון למחיקת מידע מהאיחוד האירופי',
+                    fine: 15000, // Fixed fine for EU regulation violations
+                    law_reference: 'תקנות הגנת הפרטיות (הוראות לעניין מידע שהועבר מהאזור הכלכלי האירופי)'
+                });
+            }
+
+            // EU data subject notification violations
+            if (answers.eu_data_subject_notifications === 'no') {
+                this.violations.push({
+                    severity: 'medium',
+                    category: 'eu_transfer',
+                    description: 'אי הודעה לנושאי מידע מהאיחוד האירופי על העברות לצד שלישי',
+                    fine: 15000,
+                    law_reference: 'תקנות הגנת הפרטיות (הוראות לעניין מידע שהועבר מהאזור הכלכלי האירופי)'
+                });
+            }
+
+            // EU regulation compliance violations
+            if (answers.eu_regulation_compliance && answers.eu_regulation_compliance.length < 3) {
+                this.violations.push({
+                    severity: 'medium',
+                    category: 'eu_transfer',
+                    description: 'אי עמידה בתקנות הגנת הפרטיות לעניין מידע מהאיחוד האירופי',
+                    fine: this.calculateEUTransferFine(answers.data_subjects_count),
+                    law_reference: 'תקנות הגנת הפרטיות (הוראות לעניין מידע שהועבר מהאזור הכלכלי האירופי)'
+                });
+            }
         }
     }
 
@@ -269,6 +431,53 @@ class ComplianceCalculator {
             });
         }
 
+        // Timeline-based recommendations
+        const implementationDate = new Date('2025-08-14');
+        const today = new Date();
+        const daysUntil = Math.ceil((implementationDate.getTime() - today.getTime()) / (1000 * 3600 * 24));
+        
+        if (daysUntil > 0) {
+            const urgency = daysUntil < 30 ? 'critical' : daysUntil < 90 ? 'high' : 'medium';
+            const timelineText = daysUntil < 30 ? 'מיידי - החוק נכנס לתוקף בקרוב!' :
+                                daysUntil < 90 ? `דחוף - ${daysUntil} ימים נותרו` :
+                                `${daysUntil} ימים לכניסת החוק לתוקף`;
+            
+            this.recommendations.push({
+                priority: urgency,
+                category: 'timeline',
+                action: `השלימו היערכות לתיקון 13 - נותרו ${daysUntil} ימים`,
+                timeline: timelineText,
+                description: 'תאריך יישום: 14 באוגוסט 2025'
+            });
+        }
+
+        // Breach notification recommendations
+        if (answers.breach_notification_timeline === 'no') {
+            this.recommendations.push({
+                priority: 'critical',
+                category: 'security',
+                action: 'הקימו נוהל דיווח 72 שעות על אירועי אבטחה',
+                timeline: 'מיידי',
+                description: 'חובה חוקית - עד ₪500,000 קנס'
+            });
+        } else if (answers.breach_notification_timeline === 'yes_partial') {
+            this.recommendations.push({
+                priority: 'high',
+                category: 'security',
+                action: 'השלימו יישום נוהל דיווח 72 שעות',
+                timeline: '30 ימים',
+                description: 'סיכון לקנסות על אי-דיווח'
+            });
+        } else if (answers.breach_notification_timeline === 'yes_manual') {
+            this.recommendations.push({
+                priority: 'medium',
+                category: 'security',
+                action: 'שקלו אוטומציה של נוהל דיווח אירועי אבטחה',
+                timeline: '90 ימים',
+                description: 'שיפור יעילות ומהירות דיווח'
+            });
+        }
+
         // Low priority recommendations
         if (answers.data_minimization !== 'yes') {
             this.recommendations.push({
@@ -311,39 +520,158 @@ class ComplianceCalculator {
         return orgType === 'public' || orgType === 'databroker';
     }
 
-    calculateDPOFine(orgType, dataCount) {
-        const baseFine = 50000;
-        const multipliers = {
-            public: 2,
-            databroker: 1.5,
-            financial: 2,
-            healthcare: 2,
-            private: 1,
-            security: 1
+    calculateDPOFine(orgType, dataCount, hasSensitiveData = false) {
+        // Based on Amendment 13 - DPO violation penalties
+        // סעיף 23כה - עיצומים כספיים עבור הפרות ממונה הגנת הפרטיות
+        
+        const dataSubjectCounts = {
+            less_10k: 10000,
+            "10k_100k": 50000,
+            "100k_500k": 250000,
+            "500k_1m": 750000,
+            over_1m: 1000000
         };
         
-        const sizeMultiplier = {
-            less_10k: 0.5,
-            "10k_100k": 1,
-            "100k_500k": 1.5,
-            "500k_1m": 2,
-            over_1m: 3
-        };
-
-        return Math.round(baseFine * (multipliers[orgType] || 1) * (sizeMultiplier[dataCount] || 1));
+        const subjectCount = dataSubjectCounts[dataCount] || 50000;
+        
+        // Has sensitive data - 4 ₪ per subject, min 40,000 ₪
+        // No sensitive data - 2 ₪ per subject, min 20,000 ₪
+        const basePerSubject = hasSensitiveData ? 4 : 2;
+        const minFine = hasSensitiveData ? 40000 : 20000;
+        
+        const calculatedFine = subjectCount * basePerSubject;
+        return Math.max(calculatedFine, minFine);
     }
 
     calculateRegistrationFine(orgType, dataCount) {
-        const baseFine = 30000;
-        const dataSubjectFine = {
-            less_10k: 10000,
-            "10k_100k": 30000,
-            "100k_500k": 80000,
-            "500k_1m": 150000,
-            over_1m: 300000
-        };
+        // Based on Amendment 13 - Registration violation penalties
+        // סעיף 23כו - עיצומים כספיים עבור הפרות רישום מאגרים
+        
+        const baseFine = 150000; // Base fine: ₪150,000
+        
+        // Double for databases over 1 million subjects
+        const isLargeDatabase = dataCount === 'over_1m';
+        
+        return isLargeDatabase ? baseFine * 2 : baseFine;
+    }
 
-        return baseFine + (dataSubjectFine[dataCount] || 0);
+    calculateDataProcessingFine(dataCount, hasSensitiveData = false) {
+        // Based on Amendment 13 - Data processing violation penalties
+        // סעיף 23כח - עיצומים עבור עיבוד מידע שלא כדין
+        
+        const dataSubjectCounts = {
+            less_10k: 10000,
+            "10k_100k": 50000,
+            "100k_500k": 250000,
+            "500k_1m": 750000,
+            over_1m: 1000000
+        };
+        
+        const subjectCount = dataSubjectCounts[dataCount] || 50000;
+        const perSubjectFine = hasSensitiveData ? 8 : 4; // ₪8 for sensitive, ₪4 for regular
+        const minFine = 200000; // Minimum ₪200,000
+        
+        const calculatedFine = subjectCount * perSubjectFine;
+        return Math.max(calculatedFine, minFine);
+    }
+
+    calculateInformationNoticeFine(dataCount, hasSensitiveData = false) {
+        // Based on Amendment 13 - Information notice violation penalties  
+        // סעיף 23כט - עיצומים עבור הפרות מסירת הודעה לאדם
+        
+        const dataSubjectCounts = {
+            less_10k: 10000,
+            "10k_100k": 50000,
+            "100k_500k": 250000,
+            "500k_1m": 750000,
+            over_1m: 1000000
+        };
+        
+        const subjectCount = dataSubjectCounts[dataCount] || 50000;
+        const perSubjectFine = hasSensitiveData ? 100 : 50; // ₪100 for sensitive, ₪50 for regular
+        const minFine = 30000; // Minimum ₪30,000
+        
+        const calculatedFine = subjectCount * perSubjectFine;
+        return Math.max(calculatedFine, minFine);
+    }
+
+    calculateDataSubjectRightsFine() {
+        // Based on Amendment 13 - Data subject rights violation penalties
+        // סעיף 23ל - עיצומים עבור הפרות זכויות נושא המידע
+        
+        return 15000; // Fixed ₪15,000 fine
+    }
+
+    calculateSecurityRegulationFine(securityLevel, hasSensitiveData = false) {
+        // Based on Amendment 13 - Security regulation violation penalties
+        // תקנות אבטחת מידע - עיצומים כספיים
+        
+        const basicFines = {
+            basic_violation: hasSensitiveData ? 80000 : 20000,
+            medium_violation: hasSensitiveData ? 160000 : 40000,
+            high_violation: hasSensitiveData ? 320000 : 80000
+        };
+        
+        // Determine violation level based on security level
+        if (securityLevel === 'unknown' || securityLevel === 'basic') {
+            return basicFines.high_violation; // High security violation
+        } else if (securityLevel === 'medium') {
+            return basicFines.medium_violation; // Medium security violation
+        }
+        
+        return basicFines.basic_violation; // Basic violation
+    }
+
+    hasSensitiveData(sensitiveDataArray) {
+        // Check if organization processes sensitive data according to Amendment 13
+        if (!sensitiveDataArray || sensitiveDataArray.length === 0) return false;
+        return !sensitiveDataArray.includes('none') && sensitiveDataArray.length > 0;
+    }
+
+    calculateBreachNotificationFine(orgType, hasSensitiveData = false) {
+        // Based on Amendment 13 - Breach notification violation penalties
+        // סעיף 23לא - עיצומים כספיים עבור אי דיווח על אירועי אבטחה חמורים
+        
+        // Base fine structure for breach notification failures
+        let baseFine = 100000; // ₪100,000 base fine for non-reporting
+        
+        // Organization type multipliers
+        if (orgType === 'public') {
+            baseFine *= 1.5; // Public bodies have stricter obligations
+        } else if (orgType === 'databroker') {
+            baseFine *= 2.0; // Data brokers face highest penalties  
+        } else if (orgType === 'financial' || orgType === 'healthcare') {
+            baseFine *= 1.3; // Regulated industries have enhanced obligations
+        }
+        
+        // Sensitive data multiplier
+        if (hasSensitiveData) {
+            baseFine *= 1.5; // Higher penalty for sensitive data breaches
+        }
+        
+        // Cap at maximum penalty
+        const maxFine = 500000; // Maximum ₪500,000
+        
+        return Math.min(baseFine, maxFine);
+    }
+
+    calculateEUTransferFine(dataCount) {
+        // Based on Amendment 13 - EU transfer regulation violations
+        // תקנות הגנת הפרטיות (הוראות לעניין מידע שהועבר מהאזור הכלכלי האירופי)
+        
+        const dataSubjectCounts = {
+            less_10k: 10000,
+            "10k_100k": 50000,
+            "100k_500k": 250000,
+            "500k_1m": 750000,
+            over_1m: 1000000
+        };
+        
+        const subjectCount = dataSubjectCounts[dataCount] || 50000;
+        const perSubjectFine = 4; // ₪4 per subject for EU transfer violations
+        
+        const calculatedFine = subjectCount * perSubjectFine;
+        return calculatedFine;
     }
 
     getMissingSecurityMeasures(implementedMeasures) {
@@ -364,29 +692,41 @@ class ComplianceCalculator {
     }
 
     getRiskLevel(score) {
-        if (score < 20) return { 
+        // Amendment 13 adjusted thresholds with more granular risk assessment
+        if (score < 15) return { 
             level: 'low', 
             label: 'נמוך', 
             color: '#4CAF50',
-            description: 'הארגון בסיכון נמוך לאי עמידה'
+            description: 'הארגון בסיכון נמוך לאי עמידה בתיקון 13',
+            actionRequired: 'המשך מעקב ובחינה תקופתית'
         };
-        if (score < 40) return { 
+        if (score < 30) return { 
             level: 'medium', 
             label: 'בינוני', 
             color: '#FF9800',
-            description: 'נדרשים שיפורים בתחומים מסוימים'
+            description: 'נדרשים שיפורים בתחומים מסוימים לפני יישום תיקון 13',
+            actionRequired: 'תכנון ויישום תוכנית התאמה תוך 6 חודשים'
         };
-        if (score < 60) return { 
+        if (score < 50) return { 
             level: 'high', 
             label: 'גבוה', 
             color: '#FF5722',
-            description: 'נדרשת פעולה מיידית לתיקון ליקויים'
+            description: 'נדרשת פעולה מיידית לתיקון ליקויים משמעותיים',
+            actionRequired: 'תיקון דחוף תוך 90 יום - התייעצות עם יועץ משפטי'
         };
-        return { 
+        if (score < 70) return { 
             level: 'critical', 
             label: 'קריטי', 
             color: '#F44336',
-            description: 'מצב קריטי - סיכון גבוה מאוד לקנסות והפרות'
+            description: 'מצב קריטי - סיכון גבוה מאוד לקנסות חמורים',
+            actionRequired: 'פעולה מיידית תוך 30 יום - ייעוץ משפטי דחוף'
+        };
+        return { 
+            level: 'emergency', 
+            label: 'חירום', 
+            color: '#B71C1C',
+            description: 'מצב חירום - הפרות מרובות עם חשיפה לסנקציות קשות',
+            actionRequired: 'הפסקת פעילות עד לתיקון - ייעוץ משפטי מיידי'
         };
     }
 
