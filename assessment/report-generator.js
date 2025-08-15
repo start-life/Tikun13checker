@@ -314,8 +314,8 @@ class AssessmentReportGenerator {
     generateActionButtons() {
         return `
             <div class="action-buttons">
-                <button class="btn-primary" onclick="assessmentEngine.downloadPDF()">
-                    📥 הורד דוח PDF
+                <button class="btn-primary" onclick="assessmentEngine.downloadHTML()">
+                    📥 הורד דוח HTML
                 </button>
                 <button class="btn-primary" onclick="assessmentEngine.shareResults()">
                     📤 שתף תוצאות
@@ -476,78 +476,7 @@ class AssessmentReportGenerator {
     }
 }
 
-// Add methods to AssessmentEngine for report actions
-AssessmentEngine.prototype.downloadPDF = async function() {
-    const reportGenerator = new AssessmentReportGenerator();
-    const savedResults = localStorage.getItem('tikun13_assessment_results');
-    
-    if (!savedResults) {
-        alert('אין תוצאות להורדה');
-        return;
-    }
-    
-    const data = JSON.parse(savedResults);
-    reportGenerator.results = data.results;
-    reportGenerator.answers = data.answers;
-    
-    const htmlContent = reportGenerator.generatePDFContent();
-    
-    // Create blob and download
-    const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `tikun13-assessment-${Date.now()}.html`;
-    link.click();
-    URL.revokeObjectURL(url);
-    
-    alert('הדוח הורד בהצלחה. ניתן להדפיס אותו כ-PDF מהדפדפן.');
-};
-
-AssessmentEngine.prototype.shareResults = function() {
-    const savedResults = localStorage.getItem('tikun13_assessment_results');
-    if (!savedResults) return;
-    
-    const data = JSON.parse(savedResults);
-    const shareText = `דוח עמידה בתיקון 13:\nציון: ${data.results.score}%\nרמת סיכון: ${data.results.riskLevel.label}\nהפרות: ${data.results.violations.length}\nקנסות פוטנציאליים: ₪${data.results.totalFines.toLocaleString()}`;
-    
-    if (navigator.share) {
-        navigator.share({
-            title: 'דוח עמידה בתיקון 13',
-            text: shareText
-        }).catch(err => console.log('Error sharing:', err));
-    } else {
-        // Fallback - copy to clipboard
-        navigator.clipboard.writeText(shareText)
-            .then(() => alert('התוצאות הועתקו ללוח'))
-            .catch(err => console.error('Failed to copy:', err));
-    }
-};
-
-AssessmentEngine.prototype.downloadActionPlan = function() {
-    const reportGenerator = new AssessmentReportGenerator();
-    const savedResults = localStorage.getItem('tikun13_assessment_results');
-    
-    if (!savedResults) {
-        alert('אין תוצאות ליצירת תוכנית פעולה');
-        return;
-    }
-    
-    const data = JSON.parse(savedResults);
-    reportGenerator.results = data.results;
-    reportGenerator.answers = data.answers;
-    
-    const actionPlan = reportGenerator.generateActionPlan();
-    
-    // Download as text file
-    const blob = new Blob([actionPlan], { type: 'text/plain;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `tikun13-action-plan-${Date.now()}.txt`;
-    link.click();
-    URL.revokeObjectURL(url);
-};
+// Note: Download methods are now part of the AssessmentEngine class in assessment.js
 
 // Export for use
 if (typeof module !== 'undefined' && module.exports) {
