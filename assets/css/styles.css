@@ -1160,6 +1160,10 @@ body.disclaimer-visible header {
     position: relative;
     overflow: hidden;
     height: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
 }
 
 .feature-card:hover {
@@ -1176,6 +1180,8 @@ body.disclaimer-visible header {
     font-size: 2.5rem;
     margin-bottom: 0.5rem;
     transition: transform 0.3s ease;
+    flex-shrink: 0;
+    display: block;
 }
 
 .feature-card h3 {
@@ -1185,6 +1191,9 @@ body.disclaimer-visible header {
     color: var(--text-dark);
     margin: 0;
     transition: color 0.3s ease;
+    flex-shrink: 0;
+    opacity: 1;
+    visibility: visible;
 }
 
 .feature-card p {
@@ -1197,6 +1206,8 @@ body.disclaimer-visible header {
     color: var(--text-light);
     transition: all 0.4s ease;
     transform: translateY(-10px);
+    overflow: hidden;
+    visibility: hidden;
 }
 
 .feature-card .feature-link {
@@ -1204,6 +1215,8 @@ body.disclaimer-visible header {
     max-height: 0;
     transition: all 0.4s ease;
     display: block;
+    overflow: hidden;
+    visibility: hidden;
 }
 
 /* Hover effects for expanded state */
@@ -1221,12 +1234,31 @@ body.disclaimer-visible header {
     max-height: 150px;
     padding: 0.5rem 0;
     transform: translateY(0);
+    visibility: visible;
 }
 
 .feature-card:hover .feature-link {
     opacity: 1;
     max-height: 50px;
     margin-top: 0.5rem;
+    visibility: visible;
+}
+
+/* Special styling for the cookie builder card */
+.feature-card-special h3 {
+    color: white !important;
+}
+
+.feature-card-special:hover h3 {
+    color: #ffd700 !important;
+}
+
+.feature-card-special p {
+    color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.feature-card-special:hover p {
+    color: white !important;
 }
 
 .requirements {
