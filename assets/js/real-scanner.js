@@ -427,7 +427,8 @@ class RealWebsiteScanner {
             'cookie-consent', 'cookie-banner', 'cookie-notice',
             'cookieconsent', 'cookie-bar', 'gdpr-consent',
             'privacy-banner', 'consent-banner', 'עוגיות',
-            'הסכמה לעוגיות', 'רפה עוגיות', 'מדיניות עוגיות'
+            'הסכמה לעוגיות', 'רפה עוגיות', 'מדיניות עוגיות',
+            'tikun13_cc', 'CookieConsent', 'cc-modal'
         ];
         
         let hasConsentBanner = false;
@@ -442,7 +443,8 @@ class RealWebsiteScanner {
         const hasOptOut = html.includes('opt-out') || html.includes('refuse') || 
                           html.includes('reject') || html.includes('סירוב') ||
                           html.includes('דחה') || html.includes('אסרב') ||
-                          html.includes('בטל הסכמה');
+                          html.includes('בטל הסכמה') || html.includes('דחה הכל') ||
+                          html.includes('acceptNecessaryBtn');
 
         // Amendment 13 specific: Check for granular consent (essential vs non-essential)
         const hasGranularConsent = html.includes('essential cookies') || 
@@ -450,21 +452,65 @@ class RealWebsiteScanner {
                                    html.includes('marketing cookies') ||
                                    html.includes('עוגיות שיווק') ||
                                    html.includes('analytics cookies') ||
-                                   html.includes('עוגיות אנליטיקס');
+                                   html.includes('עוגיות אנליטיקס') ||
+                                   html.includes('functionality') ||
+                                   html.includes('תפקודיות') ||
+                                   html.includes('necessary') ||
+                                   html.includes('analytics') ||
+                                   html.includes('marketing');
 
         // Amendment 13 specific: Check for consent withdrawal mechanism
         const hasConsentWithdrawal = html.includes('withdraw consent') ||
                                      html.includes('מחיקת הסכמה') ||
                                      html.includes('ביטול הסכמה') ||
-                                     html.includes('עדכון העדפות');
+                                     html.includes('עדכון העדפות') ||
+                                     html.includes('withdrawConsent') ||
+                                     html.includes('reset') ||
+                                     html.includes('showPreferences');
 
-        // Amendment 13 compliance scoring
+        // Advanced Amendment 13 features detection
+        const hasConsentTimestamp = html.includes('timestamp') || 
+                                    html.includes('lastUpdated') ||
+                                    html.includes('consentDate') ||
+                                    html.includes('תאריך הסכמה');
+        
+        const hasConsentVersion = html.includes('revision') || 
+                                 html.includes('version') ||
+                                 html.includes('consentVersion') ||
+                                 html.includes('גרסת הסכמה');
+        
+        const hasDataPortability = html.includes('exportConsentData') ||
+                                  html.includes('downloadData') ||
+                                  html.includes('יצוא נתונים') ||
+                                  html.includes('הורדת נתונים');
+        
+        const hasConsentStorage = html.includes('localStorage') && html.includes('consent') ||
+                                 html.includes('tikun13_cc') ||
+                                 html.includes('cc_cookie') ||
+                                 html.includes('cookie.categories');
+
+        // Amendment 13 compliance scoring with advanced features
         let complianceScore = 0;
-        if (extractedCookies.length === 0 && !hasTrackingScripts) complianceScore = 5;
-        else if (hasConsentBanner && hasOptOut && hasGranularConsent && hasConsentWithdrawal) complianceScore = 4;
-        else if (hasConsentBanner && hasOptOut && hasGranularConsent) complianceScore = 3;
-        else if (hasConsentBanner && hasOptOut) complianceScore = 2;
-        else if (hasConsentBanner) complianceScore = 1;
+        let advancedFeatures = 0;
+        
+        // Basic requirements
+        if (hasConsentBanner) complianceScore += 1;
+        if (hasOptOut) complianceScore += 1;
+        if (hasGranularConsent) complianceScore += 1;
+        if (hasConsentWithdrawal) complianceScore += 1;
+        
+        // Advanced features bonus
+        if (hasConsentTimestamp) advancedFeatures += 1;
+        if (hasConsentVersion) advancedFeatures += 1;
+        if (hasDataPortability) advancedFeatures += 1;
+        if (hasConsentStorage) advancedFeatures += 1;
+        
+        // No cookies/tracking = automatic compliance
+        if (extractedCookies.length === 0 && !hasTrackingScripts) {
+            complianceScore = 5;
+        } else if (complianceScore === 4 && advancedFeatures >= 2) {
+            complianceScore = 5; // Full compliance with advanced features
+        }
 
         const status = complianceScore >= 4 ? 'compliant' :
                       complianceScore >= 2 ? 'partial' : 'non-compliant';
@@ -479,14 +525,25 @@ class RealWebsiteScanner {
                 hasOptOut,
                 hasGranularConsent,
                 hasConsentWithdrawal,
+                hasConsentTimestamp,
+                hasConsentVersion,
+                hasDataPortability,
+                hasConsentStorage,
                 complianceScore,
-                recommendation: this.getCookieRecommendation(complianceScore)
+                advancedFeatures,
+                recommendation: this.getCookieRecommendation(complianceScore, advancedFeatures)
             }
         };
     }
 
-    getCookieRecommendation(score) {
-        if (score >= 4) return null;
+    getCookieRecommendation(score, advancedFeatures = 0) {
+        if (score >= 5) return null;
+        if (score >= 4) {
+            if (advancedFeatures < 2) {
+                return 'מומלץ להוסיף תכונות מתקדמות: חותמת זמן להסכמה, ניהול גרסאות, ויצוא נתונים';
+            }
+            return null;
+        }
         if (score >= 3) return 'יש להוסיף מנגנון לביטול הסכמה בהתאם לתיקון 13';
         if (score >= 2) return 'יש להוסיף בחירה גרנולרית של סוגי עוגיות בהתאם לתיקון 13';
         if (score >= 1) return 'יש להוסיף אפשרות סירוב ובחירה גרנולרית בהתאם לתיקון 13';

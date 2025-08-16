@@ -4,14 +4,76 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:; font-src 'self' data: https:;">
-    <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
     <meta name="referrer" content="strict-origin-when-cross-origin">
     <title>בדיקת תיקון 13 - בודק התאמה לחוק הגנת הפרטיות הישראלי</title>
     <meta name="description" content="כלי חינמי לבדיקת התאמת האתר שלך לתיקון 13 לחוק הגנת הפרטיות. בדיקת עוגיות, SSL, ומדיניות פרטיות בהתאם לדרישות החוק הישראלי.">
     <link rel="stylesheet" href="assets/css/styles.css">
     <link rel="stylesheet" href="assets/css/accessibility.css">
     <link rel="stylesheet" href="assessment/assessment.css">
-    <script src="assets/js/cookie-consent.js" defer></script>
+    <!-- Tikun 13 Compliant Cookie Consent -->
+    <link rel="stylesheet" href="assets/vendor/cookieconsent/cookieconsent.css">
+    <script type="module">
+        import './assets/vendor/cookieconsent/cookieconsent.esm.js';
+        import heTranslations from './assets/translations/he.json' with { type: 'json' };
+        
+        // Initialize Cookie Consent with Hebrew translations
+        window.CookieConsent.run({
+            root: 'body',
+            autoDetectLanguage: false,
+            revision: 1,
+            
+            cookie: {
+                name: 'tikun13_cc',
+                domain: location.hostname,
+                path: '/',
+                sameSite: 'Lax',
+                expiresAfterDays: 365
+            },
+            
+            guiOptions: {
+                consentModal: {
+                    layout: 'box',
+                    position: 'bottom center',
+                    equalWeightButtons: false,
+                    flipButtons: false
+                },
+                preferencesModal: {
+                    layout: 'box',
+                    position: 'right',
+                    equalWeightButtons: false,
+                    flipButtons: false
+                }
+            },
+            
+            categories: {
+                necessary: {
+                    enabled: true,
+                    readOnly: true
+                },
+                functionality: {
+                    enabled: false,
+                    readOnly: false
+                },
+                analytics: {
+                    enabled: false,
+                    readOnly: false
+                },
+                marketing: {
+                    enabled: false,
+                    readOnly: false
+                }
+            },
+            
+            language: {
+                default: 'he',
+                autoDetect: 'browser',
+                rtl: 'he',
+                translations: {
+                    he: heTranslations
+                }
+            }
+        });
+    </script>
 </head>
 <body>
     <!-- Consent Modal -->
@@ -122,6 +184,7 @@
                 <ul class="nav-links" role="list">
                     <li><a href="#" onclick="showScannerSection(); return false;">סריקת אתר</a></li>
                     <li><a href="#" onclick="showAssessmentSection(); return false;" class="nav-highlight">הערכה עצמית</a></li>
+                    <li><a href="cookie-builder/" class="nav-highlight" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 8px 16px; border-radius: 6px;">🍪 בונה באנר עוגיות</a></li>
                     <li><a href="#features">יכולות</a></li>
                     <li><a href="#requirements">דרישות החוק</a></li>
                     <li><a href="#resources">משאבים</a></li>
@@ -569,6 +632,68 @@
             </div>
         </section>
 
+        <!-- Cookie Builder Highlight Section -->
+        <section class="cookie-builder-highlight" style="background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%); padding: 4rem 0; margin: 3rem 0;">
+            <div class="container">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center;">
+                    <div>
+                        <h2 style="font-size: 2.5rem; margin-bottom: 1rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">🍪 בונה באנר עוגיות מתקדם</h2>
+                        <p style="font-size: 1.2rem; color: #555; margin-bottom: 1.5rem;">צור באנר הסכמה לעוגיות מותאם אישית התואם 100% לדרישות תיקון 13</p>
+                        
+                        <div style="margin-bottom: 2rem;">
+                            <h3 style="font-size: 1.3rem; margin-bottom: 1rem;">יכולות מרכזיות:</h3>
+                            <ul style="list-style: none; padding: 0;">
+                                <li style="padding: 0.5rem 0; display: flex; align-items: center;"><span style="color: #4caf50; margin-left: 0.5rem;">✅</span> הסכמה מפורשת לפני הפעלת עוגיות</li>
+                                <li style="padding: 0.5rem 0; display: flex; align-items: center;"><span style="color: #4caf50; margin-left: 0.5rem;">✅</span> בחירה גרנולרית של קטגוריות</li>
+                                <li style="padding: 0.5rem 0; display: flex; align-items: center;"><span style="color: #4caf50; margin-left: 0.5rem;">✅</span> תמיכה מלאה בעברית ו-RTL</li>
+                                <li style="padding: 0.5rem 0; display: flex; align-items: center;"><span style="color: #4caf50; margin-left: 0.5rem;">✅</span> רישום חותמת זמן וגרסאות</li>
+                                <li style="padding: 0.5rem 0; display: flex; align-items: center;"><span style="color: #4caf50; margin-left: 0.5rem;">✅</span> מנגנון ביטול הסכמה</li>
+                                <li style="padding: 0.5rem 0; display: flex; align-items: center;"><span style="color: #4caf50; margin-left: 0.5rem;">✅</span> יצוא נתוני הסכמה</li>
+                            </ul>
+                        </div>
+                        
+                        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                            <a href="cookie-builder/" class="btn-primary" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1rem 2rem; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block; transition: transform 0.3s;">התחל ליצור באנר</a>
+                            <a href="docs/tikun13-cookie-compliance.md" target="_blank" class="btn-secondary" style="background: white; color: #667eea; padding: 1rem 2rem; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block; border: 2px solid #667eea; transition: all 0.3s;">קרא את המדריך המלא</a>
+                        </div>
+                    </div>
+                    
+                    <div style="background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                        <h3 style="margin-bottom: 1.5rem; color: #333;">תהליך פשוט ב-3 שלבים:</h3>
+                        
+                        <div style="margin-bottom: 1.5rem; display: flex; align-items: start;">
+                            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-left: 1rem; flex-shrink: 0;">1</div>
+                            <div>
+                                <h4 style="margin-bottom: 0.5rem; color: #333;">הגדר את ההעדפות</h4>
+                                <p style="color: #666; margin: 0;">בחר קטגוריות עוגיות, עיצוב, וטקסטים בעברית</p>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom: 1.5rem; display: flex; align-items: start;">
+                            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-left: 1rem; flex-shrink: 0;">2</div>
+                            <div>
+                                <h4 style="margin-bottom: 0.5rem; color: #333;">צפה בתצוגה מקדימה</h4>
+                                <p style="color: #666; margin: 0;">בדוק איך הבאנר ייראה באתר שלך בזמן אמת</p>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; align-items: start;">
+                            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-left: 1rem; flex-shrink: 0;">3</div>
+                            <div>
+                                <h4 style="margin-bottom: 0.5rem; color: #333;">ייצא והטמע</h4>
+                                <p style="color: #666; margin: 0;">קבל קוד מוכן להטמעה או הורד חבילה מלאה</p>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #e0e0e0;">
+                            <p style="color: #666; font-size: 0.9rem; margin: 0;">🔒 מבוסס על ספריית CookieConsent המקצועית</p>
+                            <p style="color: #666; font-size: 0.9rem; margin: 0.5rem 0 0 0;">📚 כולל תיעוד מלא והוראות התקנה</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <section id="features" class="features" role="region" aria-label="תכונות הבדיקה">
             <div class="container">
                 <h2>מה אנחנו בודקים?</h2>
@@ -602,6 +727,12 @@
                         <div class="feature-icon">🛡️</div>
                         <h3>ממונה הגנת פרטיות</h3>
                         <p>הערכת הצורך במינוי ממונה הגנת פרטיות בהתאם לסוג הארגון</p>
+                    </div>
+                    <div class="feature-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: 2px solid #667eea;">
+                        <div class="feature-icon">🍪</div>
+                        <h3>בונה באנר עוגיות</h3>
+                        <p>כלי מתקדם ליצירת באנר הסכמה לעוגיות תואם 100% לתיקון 13</p>
+                        <a href="cookie-builder/" class="feature-link" style="color: white; text-decoration: underline; margin-top: 10px; display: inline-block; font-weight: bold;">צור באנר מותאם אישית →</a>
                     </div>
                 </div>
             </div>

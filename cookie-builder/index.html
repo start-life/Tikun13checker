@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>בונה באנר הסכמה לעוגיות - תואם תיקון 13</title>
+    <meta name="description" content="כלי חינמי ליצירת באנר הסכמה לעוגיות תואם תיקון 13 לחוק הגנת הפרטיות">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="stylesheet" href="../assets/vendor/cookieconsent/cookieconsent.css">
+    <link rel="stylesheet" href="builder-styles.css">
+</head>
+<body>
+    <header>
+        <nav class="nav-gradient">
+            <div class="container">
+                <div class="logo-section">
+                    <h1>🍪 בונה באנר הסכמה לעוגיות - תיקון 13</h1>
+                </div>
+                <div class="nav-links">
+                    <a href="../index.html">חזרה לבודק</a>
+                    <a href="#preview">תצוגה מקדימה</a>
+                    <a href="#export">ייצוא קוד</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="builder-container">
+        <div class="builder-grid">
+            <!-- Configuration Panel -->
+            <section class="config-panel">
+                <h2>הגדרות באנר הסכמה</h2>
+                
+                <!-- Basic Settings -->
+                <div class="config-section">
+                    <h3>הגדרות בסיסיות</h3>
+                    
+                    <div class="form-group">
+                        <label for="site-name">שם האתר</label>
+                        <input type="text" id="site-name" placeholder="האתר שלי" value="האתר שלי">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="cookie-name">שם העוגייה</label>
+                        <input type="text" id="cookie-name" placeholder="tikun13_cc" value="tikun13_cc">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="cookie-expiry">תוקף הסכמה (ימים)</label>
+                        <input type="number" id="cookie-expiry" min="1" max="365" value="365">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="revision">גרסת הסכמה</label>
+                        <input type="number" id="revision" min="1" value="1">
+                    </div>
+                </div>
+                
+                <!-- UI Settings -->
+                <div class="config-section">
+                    <h3>הגדרות ממשק</h3>
+                    
+                    <div class="form-group">
+                        <label for="modal-layout">פריסת חלון</label>
+                        <select id="modal-layout">
+                            <option value="box">תיבה</option>
+                            <option value="bar">פס</option>
+                            <option value="box wide">תיבה רחבה</option>
+                            <option value="box inline">תיבה מוטבעת</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="modal-position">מיקום חלון</label>
+                        <select id="modal-position">
+                            <option value="bottom center">מרכז תחתון</option>
+                            <option value="bottom left">שמאל תחתון</option>
+                            <option value="bottom right">ימין תחתון</option>
+                            <option value="top center">מרכז עליון</option>
+                            <option value="middle center">מרכז</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="theme">ערכת נושא</label>
+                        <select id="theme">
+                            <option value="default">ברירת מחדל</option>
+                            <option value="dark">כהה</option>
+                            <option value="light">בהיר</option>
+                            <option value="custom">מותאם אישית</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Cookie Categories -->
+                <div class="config-section">
+                    <h3>קטגוריות עוגיות</h3>
+                    
+                    <div class="category-list">
+                        <div class="category-item">
+                            <input type="checkbox" id="cat-necessary" checked disabled>
+                            <label for="cat-necessary">
+                                <strong>חיוניות</strong> - תמיד פעילות
+                            </label>
+                        </div>
+                        
+                        <div class="category-item">
+                            <input type="checkbox" id="cat-functionality" checked>
+                            <label for="cat-functionality">
+                                <strong>תפקודיות</strong> - שיפור חוויית משתמש
+                            </label>
+                        </div>
+                        
+                        <div class="category-item">
+                            <input type="checkbox" id="cat-analytics" checked>
+                            <label for="cat-analytics">
+                                <strong>אנליטיקס</strong> - ניתוח שימוש באתר
+                            </label>
+                        </div>
+                        
+                        <div class="category-item">
+                            <input type="checkbox" id="cat-marketing" checked>
+                            <label for="cat-marketing">
+                                <strong>שיווק</strong> - פרסום ממוקד
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Text Content -->
+                <div class="config-section">
+                    <h3>תוכן טקסט</h3>
+                    
+                    <div class="form-group">
+                        <label for="modal-title">כותרת באנר</label>
+                        <input type="text" id="modal-title" value="אנחנו משתמשים בעוגיות 🍪">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="modal-description">תיאור</label>
+                        <textarea id="modal-description" rows="4">האתר הזה משתמש בעוגיות כדי לשפר את חוויית המשתמש שלך. בהתאם לתיקון 13 לחוק הגנת הפרטיות, אנו מבקשים את הסכמתך המפורשת לשימוש בעוגיות.</textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="privacy-link">קישור למדיניות פרטיות</label>
+                        <input type="url" id="privacy-link" placeholder="https://example.com/privacy" value="/privacy.html">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="terms-link">קישור לתנאי שימוש</label>
+                        <input type="url" id="terms-link" placeholder="https://example.com/terms" value="/terms.html">
+                    </div>
+                </div>
+                
+                <!-- Amendment 13 Features -->
+                <div class="config-section">
+                    <h3>תכונות תיקון 13</h3>
+                    
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <input type="checkbox" id="feat-timestamp" checked>
+                            <label for="feat-timestamp">רישום חותמת זמן להסכמה</label>
+                        </div>
+                        
+                        <div class="feature-item">
+                            <input type="checkbox" id="feat-version" checked>
+                            <label for="feat-version">ניהול גרסאות הסכמה</label>
+                        </div>
+                        
+                        <div class="feature-item">
+                            <input type="checkbox" id="feat-withdrawal" checked>
+                            <label for="feat-withdrawal">אפשרות ביטול הסכמה</label>
+                        </div>
+                        
+                        <div class="feature-item">
+                            <input type="checkbox" id="feat-granular" checked>
+                            <label for="feat-granular">בחירה גרנולרית של עוגיות</label>
+                        </div>
+                        
+                        <div class="feature-item">
+                            <input type="checkbox" id="feat-export" checked>
+                            <label for="feat-export">יצוא נתוני הסכמה</label>
+                        </div>
+                        
+                        <div class="feature-item">
+                            <input type="checkbox" id="feat-hebrew" checked>
+                            <label for="feat-hebrew">תמיכה מלאה בעברית</label>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Preview Panel -->
+            <section class="preview-panel">
+                <h2>תצוגה מקדימה</h2>
+                
+                <div class="preview-controls">
+                    <button onclick="showPreview('consent')">באנר הסכמה</button>
+                    <button onclick="showPreview('preferences')">העדפות</button>
+                    <button onclick="testConsent()">בדיקת הסכמה</button>
+                </div>
+                
+                <div id="preview-frame" class="preview-frame">
+                    <!-- Live preview will be rendered here -->
+                    <div class="preview-placeholder">
+                        <p>התצוגה המקדימה תופיע כאן</p>
+                        <p>לחץ על הכפתורים למעלה לתצוגה מקדימה</p>
+                    </div>
+                </div>
+                
+                <div class="preview-info">
+                    <h3>מידע על התאמה לתיקון 13</h3>
+                    <ul class="compliance-checklist">
+                        <li class="checked">✅ הסכמה מפורשת לפני שימוש בעוגיות</li>
+                        <li class="checked">✅ אפשרות דחייה ברורה</li>
+                        <li class="checked">✅ בחירה גרנולרית של קטגוריות</li>
+                        <li class="checked">✅ מנגנון ביטול הסכמה</li>
+                        <li class="checked">✅ רישום חותמת זמן וגרסה</li>
+                        <li class="checked">✅ תמיכה מלאה בעברית</li>
+                        <li class="checked">✅ יצוא נתוני הסכמה</li>
+                        <li class="checked">✅ מדיניות פרטיות נגישה</li>
+                    </ul>
+                </div>
+            </section>
+        </div>
+        
+        <!-- Export Section -->
+        <section id="export" class="export-section">
+            <h2>ייצוא הקוד לאתר שלך</h2>
+            
+            <div class="export-tabs">
+                <button class="tab-btn active" onclick="showExportTab('html')">HTML</button>
+                <button class="tab-btn" onclick="showExportTab('javascript')">JavaScript</button>
+                <button class="tab-btn" onclick="showExportTab('config')">Config JSON</button>
+                <button class="tab-btn" onclick="showExportTab('download')">הורדת קבצים</button>
+            </div>
+            
+            <div class="export-content">
+                <div id="export-html" class="export-tab active">
+                    <h3>קוד HTML להטמעה</h3>
+                    <pre><code id="html-code"><!-- Generated HTML will appear here --></code></pre>
+                    <button onclick="copyCode('html-code')">העתק קוד</button>
+                </div>
+                
+                <div id="export-javascript" class="export-tab">
+                    <h3>קוד JavaScript</h3>
+                    <pre><code id="js-code">// Generated JavaScript will appear here</code></pre>
+                    <button onclick="copyCode('js-code')">העתק קוד</button>
+                </div>
+                
+                <div id="export-config" class="export-tab">
+                    <h3>קובץ תצורה JSON</h3>
+                    <pre><code id="config-code">// Generated configuration will appear here</code></pre>
+                    <button onclick="copyCode('config-code')">העתק קוד</button>
+                </div>
+                
+                <div id="export-download" class="export-tab">
+                    <h3>הורדת קבצים</h3>
+                    <div class="download-options">
+                        <button onclick="downloadConfig()">הורד קובץ תצורה</button>
+                        <button onclick="downloadComplete()">הורד חבילה מלאה</button>
+                        <button onclick="downloadDocumentation()">הורד תיעוד</button>
+                    </div>
+                    <p class="download-info">
+                        החבילה המלאה כוללת: קבצי JavaScript, CSS, תרגומים לעברית, וקובץ README עם הוראות התקנה.
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <p>כלי זה פותח במסגרת פרויקט Tikun13Checker | <a href="https://github.com/nirhalfon/Tikun13checker">GitHub</a></p>
+            <p>⚠️ הכלי מספק הערכה ראשונית בלבד. יש להיוועץ בעורך דין מומחה לצורך עמידה מלאה בדרישות החוק.</p>
+        </div>
+    </footer>
+    
+    <script type="module" src="builder.js"></script>
+</body>
+</html>
