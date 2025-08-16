@@ -231,7 +231,29 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize disclaimer banner and side tab
     initDisclaimerBanner();
+    
+    // Adjust section-switcher position based on header height
+    adjustSectionSwitcherPosition();
 });
+
+// Adjust section-switcher to stick below header
+function adjustSectionSwitcherPosition() {
+    const header = document.querySelector('header');
+    const sectionSwitcher = document.querySelector('.section-switcher');
+    
+    if (header && sectionSwitcher) {
+        const headerHeight = header.offsetHeight;
+        sectionSwitcher.style.top = headerHeight + 'px';
+    }
+    
+    // Update on window resize
+    window.addEventListener('resize', () => {
+        if (header && sectionSwitcher) {
+            const headerHeight = header.offsetHeight;
+            sectionSwitcher.style.top = headerHeight + 'px';
+        }
+    });
+}
 
 // Consent Management
 function initConsent() {
@@ -785,7 +807,7 @@ async function checkWebsiteCompliance(url, progressCallback, htmlContent = null)
         
         // Enable proxy mode if selected and consented (when htmlContent is null)
         if (currentScanMode === 'proxy' && !htmlContent && (proxyConsentGiven || localStorage.getItem('tikun13_proxy_consent'))) {
-            scanner.enableProxyMode();
+            scanner.enableProxyMode(true, true);
             // For proxy mode, fetch the HTML
             const proxyResult = await scanner.fetchWebsiteViaProxy(url);
             htmlContent = proxyResult.html;

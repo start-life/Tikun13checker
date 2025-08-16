@@ -7,38 +7,113 @@ class RealWebsiteScanner {
             url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
             url => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`
         ];
-        this.currentProxyIndex = 0;
         this.isManualMode = false;
         this.useProxy = false;
+        this.proxyConsentGiven = false;
+        this.userAgents = [
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+            'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        ];
     }
 
     // Enable proxy mode (requires user consent)
-    enableProxyMode() {
+    enableProxyMode(userConfirmed = false, understandsDataSharing = false) {
+        this.validateProxyConsent(userConfirmed, understandsDataSharing);
         this.useProxy = true;
+        this.proxyConsentGiven = true;
+        console.log('🔒 Proxy mode enabled with privacy protections');
     }
 
     // Disable proxy mode (default)
     disableProxyMode() {
         this.useProxy = false;
+        this.proxyConsentGiven = false;
+    }
+
+    // Privacy-aware random proxy selection
+    getRandomProxy() {
+        const randomIndex = Math.floor(Math.random() * this.corsProxies.length);
+        return {
+            index: randomIndex,
+            proxyFunction: this.corsProxies[randomIndex]
+        };
+    }
+
+    // Privacy-aware user agent rotation
+    getRandomUserAgent() {
+        const randomIndex = Math.floor(Math.random() * this.userAgents.length);
+        return this.userAgents[randomIndex];
+    }
+
+    // Sanitize headers for privacy
+    getSanitizedHeaders() {
+        return {
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.5',
+            'Accept-Encoding': 'gzip, deflate',
+            'DNT': '1',
+            'User-Agent': this.getRandomUserAgent()
+        };
+    }
+
+    // Check if proxy consent is properly given
+    isProxyConsentValid() {
+        return this.useProxy && this.proxyConsentGiven;
+    }
+
+    // Get proxy status for UI display
+    getProxyStatus() {
+        return {
+            enabled: this.useProxy,
+            consentGiven: this.proxyConsentGiven,
+            mode: this.isManualMode ? 'manual' : (this.useProxy ? 'proxy' : 'disabled'),
+            privacyProtections: this.useProxy ? [
+                'Random proxy selection',
+                'Sanitized headers',
+                'Random user agent',
+                'No persistent tracking',
+                'DNT header enabled'
+            ] : []
+        };
+    }
+
+    // Privacy-focused proxy consent validation
+    validateProxyConsent(userConfirmed = false, understandsDataSharing = false) {
+        if (!userConfirmed || !understandsDataSharing) {
+            throw new Error('נדרשת הסכמה מפורשת והבנה שהנתונים יועברו לשירות צד שלישי לצורך הניתוח');
+        }
+        return true;
     }
 
     // Fetch website using proxy (only when enabled and consented)
     async fetchWebsiteViaProxy(url) {
-        if (!this.useProxy) {
-            throw new Error('Proxy mode is disabled. Please use manual input mode or enable proxy with consent.');
+        if (!this.useProxy || !this.proxyConsentGiven) {
+            throw new Error('Proxy mode is disabled or consent not given. Please use manual input mode or enable proxy with explicit consent.');
         }
 
         let lastError = null;
+        const triedProxies = new Set();
         
-        // Try different proxy services if one fails
-        for (let i = 0; i < this.corsProxies.length; i++) {
+        // Try different proxy services randomly (privacy-focused approach)
+        while (triedProxies.size < this.corsProxies.length) {
             try {
-                const proxyUrl = this.corsProxies[this.currentProxyIndex](url);
+                const { index, proxyFunction } = this.getRandomProxy();
+                
+                // Skip if already tried this proxy
+                if (triedProxies.has(index)) {
+                    continue;
+                }
+                triedProxies.add(index);
+
+                const proxyUrl = proxyFunction(url);
+                const sanitizedHeaders = this.getSanitizedHeaders();
+                
+                console.log(`🔒 Using proxy ${index + 1} with privacy-aware headers`);
+                
                 const response = await fetch(proxyUrl, {
                     method: 'GET',
-                    headers: {
-                        'Accept': 'text/html,application/xhtml+xml'
-                    }
+                    headers: sanitizedHeaders
                 });
 
                 if (!response.ok) {
@@ -81,8 +156,7 @@ class RealWebsiteScanner {
                 throw new Error('Empty or invalid response');
             } catch (error) {
                 lastError = error;
-                this.currentProxyIndex = (this.currentProxyIndex + 1) % this.corsProxies.length;
-                console.warn(`Proxy ${i + 1} failed, trying next...`, error.message);
+                console.warn(`🔒 Proxy ${index + 1} failed, trying another randomly...`, error.message);
             }
         }
         
@@ -111,10 +185,10 @@ class RealWebsiteScanner {
         // Set manual mode flag based on whether HTML content was provided and proxy is not enabled
         this.isManualMode = !!htmlContent && !this.useProxy;
         
-        // Helper function to report progress
-        const reportProgress = (step, details = '') => {
+        // Helper function to report progress with real-time updates
+        const reportProgress = (step, details = '', progress = 0) => {
             if (progressCallback && typeof progressCallback === 'function') {
-                progressCallback(step, details);
+                progressCallback(step, details, progress);
             }
         };
         
@@ -156,10 +230,10 @@ class RealWebsiteScanner {
                     reportProgress('fetch', 'משתמש בתוכן שהתקבל...');
                     console.log('Using proxy-fetched HTML content');
                     
-                    // Add note about proxy usage
+                    // Add detailed note about proxy usage with privacy context
                     scanResult.recommendations.push({
                         priority: 'info',
-                        message: '🌐 הניתוח מבוסס על תוכן שהתקבל דרך שירות Proxy.'
+                        message: '🌐 הניתוח מבוסס על תוכן שהתקבל דרך שירות Proxy עם הגנות פרטיות: כותרות מחוסלות, User-Agent אקראי, ובחירת Proxy אקראית.'
                     });
                 }
                 
@@ -183,48 +257,48 @@ class RealWebsiteScanner {
             scanResult.websiteContext.finalUrl = finalUrl;
             
             // Parse the HTML
-            reportProgress('parse', 'מנתח מבנה HTML...');
+            reportProgress('parse', 'מנתח מבנה HTML...', 15);
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
             
             // Extract website context and data
-            reportProgress('extract', 'מחלץ נתונים מהאתר...');
-            scanResult.extractedData = this.extractWebsiteData(doc, html);
+            reportProgress('extract', 'מחלץ נתונים מהאתר...', 25);
+            scanResult.extractedData = this.extractWebsiteData(doc, html, reportProgress);
             scanResult.websiteContext = {
                 ...scanResult.websiteContext,
                 ...scanResult.extractedData.metadata
             };
-            reportProgress('extract', `נמצאו ${scanResult.extractedData.forms?.length || 0} טפסים, ${scanResult.extractedData.links?.length || 0} קישורים`);
+            reportProgress('extract', `נמצאו ${scanResult.extractedData.forms?.length || 0} טפסים, ${scanResult.extractedData.links?.length || 0} קישורים`, 35);
 
             // Perform compliance checks with real data
-            reportProgress('ssl', 'בודק אישור SSL...');
+            reportProgress('ssl', 'בודק אישור SSL...', 40);
             scanResult.compliance = {};
             scanResult.compliance.ssl = this.checkSSL(urlObj, scanResult);
             
-            reportProgress('cookies', 'מנתח עוגיות...');
-            scanResult.compliance.cookies = this.analyzeCookies(doc, html);
+            reportProgress('cookies', 'מנתח עוגיות...', 50);
+            scanResult.compliance.cookies = this.analyzeCookies(doc, html, reportProgress);
             const cookieCount = scanResult.compliance.cookies.cookies?.length || 0;
             if (cookieCount > 0) {
-                reportProgress('cookies', `נמצאו ${cookieCount} עוגיות`);
+                reportProgress('cookies', `נמצאו ${cookieCount} עוגיות`, 55);
             }
             
-            reportProgress('privacy', 'מחפש מדיניות פרטיות...');
-            scanResult.compliance.privacy = this.analyzePrivacyPolicy(doc, html);
+            reportProgress('privacy', 'מחפש מדיניות פרטיות...', 65);
+            scanResult.compliance.privacy = this.analyzePrivacyPolicy(doc, html, reportProgress);
             
-            reportProgress('hebrew', 'בודק תוכן בעברית...');
+            reportProgress('hebrew', 'בודק תוכן בעברית...', 75);
             scanResult.compliance.hebrew = this.analyzeHebrewContent(doc, html);
-            const hebrewPercentage = scanResult.compliance.hebrew.percentage || 0;
-            reportProgress('hebrew', `${hebrewPercentage}% מהתוכן בעברית`);
+            const hebrewPercentage = scanResult.compliance.hebrew.details?.hebrewPercentage || 0;
+            reportProgress('hebrew', `${hebrewPercentage}% מהתוכן בעברית`, 80);
             
-            reportProgress('security', 'בודק אמצעי אבטחה...');
+            reportProgress('security', 'בודק אמצעי אבטחה...', 85);
             scanResult.compliance.dataCollection = this.analyzeDataCollection(doc);
             scanResult.compliance.security = this.analyzeSecurityFeatures(doc, html);
             scanResult.compliance.transparency = this.analyzeTransparency(doc);
 
             // Calculate score based on real findings
-            reportProgress('score', 'מחשב ציון כולל...');
+            reportProgress('score', 'מחשב ציון כולל...', 95);
             scanResult.score = this.calculateScore(scanResult.compliance);
-            reportProgress('score', `ציון: ${scanResult.score}/100`);
+            reportProgress('score', `ציון: ${scanResult.score}/100`, 100);
             
             // Generate recommendations based on actual issues found
             scanResult.recommendations = [...scanResult.recommendations, ...this.generateRecommendations(scanResult.compliance)];
@@ -242,7 +316,7 @@ class RealWebsiteScanner {
         return scanResult;
     }
 
-    extractWebsiteData(doc, html) {
+    extractWebsiteData(doc, html, progressCallback = null) {
         const data = {
             metadata: {},
             content: {},
@@ -418,7 +492,7 @@ class RealWebsiteScanner {
         };
     }
 
-    analyzeCookies(doc, html) {
+    analyzeCookies(doc, html, progressCallback = null) {
         const extractedCookies = this.extractCookiesFromScripts(html);
         const hasTrackingScripts = this.detectTrackingScripts([], html).length > 0;
         
@@ -550,7 +624,7 @@ class RealWebsiteScanner {
         return 'יש להוסיף מנגנון הסכמה מלא לעוגיות בהתאם לדרישות תיקון 13';
     }
 
-    analyzePrivacyPolicy(doc, html) {
+    analyzePrivacyPolicy(doc, html, progressCallback = null) {
         const privacyLinks = Array.from(doc.querySelectorAll('a')).filter(a => {
             const text = (a.textContent + ' ' + a.href).toLowerCase();
             return text.includes('privacy') || text.includes('פרטיות') || 
