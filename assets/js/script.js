@@ -407,8 +407,85 @@ window.updateThemeIcon = function(theme) {
     }
 }
 
+// Mobile Menu Functions
+window.toggleMobileMenu = function() {
+    const menu = document.getElementById('mobile-menu');
+    const overlay = document.getElementById('mobile-menu-overlay');
+    const toggle = document.getElementById('mobile-menu-toggle');
+    
+    if (menu && overlay && toggle) {
+        const isActive = menu.classList.contains('active');
+        
+        if (isActive) {
+            closeMobileMenu();
+        } else {
+            openMobileMenu();
+        }
+    }
+}
+
+window.openMobileMenu = function() {
+    const menu = document.getElementById('mobile-menu');
+    const overlay = document.getElementById('mobile-menu-overlay');
+    const toggle = document.getElementById('mobile-menu-toggle');
+    
+    if (menu && overlay && toggle) {
+        menu.classList.add('active');
+        overlay.classList.add('active');
+        toggle.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+window.closeMobileMenu = function() {
+    const menu = document.getElementById('mobile-menu');
+    const overlay = document.getElementById('mobile-menu-overlay');
+    const toggle = document.getElementById('mobile-menu-toggle');
+    
+    if (menu && overlay && toggle) {
+        menu.classList.remove('active');
+        overlay.classList.remove('active');
+        toggle.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+}
+
+// Close mobile menu on escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeMobileMenu();
+    }
+});
+
+// Desktop Recommendation Banner Functions
+window.hideBanner = function() {
+    const banner = document.getElementById('desktop-banner');
+    if (banner) {
+        banner.classList.add('hidden');
+        document.body.classList.remove('banner-shown');
+        localStorage.setItem('hideBanner', 'true');
+        
+        // Remove banner from DOM after animation
+        setTimeout(() => {
+            banner.style.display = 'none';
+        }, 300);
+    }
+}
+
+// Show banner on mobile devices (unless previously hidden)
+window.initBanner = function() {
+    const banner = document.getElementById('desktop-banner');
+    const isHidden = localStorage.getItem('hideBanner') === 'true';
+    
+    if (banner && !isHidden && window.innerWidth <= 768) {
+        banner.style.display = 'block';
+        document.body.classList.add('banner-shown');
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     window.initTheme();
+    window.initBanner();
     initConsent();
     initCountdown();
     initFormHandlers();

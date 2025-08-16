@@ -138,6 +138,13 @@
                         </a>
                     </div>
                 </div>
+                <!-- Mobile Menu Button -->
+                <button class="mobile-menu-toggle" id="mobile-menu-toggle" onclick="toggleMobileMenu()" aria-label="תפריט ניווט" title="פתח/סגור תפריט">
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                </button>
+                
                 <!-- Theme Toggle Button -->
                 <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" aria-label="החלף מצב תצוגה" title="החלף בין מצב בהיר לכהה">
                     <span class="theme-icon-light">☀️</span>
@@ -154,6 +161,35 @@
             </div>
         </nav>
     </header>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu-overlay" id="mobile-menu-overlay" onclick="closeMobileMenu()"></div>
+    <div class="mobile-menu" id="mobile-menu">
+        <div class="mobile-menu-header">
+            <h3>תפריט ניווט</h3>
+            <button class="mobile-menu-close" onclick="closeMobileMenu()" aria-label="סגור תפריט">×</button>
+        </div>
+        <ul class="mobile-menu-links">
+            <li><a href="#" onclick="showScannerSection(); closeMobileMenu(); return false;">סריקת אתר</a></li>
+            <li><a href="#" onclick="showAssessmentSection(); closeMobileMenu(); return false;">הערכה עצמית</a></li>
+            <li><a href="#" onclick="showCookieBuilderSection(); closeMobileMenu(); return false;">🍪 בונה עוגיות</a></li>
+            <li><a href="#features" onclick="closeMobileMenu()">יכולות</a></li>
+            <li><a href="#resources" onclick="closeMobileMenu()">משאבים ודרישות</a></li>
+            <li><a href="https://github.com/ionsec" target="_blank" onclick="closeMobileMenu()">GitHub</a></li>
+        </ul>
+    </div>
+
+    <!-- Desktop Recommendation Banner (Mobile Only) -->
+    <div class="desktop-recommendation-banner" id="desktop-banner">
+        <div class="banner-content">
+            <div class="banner-icon">💻</div>
+            <div class="banner-text">
+                <strong>לחווית שימוש מיטבית</strong><br>
+                מומלץ להשתמש בכלי ממחשב שולחני או נייד
+            </div>
+            <button class="banner-close" onclick="hideBanner()" aria-label="סגור הודעה">×</button>
+        </div>
+    </div>
     
     <!-- Persistent Side Disclaimer Tab -->
     <div class="disclaimer-side-tab" id="disclaimer-side-tab" onclick="showDisclaimer()">
