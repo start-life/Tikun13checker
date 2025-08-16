@@ -83,12 +83,15 @@ body.disclaimer-visible header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
 }
 
 .logo-section {
     display: flex;
     align-items: center;
-    gap: 2rem;
+    gap: 1.5rem;
+    flex: 0 0 auto;
 }
 
 /* Logo Styling */
@@ -179,7 +182,12 @@ body.disclaimer-visible header {
 .nav-links {
     display: flex;
     list-style: none;
-    gap: 2rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    flex: 1 1 auto;
+    margin-right: 2rem;
 }
 
 .nav-links a {
@@ -189,7 +197,9 @@ body.disclaimer-visible header {
     opacity: 0.9;
     transition: all 0.3s;
     position: relative;
-    padding: 0.5rem 0;
+    padding: 0.5rem 0.75rem;
+    white-space: nowrap;
+    font-size: 0.95rem;
 }
 
 .nav-links a:hover {
@@ -514,6 +524,146 @@ body.disclaimer-visible header {
 
 .close:hover {
     color: #333;
+}
+
+/* Enhanced Modal Styles for Cookie Guide */
+.modal-content.modal-large {
+    max-width: 900px;
+    margin: 2% auto;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 12px 12px 0 0;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 2rem;
+    cursor: pointer;
+    padding: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background 0.3s;
+}
+
+.modal-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.modal-body {
+    padding: 2rem;
+    overflow-y: auto;
+    flex: 1;
+    direction: rtl;
+}
+
+.modal-footer {
+    padding: 1rem 1.5rem;
+    background: #f8f9fa;
+    border-top: 1px solid #e5e7eb;
+    border-radius: 0 0 12px 12px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+/* Cookie Guide Content Styles */
+#cookie-guide-content {
+    line-height: 1.8;
+}
+
+#cookie-guide-content h2 {
+    color: #667eea;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    border-bottom: 2px solid #e5e7eb;
+    padding-bottom: 0.5rem;
+}
+
+#cookie-guide-content h3 {
+    color: #764ba2;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+    font-size: 1.25rem;
+}
+
+#cookie-guide-content h4 {
+    color: #333;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+}
+
+#cookie-guide-content ul {
+    margin-right: 2rem;
+    margin-bottom: 1rem;
+}
+
+#cookie-guide-content li {
+    margin-bottom: 0.5rem;
+}
+
+#cookie-guide-content code {
+    background: #f3f4f6;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+    direction: ltr;
+}
+
+#cookie-guide-content pre {
+    background: #1e293b;
+    color: #e2e8f0;
+    padding: 1rem;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin: 1rem 0;
+    direction: ltr;
+}
+
+#cookie-guide-content pre code {
+    background: none;
+    color: inherit;
+    padding: 0;
+}
+
+#cookie-guide-content strong {
+    color: #1f2937;
+    font-weight: 600;
+}
+
+#cookie-guide-content .warning-box {
+    background: #fef3c7;
+    border: 1px solid #f59e0b;
+    border-radius: 6px;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+#cookie-guide-content .warning-box strong {
+    color: #d97706;
 }
 
 .instructions-steps {
@@ -2249,7 +2399,29 @@ footer {
     text-decoration: underline;
 }
 
+/* Medium screens */
+@media (max-width: 1024px) {
+    .nav-links {
+        gap: 0.5rem;
+        margin-right: 1rem;
+    }
+    
+    .nav-links a {
+        font-size: 0.875rem;
+        padding: 0.4rem 0.6rem;
+    }
+    
+    .logo-section {
+        gap: 1rem;
+    }
+}
+
 @media (max-width: 768px) {
+    .nav-gradient .container {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
     .nav-links {
         display: none;
     }

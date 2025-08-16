@@ -1357,6 +1357,127 @@ function handleNewsletterSignup(e) {
     e.target.reset();
 }
 
+// Cookie Guide Modal Functions
+function openCookieGuideModal() {
+    const modal = document.getElementById('cookie-guide-modal');
+    const content = document.getElementById('cookie-guide-content');
+    
+    // Load the content
+    const guideContent = `
+        <h2>סקירה כללית</h2>
+        <p>תיקון 13 לחוק הגנת הפרטיות, שנכנס לתוקף באוגוסט 2025, מחייב אתרי אינטרנט ישראליים לקבל הסכמה מפורשת ומדעת מהמשתמשים לפני שימוש בעוגיות למטרות שאינן חיוניות לתפקוד האתר.</p>
+        
+        <h3>✅ מה כולל הפתרון שלנו?</h3>
+        <ul>
+            <li>הסכמה מפורשת לפני הפעלת עוגיות</li>
+            <li>אפשרות דחייה ברורה</li>
+            <li>בחירה גרנולרית של קטגוריות</li>
+            <li>מנגנון ביטול הסכמה</li>
+            <li>רישום ותיעוד הסכמות</li>
+            <li>תמיכה מלאה בעברית ו-RTL</li>
+        </ul>
+
+        <h2>דרישות עיקריות של תיקון 13</h2>
+        
+        <h3>1. הסכמה מפורשת ומדעת</h3>
+        <ul>
+            <li><strong>לפני הפעלת עוגיות:</strong> אסור להפעיל עוגיות לא-חיוניות לפני קבלת הסכמה</li>
+            <li><strong>מידע ברור:</strong> יש להציג למשתמש מידע ברור על סוגי העוגיות והשימוש בהן</li>
+            <li><strong>פעולה אקטיבית:</strong> ההסכמה חייבת להינתן בפעולה אקטיבית (לחיצה על כפתור)</li>
+        </ul>
+        
+        <h3>2. אפשרות דחייה</h3>
+        <ul>
+            <li><strong>כפתור דחייה בולט:</strong> חייב להיות כפתור ברור לדחיית כל העוגיות הלא-חיוניות</li>
+            <li><strong>המשך גלישה:</strong> המשתמש צריך להיות מסוגל להמשיך לגלוש באתר גם אם דחה עוגיות</li>
+        </ul>
+        
+        <h3>3. בחירה גרנולרית</h3>
+        <ul>
+            <li><strong>קטגוריות נפרדות:</strong> הפרדה בין סוגי עוגיות (חיוניות, תפקודיות, אנליטיקס, שיווק)</li>
+            <li><strong>בחירה פרטנית:</strong> אפשרות לאשר/לדחות כל קטגוריה בנפרד</li>
+        </ul>
+        
+        <h3>4. ביטול הסכמה</h3>
+        <ul>
+            <li><strong>נגישות מתמדת:</strong> אפשרות לבטל או לשנות הסכמה בכל עת</li>
+            <li><strong>תהליך פשוט:</strong> ביטול ההסכמה צריך להיות פשוט כמו מתן ההסכמה</li>
+        </ul>
+        
+        <h3>5. תיעוד ושמירת נתונים</h3>
+        <ul>
+            <li><strong>חותמת זמן:</strong> רישום מתי ניתנה ההסכמה</li>
+            <li><strong>גרסת הסכמה:</strong> תיעוד גרסת מדיניות העוגיות</li>
+            <li><strong>שמירת העדפות:</strong> שמירת העדפות המשתמש לתקופה סבירה (עד שנה)</li>
+        </ul>
+
+        <h2>התקנת מערכת ההסכמה</h2>
+        
+        <h3>שלב 1: הוספת הקבצים לאתר</h3>
+        <pre><code>&lt;!-- בתוך ה-&lt;head&gt; של האתר --&gt;
+&lt;link rel="stylesheet" href="assets/vendor/cookieconsent/cookieconsent.css"&gt;</code></pre>
+        
+        <h3>שלב 2: הוספת הסקריפט</h3>
+        <pre><code>&lt;script type="module"&gt;
+    import './assets/vendor/cookieconsent/cookieconsent.esm.js';
+    import heTranslations from './assets/translations/he.json' assert { type: 'json' };
+    
+    window.CookieConsent.run({
+        // התצורה המלאה
+    });
+&lt;/script&gt;</code></pre>
+
+        <h2>קטגוריות עוגיות</h2>
+        
+        <p>המערכת תומכת ב-4 קטגוריות עיקריות:</p>
+        
+        <h3>1. עוגיות חיוניות (Necessary)</h3>
+        <p>עוגיות הכרחיות לתפקוד האתר - תמיד פעילות ולא ניתן לבטל אותן.</p>
+        
+        <h3>2. עוגיות תפקודיות (Functionality)</h3>
+        <p>עוגיות המשפרות את חוויית המשתמש (העדפות שפה, ערכת נושא וכד').</p>
+        
+        <h3>3. עוגיות אנליטיקס (Analytics)</h3>
+        <p>עוגיות לניתוח השימוש באתר (Google Analytics וכד').</p>
+        
+        <h3>4. עוגיות שיווק (Marketing)</h3>
+        <p>עוגיות לצרכי פרסום ושיווק ממוקד.</p>
+
+        <h2>שאלות נפוצות</h2>
+        
+        <h3>ש: האם המערכת תואמת GDPR?</h3>
+        <p><strong>ת:</strong> כן, המערכת תואמת גם GDPR וגם תיקון 13. היא מכסה את כל הדרישות של שני התקנים.</p>
+        
+        <h3>ש: איך מטפלים בגולשים עם חוסמי פרסומות?</h3>
+        <p><strong>ת:</strong> המערכת פועלת גם עם חוסמי פרסומות כי היא לא משתמשת בשירותי צד שלישי.</p>
+        
+        <h3>ש: כמה זמן נשמרת ההסכמה?</h3>
+        <p><strong>ת:</strong> ברירת המחדל היא שנה (365 ימים), אך ניתן להתאים זאת בתצורה.</p>
+
+        <div class="warning-box">
+            <strong>⚠️ אזהרה חשובה:</strong> מדריך זה מספק הנחיות טכניות בלבד ואינו מהווה ייעוץ משפטי. יש להיוועץ בעורך דין המתמחה בדיני פרטיות וטכנולוגיה לצורך עמידה מלאה בדרישות החוק.
+        </div>
+    `;
+    
+    content.innerHTML = guideContent;
+    modal.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+}
+
+function closeCookieGuideModal() {
+    const modal = document.getElementById('cookie-guide-modal');
+    modal.style.display = 'none';
+    document.body.style.overflow = 'auto';
+}
+
+// Close modal when clicking outside
+window.addEventListener('click', function(event) {
+    const modal = document.getElementById('cookie-guide-modal');
+    if (event.target === modal) {
+        closeCookieGuideModal();
+    }
+});
+
 function initResourceDownloads() {
     window.downloadChecklist = function() {
         const checklist = `רשימת תיוג להיערכות לתיקון 13
