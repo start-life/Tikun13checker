@@ -1122,53 +1122,91 @@ function displayError(error, url) {
     // Show the results container
     resultsContainer.style.display = 'block';
     
-    // Create error display
-    resultsContainer.innerHTML = `
-        <div class="error-container">
-            <div class="error-icon">❌</div>
-            <h3>שגיאה בסריקת האתר</h3>
-            <p class="error-url">${url ? new URL(url).hostname : 'האתר המבוקש'}</p>
-            
-            <div class="error-details">
-                <h4>מה קרה?</h4>
-                <p>${error?.message || 'לא הצלחנו לגשת לאתר או לנתח את התוכן שלו'}</p>
+    // Check if this is a detailed CorsProxy error (contains emoji indicators)
+    const isDetailedError = error?.message && (error.message.includes('❌') || error.message.includes('💡'));
+    
+    if (isDetailedError) {
+        // Display the detailed formatted error message
+        const errorMessage = error.message.replace(/\n/g, '<br>');
+        resultsContainer.innerHTML = `
+            <div class="error-container proxy-error">
+                <div class="error-icon">🚫</div>
+                <h3>שגיאת Proxy</h3>
+                <p class="error-url">${url ? new URL(url).hostname : 'האתר המבוקש'}</p>
                 
-                <h4>סיבות אפשריות:</h4>
-                <ul>
-                    <li>האתר אינו זמין כרגע</li>
-                    <li>כתובת האתר אינה נכונה</li>
-                    <li>האתר חוסם סריקות אוטומטיות</li>
-                    <li>בעיית חיבור לאינטרנט</li>
-                    <li>האתר דורש הרשאות מיוחדות</li>
-                </ul>
+                <div class="detailed-error-message">
+                    ${errorMessage}
+                </div>
                 
-                <h4>מה לעשות?</h4>
-                <ul>
-                    <li>ודא שכתובת האתר נכונה</li>
-                    <li>בדוק שהאתר עובד בדפדפן רגיל</li>
-                    <li>נסה שוב בעוד מספר דקות</li>
-                </ul>
+                <div class="error-actions">
+                    ${generateWwwRetryButton(url)}
+                    <button class="btn-primary" onclick="rescanWebsite()">
+                        🔄 נסה שוב
+                    </button>
+                    <button class="btn-secondary" onclick="switchToManualMode()">
+                        📝 מצב הזנה ידנית
+                    </button>
+                    <button class="btn-secondary" onclick="newScan()">
+                        🆕 סרוק אתר אחר
+                    </button>
+                </div>
+                
+                <div class="error-footer">
+                    <p class="error-note">
+                        💡 טיפ: במצב הזנה ידנית אתה מעתיק את ה-HTML ישירות מהדפדפן - פרטי לחלוטין!
+                    </p>
+                </div>
             </div>
-            
-            <div class="error-actions">
-                <button class="btn-primary" onclick="rescanWebsite()">
-                    🔄 נסה שוב
-                </button>
-                <button class="btn-secondary" onclick="newScan()">
-                    🆕 סרוק אתר אחר
-                </button>
-                <button class="btn-secondary" onclick="document.getElementById('checker-form').scrollIntoView({ behavior: 'smooth' })">
-                    ⬆️ חזור לטופס
-                </button>
+        `;
+    } else {
+        // Display the standard error message
+        resultsContainer.innerHTML = `
+            <div class="error-container">
+                <div class="error-icon">❌</div>
+                <h3>שגיאה בסריקת האתר</h3>
+                <p class="error-url">${url ? new URL(url).hostname : 'האתר המבוקש'}</p>
+                
+                <div class="error-details">
+                    <h4>מה קרה?</h4>
+                    <p>${error?.message || 'לא הצלחנו לגשת לאתר או לנתח את התוכן שלו'}</p>
+                    
+                    <h4>סיבות אפשריות:</h4>
+                    <ul>
+                        <li>האתר אינו זמין כרגע</li>
+                        <li>כתובת האתר אינה נכונה</li>
+                        <li>האתר חוסם סריקות אוטומטיות</li>
+                        <li>בעיית חיבור לאינטרנט</li>
+                        <li>האתר דורש הרשאות מיוחדות</li>
+                    </ul>
+                    
+                    <h4>מה לעשות?</h4>
+                    <ul>
+                        <li>ודא שכתובת האתר נכונה</li>
+                        <li>בדוק שהאתר עובד בדפדפן רגיל</li>
+                        <li>נסה שוב בעוד מספר דקות</li>
+                    </ul>
+                </div>
+                
+                <div class="error-actions">
+                    <button class="btn-primary" onclick="rescanWebsite()">
+                        🔄 נסה שוב
+                    </button>
+                    <button class="btn-secondary" onclick="newScan()">
+                        🆕 סרוק אתר אחר
+                    </button>
+                    <button class="btn-secondary" onclick="document.getElementById('checker-form').scrollIntoView({ behavior: 'smooth' })">
+                        ⬆️ חזור לטופס
+                    </button>
+                </div>
+                
+                <div class="error-footer">
+                    <p class="error-note">
+                        💡 טיפ: אם הבעיה נמשכת, נסה להעתיק את כתובת האתר ישירות משורת הכתובת בדפדפן
+                    </p>
+                </div>
             </div>
-            
-            <div class="error-footer">
-                <p class="error-note">
-                    💡 טיפ: אם הבעיה נמשכת, נסה להעתיק את כתובת האתר ישירות משורת הכתובת בדפדפן
-                </p>
-            </div>
-        </div>
-    `;
+        `;
+    }
     
     // Always show scan controls on error
     const scanControls = document.getElementById('scan-controls');
@@ -1181,6 +1219,63 @@ function displayError(error, url) {
     if (checkerTitle) {
         checkerTitle.textContent = 'שגיאה בסריקה - נסה שוב';
     }
+}
+
+// Generate www retry button for 502 errors
+function generateWwwRetryButton(url) {
+    if (!url) return '';
+    
+    try {
+        const urlObj = new URL(url);
+        const domain = urlObj.hostname;
+        
+        // Generate the alternative domain
+        const altDomain = domain.startsWith('www.') ? 
+            domain.replace('www.', '') : 
+            `www.${domain}`;
+        
+        const altUrl = url.replace(domain, altDomain);
+        
+        return `
+            <button class="btn-warning" onclick="retryWithWww('${altUrl}')">
+                🌐 נסה עם ${altDomain}
+            </button>
+        `;
+    } catch (e) {
+        return '';
+    }
+}
+
+// Retry scanning with www prefix/suffix
+function retryWithWww(newUrl) {
+    const proxyUrlInput = document.getElementById('proxy-url');
+    if (proxyUrlInput) {
+        proxyUrlInput.value = newUrl;
+        
+        // Trigger the proxy check
+        const fakeEvent = { preventDefault: () => {} };
+        handleProxyCheck(fakeEvent);
+    }
+}
+
+// Switch to manual mode
+function switchToManualMode() {
+    // Switch to private mode
+    switchScanMode('private');
+    
+    // Scroll to the form
+    document.getElementById('checker-form').scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'start' 
+    });
+    
+    // Focus on the manual input area
+    setTimeout(() => {
+        const manualContent = document.getElementById('manual-content');
+        if (manualContent) {
+            manualContent.focus();
+        }
+    }, 500);
 }
 
 function displayResults(results) {

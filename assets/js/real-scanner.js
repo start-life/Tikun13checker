@@ -108,6 +108,59 @@ class RealWebsiteScanner {
         return true;
     }
 
+    // Format CorsProxy.io error messages with user-friendly explanations
+    formatCorsProxyError(error, originalUrl) {
+        const urlObj = new URL(originalUrl);
+        const domain = urlObj.hostname;
+        
+        switch (error.status) {
+            case 502:
+                // Common case: domain doesn't resolve or is not accessible
+                const wwwSuggestion = domain.startsWith('www.') ? 
+                    domain.replace('www.', '') : 
+                    `www.${domain}`;
+                
+                return `❌ השרת לא הצליח להתחבר לאתר ${domain}
+
+🔍 סיבות אפשריות:
+• האתר לא זמין כרגע
+• בעיות DNS או רשת
+• האתר חוסם את ה-Proxy
+
+💡 הצעות לפתרון:
+• נסה עם הקידומת "www": ${wwwSuggestion}
+• בדוק שהכתובת נכונה ותקינה
+• נסה שוב מאוחר יותר
+• השתמש במצב "הזנה ידנית" - העתק את ה-HTML ישירות`;
+
+            case 404:
+                return `❌ הדף לא נמצא ב-${domain}
+
+💡 בדוק שהכתובת נכונה ונסה שוב`;
+
+            case 403:
+                return `❌ האתר ${domain} חוסם את הגישה דרך Proxy
+
+💡 השתמש במצב "הזנה ידנית" - העתק את ה-HTML ישירות מהדפדפן`;
+
+            case 429:
+                return `❌ חריגה ממגבלת הקצב של CorsProxy.io
+
+💡 נסה שוב עוד מספר דקות או השתמש במצב "הזנה ידנית"`;
+
+            case 500:
+                return `❌ שגיאת שרת פנימית ב-CorsProxy.io
+
+💡 נסה שוב עוד כמה דקות או השתמש במצב "הזנה ידנית"`;
+
+            default:
+                const message = error.message || 'שגיאה לא מוכרת';
+                return `❌ שגיאת Proxy (${error.status}): ${message}
+
+💡 נסה להשתמש במצב "הזנה ידנית" - העתק את ה-HTML ישירות מהדפדפן`;
+        }
+    }
+
     // Fetch website using proxy (only when enabled and consented)
     async fetchWebsiteViaProxy(url) {
         if (!this.useProxy || !this.proxyConsentGiven) {
@@ -137,9 +190,19 @@ class RealWebsiteScanner {
             const html = await response.text();
             
             if (typeof html === 'string' && html.length > 0) {
-                // Check for error responses (adjust based on proxy type)
-                if (type === 'corsproxy' && html.includes('error') && html.includes('proxy') && html.length < 5000) {
-                    throw new Error('CorsProxy.io service error - content may be blocked or service unavailable');
+                // Check for CorsProxy.io JSON error responses
+                if (type === 'corsproxy') {
+                    try {
+                        const errorData = JSON.parse(html);
+                        if (errorData.error) {
+                            throw new Error(this.formatCorsProxyError(errorData.error, url));
+                        }
+                    } catch (parseError) {
+                        // If it's not JSON, continue with normal checks
+                        if (html.includes('error') && html.includes('proxy') && html.length < 5000) {
+                            throw new Error('CorsProxy.io service error - content may be blocked or service unavailable');
+                        }
+                    }
                 }
                 return { html, finalUrl: url };
             }

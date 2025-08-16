@@ -4271,3 +4271,82 @@ body.disclaimer-visible {
         font-size: 0.8rem;
     }
 }
+
+/* Enhanced Error Display Styling */
+.error-container.proxy-error {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    border: 2px solid #ffc107;
+}
+
+.error-container.proxy-error .error-icon {
+    font-size: 2.5rem;
+    color: #856404;
+}
+
+.detailed-error-message {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+    border-left: 4px solid #ffc107;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: #333;
+}
+
+.detailed-error-message strong {
+    color: #856404;
+}
+
+.btn-warning {
+    background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-warning:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(255, 152, 0, 0.4);
+    background: linear-gradient(135deg, #fb8c00 0%, #ef6c00 100%);
+}
+
+.error-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.error-actions button {
+    flex: 1;
+    min-width: 160px;
+    max-width: 200px;
+}
+
+/* Responsive Error Display */
+@media (max-width: 768px) {
+    .error-actions {
+        flex-direction: column;
+    }
+    
+    .error-actions button {
+        flex: none;
+        min-width: auto;
+        max-width: none;
+    }
+    
+    .detailed-error-message {
+        padding: 15px;
+        font-size: 0.9rem;
+    }
+}
