@@ -86,7 +86,7 @@ function updateScanCountDisplay() {
             <div class="scan-limit-info">
                 <span class="scan-icon">🔍</span>
                 <span class="scan-text">נותרו ${remaining} מתוך ${DEMO_SCAN_LIMIT} סריקות היום</span>
-                <span class="educational-notice">(מטרות חינוכיות)</span>
+                <span class="educational-notice">(אתר דמו - מגבלות קיימות. הורד/Fork לשימוש מלא)</span>
             </div>
         `;
         counterElement.classList.remove('limit-reached');
@@ -95,7 +95,7 @@ function updateScanCountDisplay() {
             <div class="scan-limit-info limit-reached">
                 <span class="scan-icon">⚠️</span>
                 <span class="scan-text">הגעת למגבלת ${DEMO_SCAN_LIMIT} סריקות ליום</span>
-                <span class="educational-notice">(מטרות חינוכיות - חזור מחר או רכוש גרסה מלאה)</span>
+                <span class="educational-notice">(אתר דמו - הורד/Fork הפרויקט להרצה מקומית ללא מגבלות)</span>
             </div>
         `;
         counterElement.classList.add('limit-reached');
