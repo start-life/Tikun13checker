@@ -3,11 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:; font-src 'self' data: https:;">
+    <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
     <title>בדיקת תיקון 13 - בודק התאמה לחוק הגנת הפרטיות הישראלי</title>
     <meta name="description" content="כלי חינמי לבדיקת התאמת האתר שלך לתיקון 13 לחוק הגנת הפרטיות. בדיקת עוגיות, SSL, ומדיניות פרטיות בהתאם לדרישות החוק הישראלי.">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="accessibility.css">
     <link rel="stylesheet" href="assessment/assessment.css">
+    <script src="cookie-consent.js" defer></script>
 </head>
 <body>
     <!-- Consent Modal -->
@@ -804,8 +808,11 @@
                     <ul>
                         <li><a href="https://www.gov.il/he/departments/the_privacy_protection_authority" target="_blank">הרשות להגנת הפרטיות</a></li>
                         <li><a href="https://github.com/ionsec/tikun13-checker" target="_blank">קוד המקור ב-GitHub</a></li>
-                        <li><a href="#" onclick="showTerms()">תנאי שימוש</a></li>
-                        <li><a href="#" onclick="showPrivacy()">מדיניות פרטיות</a></li>
+                        <li><a href="terms.html">תנאי שימוש</a></li>
+                        <li><a href="privacy.html">מדיניות פרטיות</a></li>
+                        <li><a href="#about">אודות</a></li>
+                        <li><a href="mailto:info@ionsec.io">צור קשר</a></li>
+                        <li><a href="tel:+972520000000">📞 052-000-0000</a></li>
                     </ul>
                 </div>
             </div>
@@ -911,6 +918,30 @@
             </div>
         </div>
     </div>
+
+    <!-- About Section -->
+    <section id="about" class="about-section" style="padding: 40px 0; background: #f8f9fa; margin-top: 40px;">
+        <div class="container">
+            <h2 style="text-align: center; color: #333; margin-bottom: 30px;">אודות הכלי</h2>
+            <div class="about-content" style="max-width: 800px; margin: 0 auto; line-height: 1.8;">
+                <p><strong>Tikun13 Checker</strong> הוא כלי קוד פתוח שפותח על ידי IONSEC.IO כשירות לקהילה הישראלית.</p>
+                <p>המטרה שלנו היא לסייע לעסקים וארגונים להיערך לתיקון 13 לחוק הגנת הפרטיות בצורה פשוטה ונגישה.</p>
+                <h3 style="color: #667eea; margin-top: 20px;">למה פיתחנו את הכלי?</h3>
+                <ul>
+                    <li>להנגיש מידע על דרישות תיקון 13</li>
+                    <li>לספק כלי הערכה ראשוני חינמי</li>
+                    <li>לעזור לארגונים להבין את הפערים</li>
+                    <li>לקדם את תרבות הגנת הפרטיות בישראל</li>
+                </ul>
+                <h3 style="color: #667eea; margin-top: 20px;">יצירת קשר</h3>
+                <p>
+                    📧 דוא״ל: <a href="mailto:info@ionsec.io">info@ionsec.io</a><br>
+                    📞 טלפון: <a href="tel:+972520000000">052-000-0000</a><br>
+                    🌐 אתר: <a href="https://ionsec.io" target="_blank">https://ionsec.io</a>
+                </p>
+            </div>
+        </div>
+    </section>
 
     <script src="real-scanner.js"></script>
     <script src="script.js"></script>
