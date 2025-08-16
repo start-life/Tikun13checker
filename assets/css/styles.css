@@ -3299,3 +3299,343 @@ body.disclaimer-visible {
         }
     }
 }
+
+
+/* ========================================
+   Cookie Builder Section Styles
+   ======================================== */
+
+.cookie-builder-section {
+    padding: 40px 0;
+}
+
+.cookie-builder-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.cookie-builder-header h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.cookie-builder-header p {
+    font-size: 1.2rem;
+    color: #666;
+}
+
+.cookie-builder-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+/* Configuration Panel */
+.cookie-builder-config-panel {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.cookie-builder-config-section {
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.cookie-builder-config-section:last-child {
+    border-bottom: none;
+}
+
+.cookie-builder-config-section h3 {
+    color: #333;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.cookie-builder-category-list,
+.cookie-builder-feature-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.cookie-builder-category-item,
+.cookie-builder-feature-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem;
+    background: #f8f9fa;
+    border-radius: 6px;
+    transition: background 0.3s;
+}
+
+.cookie-builder-category-item:hover,
+.cookie-builder-feature-item:hover {
+    background: #e9ecef;
+}
+
+.cookie-builder-category-item input,
+.cookie-builder-feature-item input {
+    margin-left: 0.75rem;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.cookie-builder-category-item label,
+.cookie-builder-feature-item label {
+    flex: 1;
+    cursor: pointer;
+    color: #444;
+}
+
+/* Preview Panel */
+.cookie-builder-preview-panel {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.cookie-builder-preview-controls {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.cookie-builder-preview-controls button {
+    flex: 1;
+    padding: 0.75rem;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.3s;
+}
+
+.cookie-builder-preview-controls button:hover {
+    background: #5a6fd8;
+}
+
+.cookie-builder-preview-frame {
+    min-height: 400px;
+    background: #f5f5f5;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 1rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.cookie-builder-preview-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    min-height: 350px;
+    color: #999;
+    text-align: center;
+}
+
+.cookie-builder-preview-info {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e0e0e0;
+}
+
+.cookie-builder-compliance-checklist {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0;
+}
+
+.cookie-builder-compliance-checklist li {
+    padding: 0.5rem 0;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.cookie-builder-compliance-checklist li.checked {
+    color: #4caf50;
+}
+
+/* Export Section */
+.cookie-builder-export-section {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-bottom: 3rem;
+}
+
+.cookie-builder-export-tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.cb-tab-btn {
+    padding: 0.75rem 1.5rem;
+    background: none;
+    border: none;
+    color: #666;
+    cursor: pointer;
+    font-weight: 500;
+    position: relative;
+    transition: color 0.3s;
+}
+
+.cb-tab-btn.active {
+    color: #667eea;
+}
+
+.cb-tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    right: 0;
+    left: 0;
+    height: 2px;
+    background: #667eea;
+}
+
+.cookie-builder-export-tab {
+    display: none;
+}
+
+.cookie-builder-export-tab.active {
+    display: block;
+}
+
+.cookie-builder-export-tab h3 {
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+.cookie-builder-export-tab pre {
+    background: #f5f5f5;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 1rem;
+    overflow-x: auto;
+    margin-bottom: 1rem;
+}
+
+.cookie-builder-export-tab code {
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #333;
+}
+
+.cookie-builder-export-tab button {
+    padding: 0.75rem 1.5rem;
+    background: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.3s;
+}
+
+.cookie-builder-export-tab button:hover {
+    background: #45a049;
+}
+
+.cookie-builder-download-options {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.cookie-builder-download-options button {
+    flex: 1;
+    padding: 1rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: transform 0.3s;
+}
+
+.cookie-builder-download-options button:hover {
+    transform: translateY(-2px);
+}
+
+.cookie-builder-download-info {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 6px;
+    color: #666;
+    font-size: 14px;
+}
+
+/* Responsive Design for Cookie Builder */
+@media (max-width: 1024px) {
+    .cookie-builder-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .cookie-builder-config-panel {
+        max-height: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .cookie-builder-preview-controls,
+    .cookie-builder-export-tabs,
+    .cookie-builder-download-options {
+        flex-direction: column;
+    }
+    
+    .cb-tab-btn {
+        text-align: center;
+    }
+    
+    .cookie-builder-header h2 {
+        font-size: 1.8rem;
+    }
+    
+    .cookie-builder-header p {
+        font-size: 1rem;
+    }
+}
+
+/* Scrollbar Styling for Cookie Builder */
+.cookie-builder-config-panel::-webkit-scrollbar {
+    width: 8px;
+}
+
+.cookie-builder-config-panel::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.cookie-builder-config-panel::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+.cookie-builder-config-panel::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}

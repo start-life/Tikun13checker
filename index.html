@@ -184,7 +184,7 @@
                 <ul class="nav-links" role="list">
                     <li><a href="#" onclick="showScannerSection(); return false;">סריקת אתר</a></li>
                     <li><a href="#" onclick="showAssessmentSection(); return false;">הערכה עצמית</a></li>
-                    <li><a href="cookie-builder/">🍪 בונה עוגיות</a></li>
+                    <li><a href="#" onclick="showCookieBuilderSection(); return false;">🍪 בונה עוגיות</a></li>
                     <li><a href="#features">יכולות</a></li>
                     <li><a href="#requirements">דרישות</a></li>
                     <li><a href="#resources">משאבים</a></li>
@@ -291,6 +291,10 @@
                 <span class="switch-icon">📋</span>
                 <span>הערכה עצמית</span>
                 <span class="badge-new">חדש!</span>
+            </button>
+            <button class="switch-btn" onclick="showCookieBuilderSection()">
+                <span class="switch-icon">🍪</span>
+                <span>בונה באנר עוגיות</span>
             </button>
         </div>
         
@@ -652,7 +656,7 @@
                         </div>
                         
                         <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-                            <a href="cookie-builder/" class="btn-primary" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1rem 2rem; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block; transition: transform 0.3s;">התחל ליצור באנר</a>
+                            <a href="#" onclick="showCookieBuilderSection(); return false;" class="btn-primary" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1rem 2rem; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block; transition: transform 0.3s;">התחל ליצור באנר</a>
                             <a href="#" onclick="openCookieGuideModal(); return false;" class="btn-secondary" style="background: white; color: #667eea; padding: 1rem 2rem; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block; border: 2px solid #667eea; transition: all 0.3s;">קרא את המדריך המלא</a>
                         </div>
                     </div>
@@ -731,7 +735,7 @@
                         <div class="feature-icon">🍪</div>
                         <h3>בונה באנר עוגיות</h3>
                         <p>כלי מתקדם ליצירת באנר הסכמה לעוגיות תואם 100% לתיקון 13</p>
-                        <a href="cookie-builder/" class="feature-link" style="color: white; text-decoration: underline; margin-top: 10px; display: inline-block; font-weight: bold;">צור באנר מותאם אישית →</a>
+                        <a href="#" onclick="showCookieBuilderSection(); return false;" class="feature-link" style="color: white; text-decoration: underline; margin-top: 10px; display: inline-block; font-weight: bold;">צור באנר מותאם אישית →</a>
                     </div>
                 </div>
             </div>
@@ -885,6 +889,259 @@
             </div>
         </section>
         <!-- End Assessment Section -->
+        
+        <!-- Cookie Builder Section -->
+        <section id="cookie-builder-section" class="cookie-builder-section" style="display: none;">
+            <div class="container">
+                <div class="cookie-builder-header">
+                    <h2>🍪 בונה באנר הסכמה לעוגיות - תואם תיקון 13</h2>
+                    <p>כלי אינטראקטיבי ליצירת באנר הסכמה לעוגיות בהתאם לדרישות החוק</p>
+                </div>
+                
+                <div class="cookie-builder-grid">
+                    <!-- Configuration Panel -->
+                    <section class="cookie-builder-config-panel">
+                        <h2>הגדרות באנר הסכמה</h2>
+                        
+                        <!-- Basic Settings -->
+                        <div class="cookie-builder-config-section">
+                            <h3>הגדרות בסיסיות</h3>
+                            
+                            <div class="form-group">
+                                <label for="cb-site-name">שם האתר</label>
+                                <input type="text" id="cb-site-name" placeholder="האתר שלי" value="האתר שלי">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="cb-cookie-name">שם העוגייה</label>
+                                <input type="text" id="cb-cookie-name" placeholder="tikun13_cc" value="tikun13_cc">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="cb-cookie-expiry">תוקף הסכמה (ימים)</label>
+                                <input type="number" id="cb-cookie-expiry" min="1" max="365" value="365">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="cb-revision">גרסת הסכמה</label>
+                                <input type="number" id="cb-revision" min="1" value="1">
+                            </div>
+                        </div>
+                        
+                        <!-- UI Settings -->
+                        <div class="cookie-builder-config-section">
+                            <h3>הגדרות ממשק</h3>
+                            
+                            <div class="form-group">
+                                <label for="cb-modal-layout">פריסת חלון</label>
+                                <select id="cb-modal-layout">
+                                    <option value="box">תיבה</option>
+                                    <option value="bar">פס</option>
+                                    <option value="box wide">תיבה רחבה</option>
+                                    <option value="box inline">תיבה מוטבעת</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="cb-modal-position">מיקום חלון</label>
+                                <select id="cb-modal-position">
+                                    <option value="bottom center">מרכז תחתון</option>
+                                    <option value="bottom left">שמאל תחתון</option>
+                                    <option value="bottom right">ימין תחתון</option>
+                                    <option value="top center">מרכז עליון</option>
+                                    <option value="middle center">מרכז</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="cb-theme">ערכת נושא</label>
+                                <select id="cb-theme">
+                                    <option value="default">ברירת מחדל</option>
+                                    <option value="dark">כהה</option>
+                                    <option value="light">בהיר</option>
+                                    <option value="custom">מותאם אישית</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Cookie Categories -->
+                        <div class="cookie-builder-config-section">
+                            <h3>קטגוריות עוגיות</h3>
+                            
+                            <div class="cookie-builder-category-list">
+                                <div class="cookie-builder-category-item">
+                                    <input type="checkbox" id="cb-cat-necessary" checked disabled>
+                                    <label for="cb-cat-necessary">
+                                        <strong>חיוניות</strong> - תמיד פעילות
+                                    </label>
+                                </div>
+                                
+                                <div class="cookie-builder-category-item">
+                                    <input type="checkbox" id="cb-cat-functionality" checked>
+                                    <label for="cb-cat-functionality">
+                                        <strong>תפקודיות</strong> - שיפור חוויית משתמש
+                                    </label>
+                                </div>
+                                
+                                <div class="cookie-builder-category-item">
+                                    <input type="checkbox" id="cb-cat-analytics" checked>
+                                    <label for="cb-cat-analytics">
+                                        <strong>אנליטיקס</strong> - ניתוח שימוש באתר
+                                    </label>
+                                </div>
+                                
+                                <div class="cookie-builder-category-item">
+                                    <input type="checkbox" id="cb-cat-marketing" checked>
+                                    <label for="cb-cat-marketing">
+                                        <strong>שיווק</strong> - פרסום ממוקד
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Text Content -->
+                        <div class="cookie-builder-config-section">
+                            <h3>תוכן טקסט</h3>
+                            
+                            <div class="form-group">
+                                <label for="cb-modal-title">כותרת באנר</label>
+                                <input type="text" id="cb-modal-title" value="אנחנו משתמשים בעוגיות 🍪">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="cb-modal-description">תיאור</label>
+                                <textarea id="cb-modal-description" rows="4">האתר הזה משתמש בעוגיות כדי לשפר את חוויית המשתמש שלך. בהתאם לתיקון 13 לחוק הגנת הפרטיות, אנו מבקשים את הסכמתך המפורשת לשימוש בעוגיות.</textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="cb-privacy-link">קישור למדיניות פרטיות</label>
+                                <input type="url" id="cb-privacy-link" placeholder="https://example.com/privacy" value="/privacy.html">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="cb-terms-link">קישור לתנאי שימוש</label>
+                                <input type="url" id="cb-terms-link" placeholder="https://example.com/terms" value="/terms.html">
+                            </div>
+                        </div>
+                        
+                        <!-- Amendment 13 Features -->
+                        <div class="cookie-builder-config-section">
+                            <h3>תכונות תיקון 13</h3>
+                            
+                            <div class="cookie-builder-feature-list">
+                                <div class="cookie-builder-feature-item">
+                                    <input type="checkbox" id="cb-feat-timestamp" checked>
+                                    <label for="cb-feat-timestamp">רישום חותמת זמן להסכמה</label>
+                                </div>
+                                
+                                <div class="cookie-builder-feature-item">
+                                    <input type="checkbox" id="cb-feat-version" checked>
+                                    <label for="cb-feat-version">ניהול גרסאות הסכמה</label>
+                                </div>
+                                
+                                <div class="cookie-builder-feature-item">
+                                    <input type="checkbox" id="cb-feat-withdrawal" checked>
+                                    <label for="cb-feat-withdrawal">אפשרות ביטול הסכמה</label>
+                                </div>
+                                
+                                <div class="cookie-builder-feature-item">
+                                    <input type="checkbox" id="cb-feat-granular" checked>
+                                    <label for="cb-feat-granular">בחירה גרנולרית של עוגיות</label>
+                                </div>
+                                
+                                <div class="cookie-builder-feature-item">
+                                    <input type="checkbox" id="cb-feat-export" checked>
+                                    <label for="cb-feat-export">יצוא נתוני הסכמה</label>
+                                </div>
+                                
+                                <div class="cookie-builder-feature-item">
+                                    <input type="checkbox" id="cb-feat-hebrew" checked>
+                                    <label for="cb-feat-hebrew">תמיכה מלאה בעברית</label>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <!-- Preview Panel -->
+                    <section class="cookie-builder-preview-panel">
+                        <h2>תצוגה מקדימה</h2>
+                        
+                        <div class="cookie-builder-preview-controls">
+                            <button onclick="CookieBuilder.showPreview('consent')">באנר הסכמה</button>
+                            <button onclick="CookieBuilder.showPreview('preferences')">העדפות</button>
+                            <button onclick="CookieBuilder.testConsent()">בדיקת הסכמה</button>
+                        </div>
+                        
+                        <div id="cb-preview-frame" class="cookie-builder-preview-frame">
+                            <!-- Live preview will be rendered here -->
+                            <div class="cookie-builder-preview-placeholder">
+                                <p>התצוגה המקדימה תופיע כאן</p>
+                                <p>לחץ על הכפתורים למעלה לתצוגה מקדימה</p>
+                            </div>
+                        </div>
+                        
+                        <div class="cookie-builder-preview-info">
+                            <h3>מידע על התאמה לתיקון 13</h3>
+                            <ul class="cookie-builder-compliance-checklist">
+                                <li class="checked">✅ הסכמה מפורשת לפני שימוש בעוגיות</li>
+                                <li class="checked">✅ אפשרות דחייה ברורה</li>
+                                <li class="checked">✅ בחירה גרנולרית של קטגוריות</li>
+                                <li class="checked">✅ מנגנון ביטול הסכמה</li>
+                                <li class="checked">✅ רישום חותמת זמן וגרסה</li>
+                                <li class="checked">✅ תמיכה מלאה בעברית</li>
+                                <li class="checked">✅ יצוא נתוני הסכמה</li>
+                                <li class="checked">✅ מדיניות פרטיות נגישה</li>
+                            </ul>
+                        </div>
+                    </section>
+                </div>
+                
+                <!-- Export Section -->
+                <section id="cb-export" class="cookie-builder-export-section">
+                    <h2>ייצוא הקוד לאתר שלך</h2>
+                    
+                    <div class="cookie-builder-export-tabs">
+                        <button class="cb-tab-btn active" onclick="CookieBuilder.showExportTab('html')">HTML</button>
+                        <button class="cb-tab-btn" onclick="CookieBuilder.showExportTab('javascript')">JavaScript</button>
+                        <button class="cb-tab-btn" onclick="CookieBuilder.showExportTab('config')">Config JSON</button>
+                        <button class="cb-tab-btn" onclick="CookieBuilder.showExportTab('download')">הורדת קבצים</button>
+                    </div>
+                    
+                    <div class="cookie-builder-export-content">
+                        <div id="cb-export-html" class="cookie-builder-export-tab active">
+                            <h3>קוד HTML להטמעה</h3>
+                            <pre><code id="cb-html-code"><!-- Generated HTML will appear here --></code></pre>
+                            <button onclick="CookieBuilder.copyCode('cb-html-code')">העתק קוד</button>
+                        </div>
+                        
+                        <div id="cb-export-javascript" class="cookie-builder-export-tab">
+                            <h3>קוד JavaScript</h3>
+                            <pre><code id="cb-js-code">// Generated JavaScript will appear here</code></pre>
+                            <button onclick="CookieBuilder.copyCode('cb-js-code')">העתק קוד</button>
+                        </div>
+                        
+                        <div id="cb-export-config" class="cookie-builder-export-tab">
+                            <h3>קובץ תצורה JSON</h3>
+                            <pre><code id="cb-config-code">// Generated configuration will appear here</code></pre>
+                            <button onclick="CookieBuilder.copyCode('cb-config-code')">העתק קוד</button>
+                        </div>
+                        
+                        <div id="cb-export-download" class="cookie-builder-export-tab">
+                            <h3>הורדת קבצים</h3>
+                            <div class="cookie-builder-download-options">
+                                <button onclick="CookieBuilder.downloadConfig()">הורד קובץ תצורה</button>
+                                <button onclick="CookieBuilder.downloadComplete()">הורד חבילה מלאה</button>
+                                <button onclick="CookieBuilder.downloadDocumentation()">הורד תיעוד</button>
+                            </div>
+                            <p class="cookie-builder-download-info">
+                                החבילה המלאה כוללת: קבצי JavaScript, CSS, תרגומים לעברית, וקובץ README עם הוראות התקנה.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </section>
+        <!-- End Cookie Builder Section -->
     </main>
 
     <footer role="contentinfo" id="footer">
@@ -906,7 +1163,7 @@
                         <li><a href="#features">יכולות הכלי</a></li>
                         <li><a href="#requirements">דרישות החוק</a></li>
                         <li><a href="#resources">משאבים</a></li>
-                        <li><a href="cookie-builder/">בונה באנר עוגיות</a></li>
+                        <li><a href="#" onclick="showCookieBuilderSection(); return false;">בונה באנר עוגיות</a></li>
                         <li><a href="https://www.gov.il/he/departments/the_privacy_protection_authority" target="_blank">רשות הגנת הפרטיות</a></li>
                     </ul>
                 </div>
@@ -1058,7 +1315,7 @@
             </div>
             <div class="modal-footer">
                 <button class="btn-primary" onclick="closeCookieGuideModal()">סגור</button>
-                <a href="cookie-builder/" class="btn-secondary">עבור לבונה הבאנר</a>
+                <a href="#" onclick="showCookieBuilderSection(); return false;" class="btn-secondary">עבור לבונה הבאנר</a>
             </div>
         </div>
     </div>
@@ -1071,5 +1328,7 @@
     <script src="assessment/scoring-engine.js"></script>
     <script src="assessment/report-generator.js"></script>
     <script src="assessment/assessment.js"></script>
+    <!-- Cookie Builder Module -->
+    <script src="assets/js/cookie-builder.js"></script>
 </body>
 </html>

@@ -1886,9 +1886,11 @@ window.showScannerSection = function() {
     // Show scanner section
     const scannerSection = document.getElementById('scanner-section');
     const assessmentSection = document.getElementById('assessment');
+    const cookieBuilderSection = document.getElementById('cookie-builder-section');
     
     if (scannerSection) scannerSection.style.display = 'block';
     if (assessmentSection) assessmentSection.style.display = 'none';
+    if (cookieBuilderSection) cookieBuilderSection.style.display = 'none';
     
     // Update button states
     const scannerBtn = document.querySelector('.switch-btn:first-child');
@@ -1918,9 +1920,11 @@ window.showAssessmentSection = function(scrollToTop = true) {
     // Show assessment section
     const scannerSection = document.getElementById('scanner-section');
     const assessmentSection = document.getElementById('assessment');
+    const cookieBuilderSection = document.getElementById('cookie-builder-section');
     
     if (scannerSection) scannerSection.style.display = 'none';
     if (assessmentSection) assessmentSection.style.display = 'block';
+    if (cookieBuilderSection) cookieBuilderSection.style.display = 'none';
     
     // Update button states
     const scannerBtn = document.querySelector('.switch-btn:first-child');
@@ -2033,4 +2037,39 @@ window.clearForm = function() {
     
     // Focus on input
     document.getElementById('website-url').focus();
+};
+
+// Cookie Builder Section
+window.showCookieBuilderSection = function(scrollToTop = true) {
+    // Show cookie builder section
+    const scannerSection = document.getElementById('scanner-section');
+    const assessmentSection = document.getElementById('assessment');
+    const cookieBuilderSection = document.getElementById('cookie-builder-section');
+    
+    if (scannerSection) scannerSection.style.display = 'none';
+    if (assessmentSection) assessmentSection.style.display = 'none';
+    if (cookieBuilderSection) cookieBuilderSection.style.display = 'block';
+    
+    // Update section switcher buttons
+    const buttons = document.querySelectorAll('.section-switcher .switch-btn');
+    buttons.forEach(btn => btn.classList.remove('active'));
+    if (buttons[2]) buttons[2].classList.add('active'); // Third button for cookie builder
+    
+    // Update nav active state
+    document.querySelectorAll('.nav-links a').forEach(link => {
+        link.classList.remove('active');
+        if (link.textContent.includes('בונה עוגיות')) {
+            link.classList.add('active');
+        }
+    });
+    
+    // Scroll to top if needed
+    if (scrollToTop) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    
+    // Initialize cookie builder if available
+    if (typeof CookieBuilder !== 'undefined' && typeof CookieBuilder.init === 'function') {
+        CookieBuilder.init();
+    }
 };

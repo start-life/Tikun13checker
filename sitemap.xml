@@ -36,14 +36,6 @@
         <priority>0.8</priority>
     </url>
     
-    <!-- Cookie Consent Builder Tool -->
-    <url>
-        <loc>https://tikun13.ionsec.io/cookie-builder/</loc>
-        <lastmod>2025-01-16</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.7</priority>
-    </url>
-    
     <!-- Assessment Tool (if applicable) -->
     <url>
         <loc>https://tikun13.ionsec.io/assessment/</loc>
