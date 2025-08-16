@@ -1,0 +1,36 @@
+# Robots.txt for Tikun13 Checker
+# Last updated: 2025-01-16
+
+# Allow all bots
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://tikun13.ionsec.io/sitemap.xml
+
+# Crawl delay (in seconds) for respectful crawling
+Crawl-delay: 1
+
+# Disallow certain paths (if needed in future)
+# Disallow: /admin/
+# Disallow: /api/
+# Disallow: /temp/
+
+# Special instructions for specific bots
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 0
+
+# Block bad bots (optional)
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Crawl-delay: 10
