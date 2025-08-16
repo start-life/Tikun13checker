@@ -6,6 +6,193 @@ let currentScan = null;
 let currentScanMode = 'private'; // Default to private mode
 let proxyConsentGiven = false;
 
+// Usage limit management for demo site
+const DEMO_SCAN_LIMIT = 10;
+const DEMO_HOSTNAME = 'tikun13.ionsec.io';
+
+// Function to check if we're on the demo site
+function isDemoSite() {
+    return window.location.hostname === DEMO_HOSTNAME || 
+           window.location.hostname.endsWith('.github.io');
+}
+
+// Function to get scan count for demo site
+function getDemoScanCount() {
+    if (!isDemoSite()) return 0;
+    const stored = localStorage.getItem('tikun13_demo_scans');
+    if (!stored) return 0;
+    
+    try {
+        const data = JSON.parse(stored);
+        const today = new Date().toDateString();
+        
+        // Reset if it's a new day
+        if (data.date !== today) {
+            localStorage.removeItem('tikun13_demo_scans');
+            return 0;
+        }
+        
+        return data.count || 0;
+    } catch (e) {
+        localStorage.removeItem('tikun13_demo_scans');
+        return 0;
+    }
+}
+
+// Function to increment scan count
+function incrementDemoScanCount() {
+    if (!isDemoSite()) return;
+    
+    const today = new Date().toDateString();
+    const newCount = getDemoScanCount() + 1;
+    
+    localStorage.setItem('tikun13_demo_scans', JSON.stringify({
+        date: today,
+        count: newCount
+    }));
+    
+    updateScanCountDisplay();
+}
+
+// Function to check if scan limit reached
+function isScanLimitReached() {
+    if (!isDemoSite()) return false;
+    return getDemoScanCount() >= DEMO_SCAN_LIMIT;
+}
+
+// Function to update scan count display
+function updateScanCountDisplay() {
+    if (!isDemoSite()) return;
+    
+    const scanCount = getDemoScanCount();
+    const remaining = Math.max(0, DEMO_SCAN_LIMIT - scanCount);
+    
+    // Create or update scan counter display
+    let counterElement = document.getElementById('demo-scan-counter');
+    if (!counterElement) {
+        counterElement = document.createElement('div');
+        counterElement.id = 'demo-scan-counter';
+        counterElement.className = 'demo-scan-counter';
+        
+        // Insert after the header
+        const header = document.querySelector('header');
+        if (header && header.nextSibling) {
+            header.parentNode.insertBefore(counterElement, header.nextSibling);
+        }
+    }
+    
+    if (remaining > 0) {
+        counterElement.innerHTML = `
+            <div class="scan-limit-info">
+                <span class="scan-icon">🔍</span>
+                <span class="scan-text">נותרו ${remaining} מתוך ${DEMO_SCAN_LIMIT} סריקות היום</span>
+                <span class="educational-notice">(מטרות חינוכיות)</span>
+            </div>
+        `;
+        counterElement.classList.remove('limit-reached');
+    } else {
+        counterElement.innerHTML = `
+            <div class="scan-limit-info limit-reached">
+                <span class="scan-icon">⚠️</span>
+                <span class="scan-text">הגעת למגבלת ${DEMO_SCAN_LIMIT} סריקות ליום</span>
+                <span class="educational-notice">(מטרות חינוכיות - חזור מחר או רכוש גרסה מלאה)</span>
+            </div>
+        `;
+        counterElement.classList.add('limit-reached');
+    }
+}
+
+// Israeli domain validation for proxy mode (anti-abuse measure)
+function isIsraeliDomain(url) {
+    try {
+        const urlObj = new URL(url);
+        const hostname = urlObj.hostname.toLowerCase();
+        
+        // Israeli TLD patterns
+        const israeliTLDs = [
+            '.co.il',
+            '.org.il', 
+            '.ac.il',
+            '.gov.il',
+            '.net.il',
+            '.muni.il',
+            '.idf.il',
+            '.ישראל' // Hebrew IDN
+        ];
+        
+        // Check if hostname ends with any Israeli TLD
+        return israeliTLDs.some(tld => hostname.endsWith(tld));
+    } catch (e) {
+        // Invalid URL format
+        return false;
+    }
+}
+
+// Local IP validation for local proxy mode
+function isLocalIP(url) {
+    try {
+        const urlObj = new URL(url);
+        const hostname = urlObj.hostname.toLowerCase();
+        
+        // Remove brackets for IPv6 addresses
+        const cleanHostname = hostname.replace(/^\[|\]$/g, '');
+        
+        // Localhost patterns
+        if (hostname === 'localhost' || hostname === 'localhost.localdomain') {
+            return true;
+        }
+        
+        // IPv4 loopback (127.0.0.0/8)
+        if (/^127\./.test(cleanHostname)) {
+            return true;
+        }
+        
+        // IPv6 loopback
+        if (cleanHostname === '::1' || cleanHostname === '0:0:0:0:0:0:0:1') {
+            return true;
+        }
+        
+        // Private IPv4 networks
+        const ipv4Match = cleanHostname.match(/^(\d+)\.(\d+)\.(\d+)\.(\d+)$/);
+        if (ipv4Match) {
+            const [, a, b, c, d] = ipv4Match.map(Number);
+            
+            // 192.168.0.0/16
+            if (a === 192 && b === 168) return true;
+            
+            // 10.0.0.0/8
+            if (a === 10) return true;
+            
+            // 172.16.0.0/12
+            if (a === 172 && b >= 16 && b <= 31) return true;
+        }
+        
+        return false;
+    } catch (e) {
+        return false;
+    }
+}
+
+// Proxy type switching function
+function switchProxyType(type) {
+    const corsproxyForm = document.getElementById('proxy-form');
+    const localProxyForm = document.getElementById('local-proxy-form');
+    const corsproxyWarnings = document.getElementById('corsproxy-warnings');
+    const localProxyWarnings = document.getElementById('local-proxy-warnings');
+    
+    if (type === 'corsproxy') {
+        corsproxyForm.style.display = 'block';
+        localProxyForm.style.display = 'none';
+        corsproxyWarnings.style.display = 'block';
+        localProxyWarnings.style.display = 'none';
+    } else if (type === 'local') {
+        corsproxyForm.style.display = 'none';
+        localProxyForm.style.display = 'block';
+        corsproxyWarnings.style.display = 'none';
+        localProxyWarnings.style.display = 'block';
+    }
+}
+
 // Progress Tracker Class
 class ProgressTracker {
     constructor() {
@@ -229,6 +416,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize default scan mode (private)
     switchScanMode('private');
+    
+    // Initialize demo scan counter if on demo site
+    updateScanCountDisplay();
     
     // Initialize disclaimer banner and side tab
     initDisclaimerBanner();
@@ -516,6 +706,12 @@ function showDisclaimer() {
 async function handleProxyCheck(e) {
     e.preventDefault();
     
+    // Check scan limit for demo site
+    if (isScanLimitReached()) {
+        alert('הגעת למגבלת 10 סריקות ליום עבור האתר הדמו. חזור מחר או רכוש גרסה מלאה.');
+        return;
+    }
+    
     // Ensure we're in proxy mode
     currentScanMode = 'proxy';
     
@@ -541,6 +737,31 @@ async function handleProxyCheck(e) {
     if (!url) {
         alert('אנא הכנס כתובת אתר תקינה (לדוגמה: example.co.il או https://example.com)');
         return;
+    }
+    
+    // Get selected proxy type
+    const selectedProxyType = document.querySelector('input[name="proxy-type"]:checked')?.value || 'corsproxy';
+    
+    // Check if domain is Israeli (anti-abuse measure) - only for CorsProxy.io mode
+    if (selectedProxyType === 'corsproxy' && !isIsraeliDomain(url)) {
+        alert('מצב CorsProxy.io תומך רק באתרים ישראליים (.co.il, .org.il, .ac.il, .gov.il, .net.il, .muni.il, .idf.il, .ישראל).\n\nעבור אתרים בינלאומיים, אנא השתמשו במצב "הזנה ידנית" או במצב "Proxy מקומי".');
+        return;
+    }
+    
+    // For local proxy mode, validate that the proxy URL is a local IP
+    if (selectedProxyType === 'local') {
+        const localProxyInput = document.getElementById('local-proxy-url');
+        const localProxyUrl = localProxyInput?.value?.trim();
+        
+        if (!localProxyUrl) {
+            alert('יש להזין כתובת Proxy מקומי');
+            return;
+        }
+        
+        if (!isLocalIP(localProxyUrl)) {
+            alert('ניתן להשתמש רק בכתובות Proxy מקומיות (localhost, 127.0.0.1, ::1, או רשתות פרטיות)');
+            return;
+        }
     }
     
     // Update input with normalized URL
@@ -579,6 +800,9 @@ async function handleProxyCheck(e) {
             lastScannedUrl = url;
             lastScanMode = currentScanMode;
             
+            // Increment demo scan count on successful scan
+            incrementDemoScanCount();
+            
             await new Promise(resolve => setTimeout(resolve, 500));
             displayResults(results);
             
@@ -604,6 +828,12 @@ async function handleProxyCheck(e) {
 
 async function handleWebsiteCheck(e) {
     e.preventDefault();
+    
+    // Check scan limit for demo site
+    if (isScanLimitReached()) {
+        alert('הגעת למגבלת 10 סריקות ליום עבור האתר הדמו. חזור מחר או רכוש גרסה מלאה.');
+        return;
+    }
     
     // Only set to private mode if not doing a rescan (preserve the mode for rescans)
     if (e.type !== 'submit' || !e.isTrusted || !lastScannedUrl) {
@@ -690,6 +920,9 @@ async function handleWebsiteCheck(e) {
             latestScanResults = results;
             lastScannedUrl = url;
             lastScanMode = currentScanMode;
+            
+            // Increment demo scan count on successful scan
+            incrementDemoScanCount();
             
             // Wait a moment to show completion
             await new Promise(resolve => setTimeout(resolve, 500));
@@ -812,7 +1045,18 @@ async function checkWebsiteCompliance(url, progressCallback, htmlContent = null)
         
         // Enable proxy mode if selected and consented (when htmlContent is null)
         if (currentScanMode === 'proxy' && !htmlContent && (proxyConsentGiven || localStorage.getItem('tikun13_proxy_consent'))) {
-            scanner.enableProxyMode(true, true);
+            // Get selected proxy type and configuration
+            const selectedProxyType = document.querySelector('input[name="proxy-type"]:checked')?.value || 'corsproxy';
+            const localProxyUrl = selectedProxyType === 'local' ? 
+                document.getElementById('local-proxy-url')?.value?.trim() : null;
+            
+            // Enable appropriate proxy mode
+            if (selectedProxyType === 'local') {
+                scanner.enableProxyMode(true, true, 'local', localProxyUrl);
+            } else {
+                scanner.enableProxyMode(true, true, 'corsproxy');
+            }
+            
             // For proxy mode, fetch the HTML
             const proxyResult = await scanner.fetchWebsiteViaProxy(url);
             htmlContent = proxyResult.html;

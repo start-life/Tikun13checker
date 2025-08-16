@@ -1,12 +1,11 @@
 // Real Website Scanner - Privacy First with Optional Proxy Mode
 class RealWebsiteScanner {
     constructor() {
-        // Proxy services (only used when user explicitly consents)
-        this.corsProxies = [
-            url => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
-            url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
-            url => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`
-        ];
+        // Proxy service (only used when user explicitly consents)
+        // Using CorsProxy.io - a commercial GDPR-compliant service
+        this.corsProxy = url => `https://corsproxy.io/?url=${encodeURIComponent(url)}`;
+        this.localProxy = null; // Will be set when local proxy is used
+        this.proxyType = 'corsproxy'; // 'corsproxy' or 'local'
         this.isManualMode = false;
         this.useProxy = false;
         this.proxyConsentGiven = false;
@@ -18,11 +17,20 @@ class RealWebsiteScanner {
     }
 
     // Enable proxy mode (requires user consent)
-    enableProxyMode(userConfirmed = false, understandsDataSharing = false) {
-        this.validateProxyConsent(userConfirmed, understandsDataSharing);
+    enableProxyMode(userConfirmed = false, understandsDataSharing = false, proxyType = 'corsproxy', localProxyUrl = null) {
+        if (proxyType === 'corsproxy') {
+            this.validateProxyConsent(userConfirmed, understandsDataSharing);
+        }
         this.useProxy = true;
         this.proxyConsentGiven = true;
-        console.log('🔒 Proxy mode enabled with privacy protections');
+        this.proxyType = proxyType;
+        
+        if (proxyType === 'local' && localProxyUrl) {
+            this.localProxy = url => `${localProxyUrl}/${encodeURIComponent(url)}`;
+            console.log('🏠 Local proxy mode enabled - no external data sharing');
+        } else {
+            console.log('🔒 CorsProxy.io mode enabled with privacy protections');
+        }
     }
 
     // Disable proxy mode (default)
@@ -31,12 +39,12 @@ class RealWebsiteScanner {
         this.proxyConsentGiven = false;
     }
 
-    // Privacy-aware random proxy selection
-    getRandomProxy() {
-        const randomIndex = Math.floor(Math.random() * this.corsProxies.length);
+    // Get the appropriate proxy service based on type
+    getProxy() {
         return {
-            index: randomIndex,
-            proxyFunction: this.corsProxies[randomIndex]
+            index: 0,
+            proxyFunction: this.proxyType === 'local' ? this.localProxy : this.corsProxy,
+            type: this.proxyType
         };
     }
 
@@ -64,17 +72,31 @@ class RealWebsiteScanner {
 
     // Get proxy status for UI display
     getProxyStatus() {
-        return {
-            enabled: this.useProxy,
-            consentGiven: this.proxyConsentGiven,
-            mode: this.isManualMode ? 'manual' : (this.useProxy ? 'proxy' : 'disabled'),
-            privacyProtections: this.useProxy ? [
-                'Random proxy selection',
+        const serviceName = this.proxyType === 'local' ? 
+            'Local Proxy (Self-hosted)' : 
+            'CorsProxy.io (Commercial GDPR-compliant service)';
+            
+        const privacyProtections = this.useProxy ? 
+            (this.proxyType === 'local' ? [
+                'No external data sharing',
+                'Self-hosted proxy',
+                'Full user control',
+                'Private network only'
+            ] : [
+                'GDPR-compliant commercial service',
                 'Sanitized headers',
                 'Random user agent',
                 'No persistent tracking',
                 'DNT header enabled'
-            ] : []
+            ]) : [];
+            
+        return {
+            enabled: this.useProxy,
+            consentGiven: this.proxyConsentGiven,
+            mode: this.isManualMode ? 'manual' : (this.useProxy ? 'proxy' : 'disabled'),
+            service: serviceName,
+            type: this.proxyType,
+            privacyProtections
         };
     }
 
@@ -92,75 +114,41 @@ class RealWebsiteScanner {
             throw new Error('Proxy mode is disabled or consent not given. Please use manual input mode or enable proxy with explicit consent.');
         }
 
-        let lastError = null;
-        const triedProxies = new Set();
-        
-        // Try different proxy services randomly (privacy-focused approach)
-        while (triedProxies.size < this.corsProxies.length) {
-            try {
-                const { index, proxyFunction } = this.getRandomProxy();
-                
-                // Skip if already tried this proxy
-                if (triedProxies.has(index)) {
-                    continue;
-                }
-                triedProxies.add(index);
-
-                const proxyUrl = proxyFunction(url);
-                const sanitizedHeaders = this.getSanitizedHeaders();
-                
-                console.log(`🔒 Using proxy ${index + 1} with privacy-aware headers`);
-                
-                const response = await fetch(proxyUrl, {
-                    method: 'GET',
-                    headers: sanitizedHeaders
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                // Get response as text first to check format
-                const responseText = await response.text();
-                
-                let html = '';
-                let finalUrl = null;
-                
-                // Check if response is JSON or HTML
-                const trimmedResponse = responseText.trim();
-                if (trimmedResponse.startsWith('{') || trimmedResponse.startsWith('[')) {
-                    // It's JSON - parse it
-                    try {
-                        const data = JSON.parse(responseText);
-                        html = data.contents || data.data || data;
-                        finalUrl = data.status?.url || data.url || null;
-                    } catch (jsonError) {
-                        console.warn('Failed to parse JSON response:', jsonError);
-                        html = responseText;
-                    }
-                } else if (trimmedResponse.startsWith('<') || trimmedResponse.includes('<!DOCTYPE')) {
-                    // It's HTML directly
-                    html = responseText;
-                } else {
-                    // Unknown format, try to use as is
-                    html = responseText;
-                }
-                
-                if (typeof html === 'string' && html.length > 0) {
-                    // Check if we got an error page
-                    if (html.includes('error') && html.includes('proxy') && html.length < 5000) {
-                        throw new Error('Proxy service error page detected');
-                    }
-                    return { html, finalUrl };
-                }
-                throw new Error('Empty or invalid response');
-            } catch (error) {
-                lastError = error;
-                console.warn(`🔒 Proxy ${index + 1} failed, trying another randomly...`, error.message);
+        try {
+            const { proxyFunction, type } = this.getProxy();
+            const proxyUrl = proxyFunction(url);
+            const sanitizedHeaders = this.getSanitizedHeaders();
+            
+            if (type === 'local') {
+                console.log('🏠 Using local proxy - no external data sharing');
+            } else {
+                console.log('🔒 Using CorsProxy.io with privacy-aware headers');
             }
+            
+            const response = await fetch(proxyUrl, {
+                method: 'GET',
+                headers: sanitizedHeaders
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const html = await response.text();
+            
+            if (typeof html === 'string' && html.length > 0) {
+                // Check for error responses (adjust based on proxy type)
+                if (type === 'corsproxy' && html.includes('error') && html.includes('proxy') && html.length < 5000) {
+                    throw new Error('CorsProxy.io service error - content may be blocked or service unavailable');
+                }
+                return { html, finalUrl: url };
+            }
+            throw new Error(`Empty response from ${type === 'local' ? 'local proxy' : 'CorsProxy.io'}`);
+        } catch (error) {
+            const proxyName = this.proxyType === 'local' ? 'local proxy' : 'CorsProxy.io';
+            console.error(`🔒 ${proxyName} failed:`, error.message);
+            throw new Error(`Failed to fetch website via ${proxyName}: ${error.message}`);
         }
-        
-        throw new Error(`Failed to fetch website via proxy: ${lastError?.message}`);
     }
 
     // Process manually provided HTML content
@@ -231,9 +219,13 @@ class RealWebsiteScanner {
                     console.log('Using proxy-fetched HTML content');
                     
                     // Add detailed note about proxy usage with privacy context
+                    const proxyMessage = this.proxyType === 'local' ?
+                        '🏠 הניתוח מבוסס על תוכן שהתקבל דרך Proxy מקומי (ללא שיתוף נתונים חיצוני) - שליטה מלאה על הנתונים.' :
+                        '🌐 הניתוח מבוסס על תוכן שהתקבל דרך CorsProxy.io (שירות מסחרי תואם GDPR) עם הגנות פרטיות: כותרות מחוסלות ו-User-Agent אקראי.';
+                    
                     scanResult.recommendations.push({
                         priority: 'info',
-                        message: '🌐 הניתוח מבוסס על תוכן שהתקבל דרך שירות Proxy עם הגנות פרטיות: כותרות מחוסלות, User-Agent אקראי, ובחירת Proxy אקראית.'
+                        message: proxyMessage
                     });
                 }
                 

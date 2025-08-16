@@ -81,7 +81,7 @@
 
                 <div class="disclaimer-section">
                     <h4>🔒 פרטיות</h4>
-                    <p>הכלי פועל בצד הלקוח בלבד. כתובות האתרים שנבדקות אינן נשמרות או נשלחות לשרתים חיצוניים, למעט שימוש בשירותי proxy לצורך עקיפת מגבלות CORS.</p>
+                    <p>הכלי פועל בצד הלקוח בלבד. כתובות האתרים שנבדקות אינן נשמרות או נשלחות לשרתים חיצוניים, למעט שימוש בשירות CorsProxy.io (מסחרי תואם GDPR) לצורך עקיפת מגבלות CORS.</p>
                 </div>
             </div>
 
@@ -148,8 +148,7 @@
                     <li><a href="#" onclick="showAssessmentSection(); return false;">הערכה עצמית</a></li>
                     <li><a href="#" onclick="showCookieBuilderSection(); return false;">🍪 בונה עוגיות</a></li>
                     <li><a href="#features">יכולות</a></li>
-                    <li><a href="#requirements">דרישות</a></li>
-                    <li><a href="#resources">משאבים</a></li>
+                    <li><a href="#resources">משאבים ודרישות</a></li>
                     <li><a href="https://github.com/ionsec" target="_blank">GitHub</a></li>
                 </ul>
             </div>
@@ -328,7 +327,7 @@
                                     <span class="mode-icon">🔒</span>
                                     <div class="mode-details">
                                         <strong>מצב פרטי 100%</strong>
-                                        <small>העתק והדבק HTML - שום מידע לא יוצא מהדפדפן</small>
+                                        <small>העתק והדבק HTML - תומך בכל האתרים בעולם, שום מידע לא יוצא מהדפדפן</small>
                                     </div>
                                 </label>
                             </div>
@@ -339,7 +338,7 @@
                                     <span class="mode-icon">⚡</span>
                                     <div class="mode-details">
                                         <strong>מצב אוטומטי</strong>
-                                        <small>סריקה מהירה - משתמש בשירותי proxy (פחות פרטי)</small>
+                                        <small>סריקה מהירה - משתמש בשירות CorsProxy.io מסחרי (רק אתרים ישראליים, פחות פרטי)</small>
                                     </div>
                                 </label>
                             </div>
@@ -375,24 +374,135 @@
                     <!-- Proxy Mode -->
                     <div id="proxy-input-mode" class="scan-mode-content" style="display: none;">
                         <div class="proxy-consent-warning">
-                            <h4>⚠️ אזהרת פרטיות</h4>
-                            <p>במצב זה, כתובת האתר תישלח לשירותי Proxy חיצוניים:</p>
-                            <ul>
-                                <li>api.allorigins.win</li>
-                                <li>corsproxy.io</li>
-                                <li>api.codetabs.com</li>
-                            </ul>
+                            <h4>⚠️ מצב Proxy - אזהרת פרטיות</h4>
+                            <p>במצב זה, כתובות האתרים עוברות דרך שירותי Proxy חיצוניים או מקומיים:</p>
+                            
+                            <!-- CorsProxy.io specific warnings -->
+                            <div id="corsproxy-warnings" class="proxy-specific-warning">
+                                <div class="commercial-notice">
+                                    <p><strong>CorsProxy.io:</strong> שירות מסחרי תואם GDPR. אם המשאב מועיל לכם, אנא שקלו לרכוש תוכנית פרימיום לתמיכה במפתחים.</p>
+                                </div>
+                                <div class="israeli-domains-notice">
+                                    <p><strong>מגבלת דומיינים:</strong> CorsProxy.io תומך רק באתרים ישראליים (.co.il, .org.il, .ac.il, .gov.il, .net.il, .muni.il, .idf.il, .ישראל) כדי למנוע שימוש לרעה.</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Local Proxy specific warnings -->
+                            <div id="local-proxy-warnings" class="proxy-specific-warning" style="display: none;">
+                                <div class="local-setup-notice">
+                                    <p><strong>Proxy מקומי:</strong> אחריות מלאה על הגדרה, תחזוקה ואבטחה. ללא מגבלות דומיין אך ללא תמיכה טכנית. השתמשו רק בכתובות localhost מקומיות.</p>
+                                </div>
+                                
+                                <div class="local-proxy-setup">
+                                    <h4>🔧 הגדרת Proxy מקומי - פתרונות קוד פתוח</h4>
+                                    <div class="proxy-solutions">
+                                        <div class="proxy-option">
+                                            <h5>cors-anywhere (Node.js)</h5>
+                                            <code>
+                                                npm install cors-anywhere<br>
+                                                node server.js --port 8080<br>
+                                                כתובת: http://localhost:8080
+                                            </code>
+                                            <p><a href="https://github.com/Rob--W/cors-anywhere" target="_blank">GitHub</a></p>
+                                        </div>
+                                        
+                                        <div class="proxy-option">
+                                            <h5>corsproxy (Python)</h5>
+                                            <code>
+                                                pip install flask flask-cors<br>
+                                                python proxy.py<br>
+                                                כתובת: http://localhost:5000
+                                            </code>
+                                            <p><a href="https://github.com/Rob--W/cors-anywhere" target="_blank">GitHub</a></p>
+                                        </div>
+                                        
+                                        <div class="proxy-option">
+                                            <h5>cors-toujours (Express.js)</h5>
+                                            <code>
+                                                npm install express cors<br>
+                                                node app.js<br>
+                                                כתובת: http://localhost:3000
+                                            </code>
+                                            <p>פתרון מותאם ל-CORS פשוט ומהיר</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="security-warnings">
+                                        <h5>⚠️ אזהרות אבטחה</h5>
+                                        <ul>
+                                            <li>השתמשו רק ברשת מקומית (localhost/127.0.0.1)</li>
+                                            <li>אל תחשפו את ה-Proxy לאינטרנט</li>
+                                            <li>בדקו את קוד הפתרון לפני ההתקנה</li>
+                                            <li>עצירת השירות אחרי השימוש</li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <div class="no-support-disclaimer">
+                                        <p><strong>⚠️ אחריות מלאה:</strong> פתרונות מקומיים הם באחריותכם המלאה. אנו לא מספקים תמיכה טכנית, אחריות על אבטחה, או ערבות לתפקוד.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
                             <label class="consent-checkbox">
                                 <input type="checkbox" id="proxy-consent">
-                                <span>אני מבין ומסכים שהכתובת תישלח לשירותים חיצוניים</span>
+                                <span>אני מבין את סיכוני הפרטיות של מצב Proxy, מסכים להעברת נתונים דרך שירותים חיצוניים/מקומיים, ומתחייב לא לעשות שימוש לרעה</span>
                             </label>
                         </div>
-                        <form id="proxy-form" role="form" aria-label="טופס סריקה אוטומטית">
+                        
+                        <!-- Proxy Type Selection -->
+                        <div class="proxy-type-selection">
+                            <h4>🔧 בחירת סוג Proxy</h4>
+                            <div class="proxy-types">
+                                <div class="proxy-type-option">
+                                    <input type="radio" id="corsproxy-io" name="proxy-type" value="corsproxy" checked onchange="switchProxyType('corsproxy')">
+                                    <label for="corsproxy-io">
+                                        <span class="proxy-icon">🌐</span>
+                                        <div class="proxy-details">
+                                            <strong>CorsProxy.io</strong>
+                                            <small>שירות מסחרי - רק אתרים ישראליים</small>
+                                        </div>
+                                    </label>
+                                </div>
+                                <div class="proxy-type-option">
+                                    <input type="radio" id="local-proxy" name="proxy-type" value="local" onchange="switchProxyType('local')">
+                                    <label for="local-proxy">
+                                        <span class="proxy-icon">🏠</span>
+                                        <div class="proxy-details">
+                                            <strong>Proxy מקומי</strong>
+                                            <small>ללא מגבלות דומיין - דורש הגדרה עצמית</small>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- CorsProxy.io Form -->
+                        <form id="proxy-form" role="form" aria-label="טופס סריקה אוטומטית" style="display: block;">
                             <div class="input-group">
                                 <input type="text" id="proxy-url" placeholder="הכנס כתובת אתר (לדוגמה: example.co.il)" aria-label="כתובת אתר">
                                 <button type="submit" class="btn-primary" id="proxy-scan-button" disabled>סרוק אוטומטית</button>
                             </div>
                         </form>
+                        
+                        <!-- Local Proxy Form -->
+                        <div id="local-proxy-form" style="display: none;">
+                            <div class="local-proxy-warning">
+                                <h5>⚠️ Proxy מקומי - הגדרה עצמית</h5>
+                                <p>הזן את כתובת ה-Proxy המקומי שלך (localhost בלבד):</p>
+                                <ul>
+                                    <li>דוגמה: http://localhost:8080</li>
+                                    <li>ללא מגבלות דומיין - כל האתרים בעולם</li>
+                                    <li>אחריות מלאה על הגדרה ותחזוקה</li>
+                                </ul>
+                            </div>
+                            <div class="input-group">
+                                <input type="text" id="local-proxy-url" placeholder="כתובת Proxy מקומי (לדוגמה: http://localhost:8080)" aria-label="כתובת Proxy מקומי">
+                            </div>
+                            <div class="input-group">
+                                <input type="text" id="local-target-url" placeholder="כתובת האתר לסריקה (לדוגמה: https://example.com)" aria-label="כתובת אתר יעד">
+                                <button type="button" class="btn-primary" id="local-proxy-scan-button">סרוק דרך Proxy מקומי</button>
+                            </div>
+                        </div>
                     </div>
                     
                     <!-- Instructions Modal -->
@@ -586,64 +696,6 @@
             </div>
         </section>
 
-        <section id="requirements" class="requirements" role="region" aria-label="דרישות תיקון 13">
-            <div class="container">
-                <h2>דרישות עיקריות של תיקון 13</h2>
-                
-                <div class="timeline">
-                    <div class="timeline-item">
-                        <div class="timeline-date">14 באוגוסט 2025</div>
-                        <div class="timeline-content">
-                            <h3>כניסה לתוקף</h3>
-                            <p>תיקון 13 נכנס לתוקף באופן מלא. כל הארגונים חייבים לעמוד בדרישות החוק.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="requirements-grid">
-                    <div class="requirement-card">
-                        <h3>1. מסמכי הגדרת מאגר</h3>
-                        <ul>
-                            <li>מיפוי וותיעוד פעילויות עיבוד מידע</li>
-                            <li>סקירה שנתית של התיעוד</li>
-                            <li>עדכון שוטף בהתאם לשינויים</li>
-                        </ul>
-                    </div>
-                    <div class="requirement-card">
-                        <h3>2. ממונה הגנת פרטיות</h3>
-                        <ul>
-                            <li>חובת מינוי לגופים ציבוריים</li>
-                            <li>חובה לארגונים גדולים ורגישים</li>
-                            <li>אחריות על יישום והטמעת החוק</li>
-                        </ul>
-                    </div>
-                    <div class="requirement-card">
-                        <h3>3. הודעות לנושאי מידע</h3>
-                        <ul>
-                            <li>שם ופרטי הקשר של בעל המאגר</li>
-                            <li>מטרות איסוף המידע</li>
-                            <li>זכות עיון ותיקון (סעיפים 13-14)</li>
-                        </ul>
-                    </div>
-                    <div class="requirement-card">
-                        <h3>4. אבטחת מידע מוגברת</h3>
-                        <ul>
-                            <li>הצפנת מידע רגיש</li>
-                            <li>בקרות גישה מחמירות</li>
-                            <li>ביקורות אבטחה תקופתיות</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="penalties-section">
-                    <h3>סנקציות וקנסות</h3>
-                    <div class="warning-box">
-                        <p><strong>שימו לב:</strong> הרשות להגנת הפרטיות קיבלה סמכויות אכיפה מורחבות וסמכות להטיל קנסות משמעותיים בהתאם לחומרת ההפרה, מספר נושאי המידע שנפגעו, ומחזור הארגון.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
         <!-- Resources Section -->
         <section id="resources" class="resources" role="region" aria-label="משאבים חינמיים">
             <div class="container">
@@ -652,7 +704,8 @@
                 <div class="resources-content">
                     <!-- Tabs Navigation -->
                     <div class="resource-tabs">
-                        <button class="resource-tab active" onclick="showResourceTab('checklists')">📋 רשימות תיוג</button>
+                        <button class="resource-tab active" onclick="showResourceTab('requirements')">⚖️ דרישות החוק</button>
+                        <button class="resource-tab" onclick="showResourceTab('checklists')">📋 רשימות תיוג</button>
                         <button class="resource-tab" onclick="showResourceTab('templates')">📝 תבניות מסמכים</button>
                         <button class="resource-tab" onclick="showResourceTab('code')">💻 קוד מוכן</button>
                         <button class="resource-tab" onclick="showResourceTab('calculators')">🧮 מחשבונים</button>
@@ -660,8 +713,65 @@
 
                     <!-- Tab Content -->
                     <div class="resource-content">
+                        <!-- Requirements Tab -->
+                        <div id="requirements-tab" class="resource-tab-content active">
+                            <h3>דרישות עיקריות של תיקון 13</h3>
+                            
+                            <div class="timeline">
+                                <div class="timeline-item">
+                                    <div class="timeline-date">14 באוגוסט 2025</div>
+                                    <div class="timeline-content">
+                                        <h4>כניסה לתוקף</h4>
+                                        <p>תיקון 13 נכנס לתוקף באופן מלא. כל הארגונים חייבים לעמוד בדרישות החוק.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="requirements-grid">
+                                <div class="requirement-card">
+                                    <h4>1. מסמכי הגדרת מאגר</h4>
+                                    <ul>
+                                        <li>מיפוי וותיעוד פעילויות עיבוד מידע</li>
+                                        <li>סקירה שנתית של התיעוד</li>
+                                        <li>עדכון שוטף בהתאם לשינויים</li>
+                                    </ul>
+                                </div>
+                                <div class="requirement-card">
+                                    <h4>2. ממונה הגנת פרטיות</h4>
+                                    <ul>
+                                        <li>חובת מינוי לגופים ציבוריים</li>
+                                        <li>חובה לארגונים גדולים ורגישים</li>
+                                        <li>אחריות על יישום והטמעת החוק</li>
+                                    </ul>
+                                </div>
+                                <div class="requirement-card">
+                                    <h4>3. הודעות לנושאי מידע</h4>
+                                    <ul>
+                                        <li>שם ופרטי הקשר של בעל המאגר</li>
+                                        <li>מטרות איסוף המידע</li>
+                                        <li>זכות עיון ותיקון (סעיפים 13-14)</li>
+                                    </ul>
+                                </div>
+                                <div class="requirement-card">
+                                    <h4>4. אבטחת מידע מוגברת</h4>
+                                    <ul>
+                                        <li>הצפנת מידע רגיש</li>
+                                        <li>בקרות גישה מחמירות</li>
+                                        <li>ביקורות אבטחה תקופתיות</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="penalties-section">
+                                <h4>סנקציות וקנסות</h4>
+                                <div class="warning-box">
+                                    <p><strong>שימו לב:</strong> הרשות להגנת הפרטיות קיבלה סמכויות אכיפה מורחבות וסמכות להטיל קנסות משמעותיים בהתאם לחומרת ההפרה, מספר נושאי המידע שנפגעו, ומחזור הארגון.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <!-- Checklists Tab -->
-                        <div id="checklists-tab" class="resource-tab-content active">
+                        <div id="checklists-tab" class="resource-tab-content">
                             <h3>רשימות תיוג מקיפות להיערכות</h3>
                             <div class="checklist-grid">
                                 <div class="checklist-item">
@@ -1212,7 +1322,7 @@
                     <h4>קישורים</h4>
                     <ul>
                         <li><a href="#features">יכולות הכלי</a></li>
-                        <li><a href="#requirements">דרישות החוק</a></li>
+                        <li><a href="#resources">דרישות החוק</a></li>
                         <li><a href="#resources">משאבים</a></li>
                         <li><a href="#" onclick="showCookieBuilderSection(); return false;">בונה באנר עוגיות</a></li>
                         <li><a href="https://www.gov.il/he/departments/the_privacy_protection_authority" target="_blank">רשות הגנת הפרטיות</a></li>
