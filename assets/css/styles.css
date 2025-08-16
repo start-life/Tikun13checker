@@ -4350,3 +4350,182 @@ body.disclaimer-visible {
         font-size: 0.9rem;
     }
 }
+
+/* Enhanced Local Proxy Form Styling */
+.local-proxy-form-container {
+    background: linear-gradient(135deg, #e8f5e8 0%, #d4edda 100%);
+    border: 2px solid #28a745;
+    border-radius: 12px;
+    padding: 25px;
+    margin: 20px 0;
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.2);
+}
+
+.local-proxy-form-container h4 {
+    color: #155724;
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+    text-align: center;
+}
+
+.local-proxy-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.local-proxy-group {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #c3e6cb;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.local-proxy-group .input-label {
+    display: block;
+    color: #155724;
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+}
+
+.local-proxy-input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #28a745;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #fff;
+}
+
+.local-proxy-input:focus {
+    outline: none;
+    border-color: #155724;
+    box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.2);
+    background: #f8fff8;
+}
+
+.local-proxy-input::placeholder {
+    color: #6c757d;
+    font-style: italic;
+}
+
+.btn-local-scan {
+    margin-top: 15px;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border: none;
+    padding: 12px 25px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 12px rgba(40, 167, 69, 0.3);
+}
+
+.btn-local-scan:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(40, 167, 69, 0.4);
+    background: linear-gradient(135deg, #218838 0%, #1e7e34 100%);
+}
+
+.local-proxy-note {
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 6px;
+    padding: 12px;
+    margin-top: 15px;
+    border-left: 4px solid #ffc107;
+}
+
+.local-proxy-note p {
+    margin: 0;
+    color: #856404;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+/* Simplified Proxy Setup Styling */
+.proxy-suggestions {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 15px;
+}
+
+.proxy-suggestions p {
+    margin-bottom: 15px;
+    color: #333;
+    font-weight: 500;
+}
+
+.proxy-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 20px 0;
+}
+
+.proxy-list li {
+    padding: 8px 0;
+    border-bottom: 1px solid #e9ecef;
+    color: #495057;
+}
+
+.proxy-list li:last-child {
+    border-bottom: none;
+}
+
+.proxy-list li strong {
+    color: var(--secondary-color);
+}
+
+.proxy-list a {
+    color: var(--secondary-color);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.proxy-list a:hover {
+    text-decoration: underline;
+}
+
+.setup-note {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 15px;
+    margin-top: 15px;
+}
+
+.setup-note p {
+    margin: 0 0 8px 0;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.setup-note p:last-child {
+    margin-bottom: 0;
+}
+
+/* Responsive Design for Local Proxy Form */
+@media (max-width: 768px) {
+    .local-proxy-form-container {
+        padding: 20px 15px;
+    }
+    
+    .local-proxy-group {
+        padding: 12px;
+    }
+    
+    .local-proxy-input {
+        padding: 10px 12px;
+        font-size: 0.95rem;
+    }
+    
+    .btn-local-scan {
+        padding: 10px 20px;
+        font-size: 0.95rem;
+    }
+}

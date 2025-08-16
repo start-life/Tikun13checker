@@ -526,6 +526,7 @@ function initFormHandlers() {
     const checkerForm = document.getElementById('checker-form');
     const proxyForm = document.getElementById('proxy-form');
     const newsletterForm = document.getElementById('newsletter-form');
+    const localProxyScanButton = document.getElementById('local-proxy-scan-button');
     
     if (checkerForm) {
         checkerForm.addEventListener('submit', handleWebsiteCheck);
@@ -537,6 +538,10 @@ function initFormHandlers() {
     
     if (newsletterForm) {
         newsletterForm.addEventListener('submit', handleNewsletterSignup);
+    }
+    
+    if (localProxyScanButton) {
+        localProxyScanButton.addEventListener('click', handleLocalProxyCheck);
     }
 }
 
@@ -819,6 +824,125 @@ async function handleProxyCheck(e) {
         await new Promise(resolve => setTimeout(resolve, 500));
         displayError(error, url);
         lastScannedUrl = url;
+        document.getElementById('scan-controls').style.display = 'flex';
+    } finally {
+        showLoadingOverlay(false);
+        currentScan = null;
+    }
+}
+
+// Handle local proxy scan
+async function handleLocalProxyCheck(e) {
+    e.preventDefault();
+    
+    // Check scan limit for demo site
+    if (isScanLimitReached()) {
+        alert('הגעת למגבלת 10 סריקות ליום עבור האתר הדמו. חזור מחר או רכוש גרסה מלאה.');
+        return;
+    }
+    
+    // Ensure we're in proxy mode
+    currentScanMode = 'proxy';
+    
+    // Check consent first
+    if (!localStorage.getItem('tikun13_consent')) {
+        alert('יש לקבל את תנאי השימוש לפני השימוש בכלי');
+        initConsent();
+        return;
+    }
+    
+    // Check proxy consent
+    if (!proxyConsentGiven && !localStorage.getItem('tikun13_proxy_consent')) {
+        alert('יש לאשר את השימוש במצב Proxy לפני הסריקה.');
+        return;
+    }
+    
+    const localProxyUrlInput = document.getElementById('local-proxy-url');
+    const localTargetUrlInput = document.getElementById('local-target-url');
+    
+    const localProxyUrl = localProxyUrlInput.value.trim();
+    const targetUrl = localTargetUrlInput.value.trim();
+    
+    // Validate inputs
+    if (!localProxyUrl) {
+        alert('יש להזין כתובת Proxy מקומי');
+        localProxyUrlInput.focus();
+        return;
+    }
+    
+    if (!targetUrl) {
+        alert('יש להזין כתובת אתר לסריקה');
+        localTargetUrlInput.focus();
+        return;
+    }
+    
+    // Validate local proxy URL
+    if (!isLocalIP(localProxyUrl)) {
+        alert('ניתן להשתמש רק בכתובות Proxy מקומיות (localhost, 127.0.0.1, ::1, או רשתות פרטיות)');
+        localProxyUrlInput.focus();
+        return;
+    }
+    
+    // Normalize and validate target URL
+    const normalizedTargetUrl = normalizeAndValidateUrl(targetUrl);
+    if (!normalizedTargetUrl) {
+        alert('אנא הכנס כתובת אתר תקינה לסריקה (לדוגמה: https://example.com)');
+        localTargetUrlInput.focus();
+        return;
+    }
+    
+    // Update inputs with normalized values
+    localTargetUrlInput.value = normalizedTargetUrl;
+    
+    // Create progress tracker
+    const progressTracker = new ProgressTracker();
+    currentScan = progressTracker;
+    
+    showLoadingOverlay(true);
+    
+    try {
+        // Check website compliance with local proxy
+        const results = await checkWebsiteComplianceWithLocalProxy(normalizedTargetUrl, progressTracker.updateProgress.bind(progressTracker), localProxyUrl);
+        
+        if (!results) {
+            throw new Error('No results returned from scan');
+        }
+        
+        // Check if scan had errors
+        if (results.error) {
+            console.error('Scan completed with error:', results.error);
+            progressTracker.error('הסריקה הושלמה עם שגיאות');
+            
+            await new Promise(resolve => setTimeout(resolve, 500));
+            displayError({ message: results.error }, normalizedTargetUrl);
+            lastScannedUrl = normalizedTargetUrl;
+        } else {
+            // Complete the progress successfully
+            progressTracker.complete();
+            
+            latestScanResults = results;
+            lastScannedUrl = normalizedTargetUrl;
+            lastScanMode = currentScanMode;
+            
+            // Increment demo scan count on successful scan
+            incrementDemoScanCount();
+            
+            // Display results
+            displayResults(results);
+            
+            // Scroll to results
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        
+        document.getElementById('scan-controls').style.display = 'flex';
+        
+    } catch (error) {
+        console.error('Error checking website:', error);
+        progressTracker.error(error.message || 'אירעה שגיאה בבדיקת האתר');
+        
+        await new Promise(resolve => setTimeout(resolve, 500));
+        displayError(error, normalizedTargetUrl);
+        lastScannedUrl = normalizedTargetUrl;
         document.getElementById('scan-controls').style.display = 'flex';
     } finally {
         showLoadingOverlay(false);
@@ -1114,6 +1238,71 @@ async function checkWebsiteCompliance(url, progressCallback, htmlContent = null)
 }
 
 // Removed mock data functions - now using real scanner in real-scanner.js
+
+// Check website compliance with local proxy (similar to checkWebsiteCompliance but for local proxy)
+async function checkWebsiteComplianceWithLocalProxy(url, progressCallback, localProxyUrl) {
+    try {
+        // Use the real scanner with local proxy configuration
+        const scanner = new RealWebsiteScanner();
+        
+        // Enable local proxy mode with the provided proxy URL
+        scanner.enableProxyMode(true, true, 'local', localProxyUrl);
+        
+        // For local proxy mode, fetch the HTML via the local proxy
+        const proxyResult = await scanner.fetchWebsiteViaProxy(url);
+        const htmlContent = proxyResult.html;
+        
+        const results = await scanner.scanWebsite(url, progressCallback, htmlContent);
+        
+        // Map the results to the expected format
+        return {
+            url: results.url,
+            timestamp: results.timestamp,
+            checks: results.compliance,
+            compliance: results.compliance,
+            overallScore: results.score,
+            score: results.score,
+            recommendations: results.recommendations,
+            risks: results.risks,
+            extractedData: results.extractedData,
+            websiteContext: results.websiteContext,
+            scanDuration: results.scanDuration,
+            error: results.error
+        };
+    } catch (error) {
+        console.error('Error in checkWebsiteComplianceWithLocalProxy:', error);
+        // Return a default error result structure
+        return {
+            url: url,
+            timestamp: new Date().toISOString(),
+            checks: {
+                ssl: {
+                    status: 'error',
+                    message: 'לא ניתן לבדוק את אישור ה-SSL',
+                    recommendation: 'נסה שוב מאוחר יותר'
+                },
+                cookies: {
+                    status: 'error',
+                    message: 'לא ניתן לבדוק עוגיות',
+                    recommendation: 'נסה שוב מאוחר יותר'
+                },
+                privacy: {
+                    status: 'error',
+                    message: 'לא ניתן לבדוק מדיניות פרטיות',
+                    recommendation: 'נסה שוב מאוחר יותר'
+                },
+                hebrew: {
+                    status: 'error',
+                    message: 'לא ניתן לבדוק תוכן עברי',
+                    recommendation: 'נסה שוב מאוחר יותר'
+                }
+            },
+            compliance: {},
+            overallScore: 0,
+            error: error.message
+        };
+    }
+}
 
 function displayError(error, url) {
     const resultsContainer = document.getElementById('results');

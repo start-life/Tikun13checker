@@ -394,51 +394,19 @@
                                 </div>
                                 
                                 <div class="local-proxy-setup">
-                                    <h4>🔧 הגדרת Proxy מקומי - פתרונות קוד פתוח</h4>
-                                    <div class="proxy-solutions">
-                                        <div class="proxy-option">
-                                            <h5>cors-anywhere (Node.js)</h5>
-                                            <code>
-                                                npm install cors-anywhere<br>
-                                                node server.js --port 8080<br>
-                                                כתובת: http://localhost:8080
-                                            </code>
-                                            <p><a href="https://github.com/Rob--W/cors-anywhere" target="_blank">GitHub</a></p>
-                                        </div>
-                                        
-                                        <div class="proxy-option">
-                                            <h5>corsproxy (Python)</h5>
-                                            <code>
-                                                pip install flask flask-cors<br>
-                                                python proxy.py<br>
-                                                כתובת: http://localhost:5000
-                                            </code>
-                                            <p><a href="https://github.com/Rob--W/cors-anywhere" target="_blank">GitHub</a></p>
-                                        </div>
-                                        
-                                        <div class="proxy-option">
-                                            <h5>cors-toujours (Express.js)</h5>
-                                            <code>
-                                                npm install express cors<br>
-                                                node app.js<br>
-                                                כתובת: http://localhost:3000
-                                            </code>
-                                            <p>פתרון מותאם ל-CORS פשוט ומהיר</p>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="security-warnings">
-                                        <h5>⚠️ אזהרות אבטחה</h5>
-                                        <ul>
-                                            <li>השתמשו רק ברשת מקומית (localhost/127.0.0.1)</li>
-                                            <li>אל תחשפו את ה-Proxy לאינטרנט</li>
-                                            <li>בדקו את קוד הפתרון לפני ההתקנה</li>
-                                            <li>עצירת השירות אחרי השימוש</li>
+                                    <h4>💡 הצעות לפתרונות Proxy מקומיים</h4>
+                                    <div class="proxy-suggestions">
+                                        <p><strong>פתרונות קוד פתוח מומלצים:</strong></p>
+                                        <ul class="proxy-list">
+                                            <li><strong>cors-anywhere</strong> (Node.js) - <a href="https://github.com/Rob--W/cors-anywhere" target="_blank">GitHub</a></li>
+                                            <li><strong>local-cors-proxy</strong> (npm) - פשוט להתקנה</li>
+                                            <li><strong>CORS Proxy Server</strong> (Python/Flask)</li>
                                         </ul>
-                                    </div>
-                                    
-                                    <div class="no-support-disclaimer">
-                                        <p><strong>⚠️ אחריות מלאה:</strong> פתרונות מקומיים הם באחריותכם המלאה. אנו לא מספקים תמיכה טכנית, אחריות על אבטחה, או ערבות לתפקוד.</p>
+                                        
+                                        <div class="setup-note">
+                                            <p><strong>🔍 מחקר עצמי נדרש:</strong> בחרו פתרון המתאים לכם, קראו את התיעוד והתקינו על אחריותכם.</p>
+                                            <p><strong>⚠️ אבטחה:</strong> השתמשו רק ב-localhost - אל תחשפו לאינטרנט!</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -486,21 +454,25 @@
                         
                         <!-- Local Proxy Form -->
                         <div id="local-proxy-form" style="display: none;">
-                            <div class="local-proxy-warning">
-                                <h5>⚠️ Proxy מקומי - הגדרה עצמית</h5>
-                                <p>הזן את כתובת ה-Proxy המקומי שלך (localhost בלבד):</p>
-                                <ul>
-                                    <li>דוגמה: http://localhost:8080</li>
-                                    <li>ללא מגבלות דומיין - כל האתרים בעולם</li>
-                                    <li>אחריות מלאה על הגדרה ותחזוקה</li>
-                                </ul>
-                            </div>
-                            <div class="input-group">
-                                <input type="text" id="local-proxy-url" placeholder="כתובת Proxy מקומי (לדוגמה: http://localhost:8080)" aria-label="כתובת Proxy מקומי">
-                            </div>
-                            <div class="input-group">
-                                <input type="text" id="local-target-url" placeholder="כתובת האתר לסריקה (לדוגמה: https://example.com)" aria-label="כתובת אתר יעד">
-                                <button type="button" class="btn-primary" id="local-proxy-scan-button">סרוק דרך Proxy מקומי</button>
+                            <div class="local-proxy-form-container">
+                                <h4>🏠 הגדרת Proxy מקומי</h4>
+                                
+                                <div class="local-proxy-inputs">
+                                    <div class="input-group local-proxy-group">
+                                        <label for="local-proxy-url" class="input-label">כתובת Proxy מקומי:</label>
+                                        <input type="text" id="local-proxy-url" placeholder="http://localhost:8080" aria-label="כתובת Proxy מקומי" class="local-proxy-input">
+                                    </div>
+                                    
+                                    <div class="input-group local-proxy-group">
+                                        <label for="local-target-url" class="input-label">כתובת האתר לסריקה:</label>
+                                        <input type="text" id="local-target-url" placeholder="https://example.com" aria-label="כתובת אתר יעד" class="local-proxy-input">
+                                        <button type="button" class="btn-primary btn-local-scan" id="local-proxy-scan-button">סרוק דרך Proxy מקומי</button>
+                                    </div>
+                                </div>
+                                
+                                <div class="local-proxy-note">
+                                    <p><strong>ℹ️ הערה:</strong> נדרש Proxy מקומי פעיל (localhost בלבד). ללא מגבלות דומיין - אחריות מלאה על ההגדרה.</p>
+                                </div>
                             </div>
                         </div>
                     </div>
