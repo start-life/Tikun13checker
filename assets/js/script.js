@@ -182,20 +182,20 @@ class ProgressTracker {
     }
 }
 
-// Theme Management
-function initTheme() {
+// Theme Management - Make functions globally accessible
+window.initTheme = function() {
     const savedTheme = localStorage.getItem('theme') || 'light';
     document.documentElement.setAttribute('data-theme', savedTheme);
-    updateThemeIcon(savedTheme);
+    window.updateThemeIcon(savedTheme);
 }
 
-function toggleTheme() {
+window.toggleTheme = function() {
     const currentTheme = document.documentElement.getAttribute('data-theme');
     const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
     
     document.documentElement.setAttribute('data-theme', newTheme);
     localStorage.setItem('theme', newTheme);
-    updateThemeIcon(newTheme);
+    window.updateThemeIcon(newTheme);
     
     // Smooth transition
     document.documentElement.style.transition = 'background-color 0.3s ease, color 0.3s ease';
@@ -204,7 +204,7 @@ function toggleTheme() {
     }, 300);
 }
 
-function updateThemeIcon(theme) {
+window.updateThemeIcon = function(theme) {
     const lightIcon = document.querySelector('.theme-icon-light');
     const darkIcon = document.querySelector('.theme-icon-dark');
     
@@ -220,7 +220,7 @@ function updateThemeIcon(theme) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    initTheme();
+    window.initTheme();
     initConsent();
     initCountdown();
     initFormHandlers();
