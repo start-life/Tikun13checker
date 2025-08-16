@@ -159,9 +159,9 @@ class AssessmentEngine {
                         <span>סעיף ${sectionIndex + 1} מתוך ${this.questions.sections.length}</span>
                         <div class="progress-bar-container">
                             <div class="progress-bar">
-                                <div class="progress-fill" style="width: ${((sectionIndex + 1) / this.questions.sections.length) * 100}%"></div>
+                                <div class="progress-fill" style="width: ${(sectionIndex / this.questions.sections.length) * 100}%"></div>
                             </div>
-                            <div class="progress-percentage">${Math.round(((sectionIndex + 1) / this.questions.sections.length) * 100)}%</div>
+                            <div class="progress-percentage">${Math.round((sectionIndex / this.questions.sections.length) * 100)}%</div>
                         </div>
                     </div>
                     <h2>${section.icon} ${section.title}</h2>
