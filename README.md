@@ -2,11 +2,12 @@
 
 <div align="center">
 
-![Version](https://img.shields.io/badge/version-2.2-blue)
+![Version](https://img.shields.io/badge/version-2.3-blue)
 ![License](https://img.shields.io/badge/license-Apache%202.0-green)
 ![Status](https://img.shields.io/badge/status-active-success)
 ![Hebrew](https://img.shields.io/badge/language-Hebrew-blue)
 ![Educational](https://img.shields.io/badge/purpose-Educational-orange)
+![Theme](https://img.shields.io/badge/theme-Dark%20%26%20Light-purple)
 
 **כלי חינוכי מקיף לבדיקת התאמה לתיקון 13 לחוק הגנת הפרטיות**
 
@@ -118,6 +119,9 @@ http://localhost:8000
 - ניגודיות גבוהה
 
 ### ✨ חוויית משתמש משופרת
+- 🌓 **מצב כהה/בהיר** - החלפה אוטומטית עם שמירת העדפות
+- ⚖️ **עיצוב משפטי מקצועי** - טיפוגרפיה עברית מודרנית עם Rubik ו-Open Sans
+- 🎨 **ערכת צבעים חוק ופרטיות** - כחול נייבי, זהב משפטי וירוק ממשלתי
 - אנימציות חלקות
 - מעברים נעימים
 - טעינה מהירה
@@ -143,6 +147,8 @@ Tikun13checker/
 ├── 📱 mobile-nav.js              # ניווט מובייל
 ├── 🎯 icons.js                   # ניהול אייקונים
 ├── 
+├── 🍪 cookie-builder.js          # בונה באנר עוגיות
+├── 
 ├── 📋 assessment/                # מודול הערכה עצמית
 │   ├── assessment.js             # מנוע הערכה
 │   ├── questions-db.js           # מסד נתוני שאלות (40+ שאלות)
@@ -150,6 +156,7 @@ Tikun13checker/
 │   ├── report-generator.js       # מחולל דוחות
 │   └── assessment.css            # עיצוב מודול
 ├── 
+├── 🎨 favicon.svg                # אייקון האתר - מגן משפטי
 ├── 📚 manual 13.pdf              # מדריך משתמש
 ├── 📜 LICENSE                    # רישיון Apache 2.0
 └── 📖 README.md                  # קובץ זה
@@ -193,11 +200,19 @@ Tikun13checker/
 
 ```css
 :root {
-    --primary-color: #667eea;    /* צבע ראשי */
-    --secondary-color: #764ba2;  /* צבע משני */
-    --success-color: #48bb78;    /* הצלחה */
-    --warning-color: #ed8936;    /* אזהרה */
-    --danger-color: #f56565;     /* סכנה */
+    --primary-color: #1e3a8a;    /* כחול נייבי - סמכות ואמון */
+    --secondary-color: #2563eb;  /* כחול מקצועי - אמינות */
+    --accent-gold: #b8860b;      /* זהב משפטי - יוקרה ומצוינות */
+    --gov-green: #047857;        /* ירוק ממשלתי - ציות */
+    --success-color: #059669;    /* ירוק ציות */
+    --warning-color: #dc2626;    /* אדום התראה משפטית */
+}
+
+/* מצב כהה - מופעל אוטומטית */
+[data-theme="dark"] {
+    --primary-color: #3b82f6;    /* כחול בהיר למצב כהה */
+    --accent-gold: #facc15;      /* זהב בהיר */
+    --bg-light: #0f172a;         /* רקע כהה */
 }
 ```
 

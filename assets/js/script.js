@@ -182,7 +182,45 @@ class ProgressTracker {
     }
 }
 
+// Theme Management
+function initTheme() {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    updateThemeIcon(savedTheme);
+}
+
+function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    updateThemeIcon(newTheme);
+    
+    // Smooth transition
+    document.documentElement.style.transition = 'background-color 0.3s ease, color 0.3s ease';
+    setTimeout(() => {
+        document.documentElement.style.transition = '';
+    }, 300);
+}
+
+function updateThemeIcon(theme) {
+    const lightIcon = document.querySelector('.theme-icon-light');
+    const darkIcon = document.querySelector('.theme-icon-dark');
+    
+    if (lightIcon && darkIcon) {
+        if (theme === 'dark') {
+            lightIcon.style.display = 'none';
+            darkIcon.style.display = 'inline';
+        } else {
+            lightIcon.style.display = 'inline';
+            darkIcon.style.display = 'none';
+        }
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
+    initTheme();
     initConsent();
     initCountdown();
     initFormHandlers();
@@ -1670,7 +1708,7 @@ function generateHTMLReport(results) {
             background: #f5f5f5;
         }
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
             color: white;
             padding: 30px;
             border-radius: 10px;
@@ -2736,7 +2774,7 @@ function showComingSoonModal(title, description) {
                     <p style="color: #666; line-height: 1.6; white-space: pre-line;">${description}</p>
                     <div style="margin-top: 30px;">
                         <button class="btn btn-primary" onclick="closeComingSoonModal()" style="
-                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
                             color: white;
                             border: none;
                             padding: 12px 30px;

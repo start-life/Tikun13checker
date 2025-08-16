@@ -7,6 +7,14 @@
     <meta name="referrer" content="strict-origin-when-cross-origin">
     <title>בדיקת תיקון 13 - בודק התאמה לחוק הגנת הפרטיות הישראלי</title>
     <meta name="description" content="כלי חינמי לבדיקת התאמת האתר שלך לתיקון 13 לחוק הגנת הפרטיות. בדיקת עוגיות, SSL, ומדיניות פרטיות בהתאם לדרישות החוק הישראלי.">
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="alternate icon" type="image/x-icon" href="favicon.ico">
+    <!-- Google Fonts for Hebrew Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Stylesheets -->
     <link rel="stylesheet" href="assets/css/styles.css">
     <link rel="stylesheet" href="assets/css/accessibility.css">
     <link rel="stylesheet" href="assets/css/resources-section.css">
@@ -130,6 +138,11 @@
                         </a>
                     </div>
                 </div>
+                <!-- Theme Toggle Button -->
+                <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" aria-label="החלף מצב תצוגה" title="החלף בין מצב בהיר לכהה">
+                    <span class="theme-icon-light">☀️</span>
+                    <span class="theme-icon-dark" style="display: none;">🌙</span>
+                </button>
                 <ul class="nav-links" role="list">
                     <li><a href="#" onclick="showScannerSection(); return false;">סריקת אתר</a></li>
                     <li><a href="#" onclick="showAssessmentSection(); return false;">הערכה עצמית</a></li>
@@ -472,24 +485,24 @@
             <div class="container">
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center;">
                     <div>
-                        <h2 style="font-size: 2.5rem; margin-bottom: 1rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">🍪 בונה באנר עוגיות מתקדם</h2>
+                        <h2 style="font-size: 2.5rem; margin-bottom: 1rem; background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">⚖️ בונה באנר עוגיות מתקדם</h2>
                         <p style="font-size: 1.2rem; color: #555; margin-bottom: 1.5rem;">צור באנר הסכמה לעוגיות מותאם אישית התואם 100% לדרישות תיקון 13</p>
                         
                         <div style="margin-bottom: 2rem;">
-                            <h3 style="font-size: 1.3rem; margin-bottom: 1rem;">יכולות מרכזיות:</h3>
+                            <h3 style="font-size: 1.3rem; margin-bottom: 1rem; color: #0f172a;">יכולות מרכזיות:</h3>
                             <ul style="list-style: none; padding: 0;">
-                                <li style="padding: 0.5rem 0; display: flex; align-items: center;"><span style="color: #4caf50; margin-left: 0.5rem;">✅</span> הסכמה מפורשת לפני הפעלת עוגיות</li>
-                                <li style="padding: 0.5rem 0; display: flex; align-items: center;"><span style="color: #4caf50; margin-left: 0.5rem;">✅</span> בחירה גרנולרית של קטגוריות</li>
-                                <li style="padding: 0.5rem 0; display: flex; align-items: center;"><span style="color: #4caf50; margin-left: 0.5rem;">✅</span> תמיכה מלאה בעברית ו-RTL</li>
-                                <li style="padding: 0.5rem 0; display: flex; align-items: center;"><span style="color: #4caf50; margin-left: 0.5rem;">✅</span> רישום חותמת זמן וגרסאות</li>
-                                <li style="padding: 0.5rem 0; display: flex; align-items: center;"><span style="color: #4caf50; margin-left: 0.5rem;">✅</span> מנגנון ביטול הסכמה</li>
-                                <li style="padding: 0.5rem 0; display: flex; align-items: center;"><span style="color: #4caf50; margin-left: 0.5rem;">✅</span> יצוא נתוני הסכמה</li>
+                                <li style="padding: 0.5rem 0; display: flex; align-items: center; color: #0f172a;"><span style="color: #047857; margin-left: 0.5rem;">✅</span> הסכמה מפורשת לפני הפעלת עוגיות</li>
+                                <li style="padding: 0.5rem 0; display: flex; align-items: center; color: #0f172a;"><span style="color: #047857; margin-left: 0.5rem;">✅</span> בחירה גרנולרית של קטגוריות</li>
+                                <li style="padding: 0.5rem 0; display: flex; align-items: center; color: #0f172a;"><span style="color: #047857; margin-left: 0.5rem;">✅</span> תמיכה מלאה בעברית ו-RTL</li>
+                                <li style="padding: 0.5rem 0; display: flex; align-items: center; color: #0f172a;"><span style="color: #047857; margin-left: 0.5rem;">✅</span> רישום חותמת זמן וגרסאות</li>
+                                <li style="padding: 0.5rem 0; display: flex; align-items: center; color: #0f172a;"><span style="color: #047857; margin-left: 0.5rem;">✅</span> מנגנון ביטול הסכמה</li>
+                                <li style="padding: 0.5rem 0; display: flex; align-items: center; color: #0f172a;"><span style="color: #047857; margin-left: 0.5rem;">✅</span> יצוא נתוני הסכמה</li>
                             </ul>
                         </div>
                         
                         <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-                            <a href="#" onclick="showCookieBuilderSection(); return false;" class="btn-primary" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1rem 2rem; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block; transition: transform 0.3s;">התחל ליצור באנר</a>
-                            <a href="#" onclick="openCookieGuideModal(); return false;" class="btn-secondary" style="background: white; color: #667eea; padding: 1rem 2rem; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block; border: 2px solid #667eea; transition: all 0.3s;">קרא את המדריך המלא</a>
+                            <a href="#" onclick="showCookieBuilderSection(); return false;" class="btn-primary" style="background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); color: white; padding: 1rem 2rem; border-radius: 4px; text-decoration: none; font-weight: bold; display: inline-block; transition: transform 0.3s; border: 2px solid #b8860b;">התחל ליצור באנר</a>
+                            <a href="#" onclick="openCookieGuideModal(); return false;" class="btn-secondary" style="background: white; color: #1e3a8a; padding: 1rem 2rem; border-radius: 4px; text-decoration: none; font-weight: bold; display: inline-block; border: 2px solid #1e3a8a; transition: all 0.3s;">קרא את המדריך המלא</a>
                         </div>
                     </div>
                     
@@ -497,7 +510,7 @@
                         <h3 style="margin-bottom: 1.5rem; color: #333;">תהליך פשוט ב-3 שלבים:</h3>
                         
                         <div style="margin-bottom: 1.5rem; display: flex; align-items: start;">
-                            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-left: 1rem; flex-shrink: 0;">1</div>
+                            <div style="background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-left: 1rem; flex-shrink: 0; border: 2px solid #b8860b;">1</div>
                             <div>
                                 <h4 style="margin-bottom: 0.5rem; color: #333;">הגדר את ההעדפות</h4>
                                 <p style="color: #666; margin: 0;">בחר קטגוריות עוגיות, עיצוב, וטקסטים בעברית</p>
@@ -505,7 +518,7 @@
                         </div>
                         
                         <div style="margin-bottom: 1.5rem; display: flex; align-items: start;">
-                            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-left: 1rem; flex-shrink: 0;">2</div>
+                            <div style="background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-left: 1rem; flex-shrink: 0; border: 2px solid #b8860b;">2</div>
                             <div>
                                 <h4 style="margin-bottom: 0.5rem; color: #333;">צפה בתצוגה מקדימה</h4>
                                 <p style="color: #666; margin: 0;">בדוק איך הבאנר ייראה באתר שלך בזמן אמת</p>
@@ -513,7 +526,7 @@
                         </div>
                         
                         <div style="display: flex; align-items: start;">
-                            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-left: 1rem; flex-shrink: 0;">3</div>
+                            <div style="background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-left: 1rem; flex-shrink: 0; border: 2px solid #b8860b;">3</div>
                             <div>
                                 <h4 style="margin-bottom: 0.5rem; color: #333;">ייצא והטמע</h4>
                                 <p style="color: #666; margin: 0;">קבל קוד מוכן להטמעה או הורד חבילה מלאה</p>
@@ -563,7 +576,7 @@
                         <h3>ממונה הגנת פרטיות</h3>
                         <p>הערכת הצורך במינוי ממונה הגנת פרטיות בהתאם לסוג הארגון</p>
                     </div>
-                    <div class="feature-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: 2px solid #667eea;">
+                    <div class="feature-card" style="background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); color: white; border: 3px solid #b8860b;">
                         <div class="feature-icon">🍪</div>
                         <h3>בונה באנר עוגיות</h3>
                         <p>כלי מתקדם ליצירת באנר הסכמה לעוגיות תואם 100% לתיקון 13</p>
@@ -743,7 +756,7 @@
                                         <span class="feature-tag">✓ התאמה אישית מלאה</span>
                                         <span class="feature-tag">✓ קוד מוכן להטמעה</span>
                                     </div>
-                                    <button class="btn-primary" onclick="downloadAdvancedBanner()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                    <button class="btn-primary" onclick="downloadAdvancedBanner()" style="background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); border: 2px solid #b8860b;">
                                         🔧 עבור לכלי יצירת הבאנר
                                     </button>
                                     <button class="btn-secondary" onclick="previewBanner()">תצוגה מקדימה</button>

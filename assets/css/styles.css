@@ -1,18 +1,110 @@
 :root {
-    --primary-color: #2563eb;
-    --primary-dark: #1e40af;
-    --success-color: #10b981;
-    --warning-color: #f59e0b;
-    --danger-color: #ef4444;
-    --text-dark: #1f2937;
-    --text-light: #6b7280;
-    --bg-light: #f9fafb;
-    --bg-white: #ffffff;
-    --border-color: #e5e7eb;
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    --focus-color: #4A90E2;
+    /* Law & Authority Color Palette */
+    --primary-color: #1e3a8a;     /* Dark Navy - Authority & Trust */
+    --primary-dark: #0f172a;      /* Near Black - Strong Authority */
+    --secondary-color: #2563eb;    /* Professional Blue - Reliability */
+    --accent-gold: #b8860b;        /* Legal Gold - Excellence & Prestige */
+    --gov-green: #047857;          /* Official Green - Compliance */
+    
+    /* Supporting Colors */
+    --success-color: #059669;      /* Compliance Green */
+    --warning-color: #dc2626;      /* Legal Alert Red */
+    --danger-color: #991b1b;       /* Critical Red */
+    --info-color: #0284c7;         /* Information Blue */
+    
+    /* Text Colors */
+    --text-dark: #0f172a;          /* Near Black - High Contrast */
+    --text-light: #475569;         /* Professional Gray */
+    --text-muted: #64748b;         /* Muted Gray */
+    
+    /* Background Colors */
+    --bg-light: #f8fafc;           /* Light Legal Gray */
+    --bg-white: #ffffff;           /* Pure White */
+    --bg-section: #f1f5f9;        /* Section Background */
+    
+    /* Borders & Shadows */
+    --border-color: #cbd5e1;       /* Professional Border */
+    --border-strong: #1e3a8a;      /* Strong Navy Border */
+    --shadow-sm: 0 2px 4px 0 rgba(30, 58, 138, 0.1);
+    --shadow-md: 0 4px 8px -1px rgba(30, 58, 138, 0.15);
+    --shadow-lg: 0 10px 20px -3px rgba(30, 58, 138, 0.2);
+    
+    /* Focus & Interaction */
+    --focus-color: #b8860b;        /* Gold Focus for Authority */
+}
+
+/* Dark Mode Variables */
+[data-theme="dark"] {
+    /* Primary Colors remain similar for branding */
+    --primary-color: #3b82f6;      /* Brighter Blue for Dark Mode */
+    --primary-dark: #1e3a8a;       /* Original Navy */
+    --secondary-color: #60a5fa;    /* Lighter Blue */
+    --accent-gold: #facc15;        /* Brighter Gold */
+    --gov-green: #10b981;          /* Brighter Green */
+    
+    /* Supporting Colors adjusted for dark */
+    --success-color: #22c55e;      /* Brighter Green */
+    --warning-color: #ef4444;      /* Brighter Red */
+    --danger-color: #dc2626;       /* Adjusted Red */
+    --info-color: #38bdf8;         /* Brighter Info Blue */
+    
+    /* Inverted Text Colors */
+    --text-dark: #f1f5f9;          /* Light Text on Dark */
+    --text-light: #cbd5e1;         /* Lighter Gray Text */
+    --text-muted: #94a3b8;         /* Muted Light Gray */
+    
+    /* Dark Backgrounds */
+    --bg-light: #0f172a;           /* Dark Background */
+    --bg-white: #1e293b;           /* Slightly Lighter Dark */
+    --bg-section: #1a2332;         /* Section Dark Background */
+    
+    /* Dark Mode Borders & Shadows */
+    --border-color: #334155;       /* Dark Border */
+    --border-strong: #3b82f6;      /* Blue Border for Dark Mode */
+    --shadow-sm: 0 2px 4px 0 rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 8px -1px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 10px 20px -3px rgba(0, 0, 0, 0.5);
+    
+    /* Focus for Dark Mode */
+    --focus-color: #facc15;        /* Bright Gold Focus */
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: var(--bg-white);
+    border: 2px solid var(--border-strong);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 24px;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-md);
+    z-index: 1000;
+}
+
+.theme-toggle:hover {
+    transform: scale(1.1);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--accent-gold);
+}
+
+.theme-toggle:active {
+    transform: scale(0.95);
+}
+
+[data-theme="dark"] .theme-icon-light {
+    display: none;
+}
+
+[data-theme="dark"] .theme-icon-dark {
+    display: inline !important;
 }
 
 * {
@@ -22,11 +114,13 @@
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
-    line-height: 1.6;
+    font-family: 'Rubik', 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.8;
     color: var(--text-dark);
     background-color: var(--bg-light);
     direction: rtl;
+    letter-spacing: 0.02em;
+    font-weight: 400;
 }
 
 /* Enhanced Focus Styles for Accessibility */
@@ -74,9 +168,10 @@ body.disclaimer-visible header {
 }
 
 .nav-gradient {
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    box-shadow: 0 4px 20px rgba(30, 58, 138, 0.3);
     padding: 1rem 0;
+    border-bottom: 3px solid var(--accent-gold);
 }
 
 .nav-gradient .container {
@@ -131,17 +226,22 @@ body.disclaimer-visible header {
 
 .logo-text h1 {
     color: white;
-    font-size: 1.5rem;
+    font-family: 'Rubik', sans-serif;
+    font-size: 1.75rem;
     margin: 0;
-    font-weight: 700;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-weight: 800;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
 }
 
 .logo-text .tagline {
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 0.75rem;
+    color: var(--accent-gold);
+    font-size: 0.85rem;
     margin: 0;
-    font-weight: 400;
+    font-weight: 500;
+    font-family: 'Open Sans', sans-serif;
+    letter-spacing: 0.03em;
 }
 
 .powered-by {
@@ -321,7 +421,7 @@ body.disclaimer-visible header {
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    background: linear-gradient(135deg, rgba(30, 58, 138, 0.1) 0%, rgba(184, 134, 11, 0.1) 100%);
     transition: left 0.3s ease;
 }
 
@@ -331,20 +431,23 @@ body.disclaimer-visible header {
 
 .switch-btn:hover {
     transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 8px 25px rgba(30, 58, 138, 0.2);
+    border-color: var(--accent-gold);
 }
 
 .switch-btn.active {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
     color: white;
-    border-color: transparent;
-    box-shadow: 0 8px 30px rgba(102, 126, 234, 0.4);
+    border-color: var(--accent-gold);
+    box-shadow: 0 8px 30px rgba(30, 58, 138, 0.4);
+    font-weight: 700;
 }
 
 .switch-btn.highlight {
-    border: 2px solid #667eea;
+    border: 3px solid var(--accent-gold);
     position: relative;
     animation: highlight-pulse 2s ease-in-out infinite;
+    background: linear-gradient(135deg, rgba(184, 134, 11, 0.1), rgba(4, 120, 87, 0.1));
 }
 
 @keyframes highlight-pulse {
@@ -361,15 +464,16 @@ body.disclaimer-visible header {
 }
 
 .badge-new {
-    background: linear-gradient(135deg, #ff6b6b, #ff4757);
+    background: linear-gradient(135deg, var(--accent-gold), var(--gov-green));
     color: white;
     padding: 3px 10px;
-    border-radius: 15px;
+    border-radius: 4px;
     font-size: 0.75rem;
     font-weight: bold;
     margin-right: 5px;
     animation: badge-glow 2s ease-in-out infinite;
-    box-shadow: 0 2px 8px rgba(255, 107, 107, 0.4);
+    box-shadow: 0 2px 8px rgba(184, 134, 11, 0.4);
+    text-transform: uppercase;
 }
 
 @keyframes badge-glow {
@@ -755,25 +859,35 @@ body.disclaimer-visible header {
 }
 
 .hero h2 {
-    font-size: 2.5rem;
+    font-family: 'Rubik', sans-serif;
+    font-size: 3rem;
+    font-weight: 800;
     margin-bottom: 1rem;
     text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .hero-subtitle {
-    font-size: 1.25rem;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 1.35rem;
+    font-weight: 500;
     text-align: center;
     margin-bottom: 2rem;
-    opacity: 0.95;
+    color: var(--accent-gold);
+    letter-spacing: 0.03em;
 }
 
 .deadline-banner {
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 12px;
+    background: rgba(184, 134, 11, 0.15);
+    border: 2px solid var(--accent-gold);
+    border-radius: 4px;
     padding: 1.5rem;
     margin: 2rem auto;
     max-width: 600px;
     backdrop-filter: blur(10px);
+    box-shadow: 0 4px 15px rgba(184, 134, 11, 0.2);
 }
 
 .deadline-content {
@@ -814,18 +928,39 @@ body.disclaimer-visible header {
     margin-bottom: 1rem;
 }
 
-#website-url {
+#website-url,
+#proxy-url {
     flex: 1;
-    padding: 0.75rem 1rem;
-    border: 2px solid var(--border-color);
-    border-radius: 8px;
-    font-size: 1rem;
-    transition: border-color 0.3s;
+    padding: 1rem 1.25rem;
+    border: 3px solid var(--border-strong);
+    border-radius: 4px;
+    font-size: 1.1rem;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 500;
+    background: var(--bg-white);
+    color: var(--text-dark);
+    transition: all 0.3s;
+    box-shadow: var(--shadow-sm);
 }
 
-#website-url:focus {
+#website-url:focus,
+#proxy-url:focus {
     outline: none;
-    border-color: var(--primary-color);
+    border-color: var(--accent-gold);
+    box-shadow: 0 0 0 4px rgba(184, 134, 11, 0.1);
+    transform: scale(1.02);
+}
+
+#website-url::placeholder,
+#proxy-url::placeholder {
+    color: var(--text-muted);
+    font-weight: 400;
+}
+
+/* Enhanced visibility for proxy URL input */
+#proxy-url {
+    background: linear-gradient(135deg, var(--bg-white) 0%, rgba(184, 134, 11, 0.03) 100%);
+    border-color: var(--accent-gold);
 }
 
 .btn-primary, .btn-secondary {
@@ -3311,19 +3446,26 @@ body.disclaimer-visible {
 
 /* Educational Notice Styling */
 .educational-notice {
-    background: #fff3cd;
-    border: 2px solid #ffc107;
-    border-radius: 8px;
-    padding: 12px 20px;
-    margin: 15px auto;
+    background: linear-gradient(135deg, rgba(184, 134, 11, 0.05), rgba(30, 58, 138, 0.05));
+    border: 3px solid var(--accent-gold);
+    border-radius: 4px;
+    padding: 16px 24px;
+    margin: 20px auto;
     text-align: center;
-    font-size: 14px;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
     max-width: 800px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(30, 58, 138, 0.15);
+    position: relative;
 }
 
 .educational-notice strong {
-    color: #856404;
+    color: var(--primary-color);
+    font-weight: 700;
+    font-family: 'Rubik', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
 }
 
 /* Cookie Builder Highlight Banner */
