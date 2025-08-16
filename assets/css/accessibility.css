@@ -40,7 +40,7 @@
 .accessibility-widget {
     position: fixed;
     bottom: 20px;
-    left: 20px;
+    right: 20px;
     z-index: 9999;
     direction: rtl;
 }
@@ -75,7 +75,7 @@
 .accessibility-panel {
     position: absolute;
     bottom: 70px;
-    left: 0;
+    right: 0;
     width: 320px;
     max-height: 600px;
     background: white;
@@ -496,7 +496,7 @@
 @media (max-width: 480px) {
     .accessibility-widget {
         bottom: 10px;
-        left: 10px;
+        right: 10px;
     }
     
     .accessibility-toggle {
@@ -508,6 +508,7 @@
     .accessibility-panel {
         width: calc(100vw - 20px);
         left: 50%;
+        right: auto;
         transform: translateX(-50%) translateY(20px);
         bottom: 60px;
     }

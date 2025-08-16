@@ -2867,7 +2867,7 @@ body.disclaimer-visible {
 /* Persistent Side Disclaimer Tab */
 .disclaimer-side-tab {
     position: fixed;
-    right: -40px;
+    right: -45px;
     top: 50%;
     transform: translateY(-50%) rotate(-90deg);
     background: linear-gradient(135deg, #ff6b6b 0%, #ff8787 100%);
