@@ -9,71 +9,9 @@
     <meta name="description" content="כלי חינמי לבדיקת התאמת האתר שלך לתיקון 13 לחוק הגנת הפרטיות. בדיקת עוגיות, SSL, ומדיניות פרטיות בהתאם לדרישות החוק הישראלי.">
     <link rel="stylesheet" href="assets/css/styles.css">
     <link rel="stylesheet" href="assets/css/accessibility.css">
+    <link rel="stylesheet" href="assets/css/resources-section.css">
     <link rel="stylesheet" href="assessment/assessment.css">
-    <!-- Tikun 13 Compliant Cookie Consent -->
-    <link rel="stylesheet" href="assets/vendor/cookieconsent/cookieconsent.css">
-    <script type="module">
-        import './assets/vendor/cookieconsent/cookieconsent.esm.js';
-        import heTranslations from './assets/translations/he.json' with { type: 'json' };
-        
-        // Initialize Cookie Consent with Hebrew translations
-        window.CookieConsent.run({
-            root: 'body',
-            autoDetectLanguage: false,
-            revision: 1,
-            
-            cookie: {
-                name: 'tikun13_cc',
-                domain: location.hostname,
-                path: '/',
-                sameSite: 'Lax',
-                expiresAfterDays: 365
-            },
-            
-            guiOptions: {
-                consentModal: {
-                    layout: 'box',
-                    position: 'bottom center',
-                    equalWeightButtons: false,
-                    flipButtons: false
-                },
-                preferencesModal: {
-                    layout: 'box',
-                    position: 'right',
-                    equalWeightButtons: false,
-                    flipButtons: false
-                }
-            },
-            
-            categories: {
-                necessary: {
-                    enabled: true,
-                    readOnly: true
-                },
-                functionality: {
-                    enabled: false,
-                    readOnly: false
-                },
-                analytics: {
-                    enabled: false,
-                    readOnly: false
-                },
-                marketing: {
-                    enabled: false,
-                    readOnly: false
-                }
-            },
-            
-            language: {
-                default: 'he',
-                autoDetect: 'browser',
-                rtl: 'he',
-                translations: {
-                    he: heTranslations
-                }
-            }
-        });
-    </script>
+    <!-- Note: This tool does NOT use cookies. All data is stored locally in your browser. -->
 </head>
 <body>
     <!-- Consent Modal -->
@@ -799,25 +737,200 @@
             </div>
         </section>
 
-        <section id="resources" class="resources">
+        <!-- Resources Section -->
+        <section id="resources" class="resources" role="region" aria-label="משאבים חינמיים">
             <div class="container">
-                <h2>משאבים חינמיים</h2>
-                <div class="resources-grid">
-                    <div class="resource-card">
-                        <h3>📋 רשימת תיוג להיערכות</h3>
-                        <p>רשימה מקיפה של כל הצעדים הנדרשים לעמידה בתיקון 13</p>
-                        <button class="btn-secondary" onclick="downloadChecklist()" aria-label="הורד רשימת תיוג להיערכות">הורד רשימה</button>
+                <h2>📚 מרכז משאבים לתיקון 13</h2>
+                <p class="section-subtitle">כלים, תבניות ומסמכים חינמיים להיערכות מלאה לתיקון 13</p>
+                <div class="resources-content">
+                    <!-- Tabs Navigation -->
+                    <div class="resource-tabs">
+                        <button class="resource-tab active" onclick="showResourceTab('checklists')">📋 רשימות תיוג</button>
+                        <button class="resource-tab" onclick="showResourceTab('templates')">📝 תבניות מסמכים</button>
+                        <button class="resource-tab" onclick="showResourceTab('code')">💻 קוד מוכן</button>
+                        <button class="resource-tab" onclick="showResourceTab('calculators')">🧮 מחשבונים</button>
                     </div>
-                    <div class="resource-card">
-                        <h3>📝 תבנית מדיניות פרטיות</h3>
-                        <p>תבנית בעברית המותאמת לדרישות החוק הישראלי</p>
-                        <button class="btn-secondary" onclick="downloadTemplate()" aria-label="הורד תבנית מדיניות פרטיות">הורד תבנית</button>
+
+                    <!-- Tab Content -->
+                    <div class="resource-content">
+                        <!-- Checklists Tab -->
+                        <div id="checklists-tab" class="resource-tab-content active">
+                            <h3>רשימות תיוג מקיפות להיערכות</h3>
+                            <div class="checklist-grid">
+                                <div class="checklist-item">
+                                    <h4>📊 מיפוי מאגרי מידע</h4>
+                                    <ul>
+                                        <li>זיהוי כל מאגרי המידע בארגון</li>
+                                        <li>סיווג מאגרים לפי רמת רגישות</li>
+                                        <li>תיעוד מטרות המאגר</li>
+                                        <li>מיפוי זרימת המידע</li>
+                                    </ul>
+                                    <button class="btn-download" onclick="downloadChecklist('mapping')">הורד רשימה מלאה</button>
+                                </div>
+                                <div class="checklist-item">
+                                    <h4>👤 ממונה הגנת פרטיות (DPO)</h4>
+                                    <ul>
+                                        <li>בדיקת חובת מינוי DPO</li>
+                                        <li>הגדרת תפקידים וסמכויות</li>
+                                        <li>הכשרה מקצועית</li>
+                                        <li>דיווח לרשות</li>
+                                    </ul>
+                                    <button class="btn-download" onclick="downloadChecklist('dpo')">הורד רשימה מלאה</button>
+                                </div>
+                                <div class="checklist-item">
+                                    <h4>🔐 אבטחת מידע</h4>
+                                    <ul>
+                                        <li>נוהל אבטחת מידע</li>
+                                        <li>הרשאות גישה</li>
+                                        <li>גיבויים ושחזור</li>
+                                        <li>תיעוד אירועי אבטחה</li>
+                                    </ul>
+                                    <button class="btn-download" onclick="downloadChecklist('security')">הורד רשימה מלאה</button>
+                                </div>
+                                <div class="checklist-item">
+                                    <h4>⚖️ זכויות נושאי מידע</h4>
+                                    <ul>
+                                        <li>מנגנון עיון במידע</li>
+                                        <li>תיקון ומחיקת מידע</li>
+                                        <li>ניידות מידע</li>
+                                        <li>התנגדות לעיבוד</li>
+                                    </ul>
+                                    <button class="btn-download" onclick="downloadChecklist('rights')">הורד רשימה מלאה</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Templates Tab -->
+                        <div id="templates-tab" class="resource-tab-content">
+                            <h3>תבניות מסמכים מותאמות לתיקון 13</h3>
+                            <div class="template-grid">
+                                <div class="template-card">
+                                    <div class="template-icon">📄</div>
+                                    <h4>מדיניות פרטיות</h4>
+                                    <p>תבנית מקיפה בעברית כולל כל הסעיפים הנדרשים</p>
+                                    <span class="template-meta">עודכן: ינואר 2025 | 12 עמודים</span>
+                                    <button class="btn-primary" onclick="downloadTemplate('privacy-policy')">הורד תבנית</button>
+                                </div>
+                                <div class="template-card">
+                                    <div class="template-icon">🛡️</div>
+                                    <h4>נוהל אבטחת מידע</h4>
+                                    <p>נוהל מפורט לפי תקנות אבטחת מידע</p>
+                                    <span class="template-meta">עודכן: ינואר 2025 | 18 עמודים</span>
+                                    <button class="btn-primary" onclick="downloadTemplate('security-policy')">הורד תבנית</button>
+                                </div>
+                                <div class="template-card">
+                                    <div class="template-icon">📋</div>
+                                    <h4>מסמך הגדרות מאגר</h4>
+                                    <p>תבנית לפי תקנה 2 לתקנות אבטחת מידע</p>
+                                    <span class="template-meta">עודכן: ינואר 2025 | 8 עמודים</span>
+                                    <button class="btn-primary" onclick="downloadTemplate('database-def')">הורד תבנית</button>
+                                </div>
+                                <div class="template-card">
+                                    <div class="template-icon">📨</div>
+                                    <h4>הודעה לרשות</h4>
+                                    <p>טופס הודעה על מאגר מידע גדול</p>
+                                    <span class="template-meta">עודכן: ינואר 2025 | 4 עמודים</span>
+                                    <button class="btn-primary" onclick="downloadTemplate('authority-notice')">הורד תבנית</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Code Tab -->
+                        <div id="code-tab" class="resource-tab-content">
+                            <h3>קוד מוכן להטמעה</h3>
+                            <div class="code-samples">
+                                <div class="code-sample">
+                                    <h4>🍪 באנר הסכמה לעוגיות מתקדם</h4>
+                                    <p>מערכת מלאה כולל ניהול קטגוריות ותיעוד הסכמות</p>
+                                    <div class="code-features">
+                                        <span class="feature-tag">✓ תואם תיקון 13</span>
+                                        <span class="feature-tag">✓ עברית מלאה</span>
+                                        <span class="feature-tag">✓ Namespace נפרד</span>
+                                        <span class="feature-tag">✓ רספונסיבי</span>
+                                    </div>
+                                    <button class="btn-primary" onclick="downloadAdvancedBanner()">הורד קוד מלא</button>
+                                    <button class="btn-secondary" onclick="previewBanner()">תצוגה מקדימה</button>
+                                </div>
+                                <div class="code-sample">
+                                    <h4>📊 מערכת ניהול זכויות</h4>
+                                    <p>API לניהול בקשות עיון, תיקון ומחיקה</p>
+                                    <div class="code-features">
+                                        <span class="feature-tag">✓ Node.js/PHP</span>
+                                        <span class="feature-tag">✓ תיעוד מלא</span>
+                                        <span class="feature-tag">✓ דוגמאות</span>
+                                    </div>
+                                    <button class="btn-primary" onclick="downloadRightsAPI()">הורד קוד</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Calculators Tab -->
+                        <div id="calculators-tab" class="resource-tab-content">
+                            <h3>מחשבוני עיצומים כספיים</h3>
+                            <div class="calculator-container">
+                                <div class="calculator-section">
+                                    <h4>🧮 מחשבון עיצומים על הפרות רישום</h4>
+                                    <div class="calc-input-group">
+                                        <label>סוג ההפרה:</label>
+                                        <select id="violation-type">
+                                            <option value="registration">אי-רישום מאגר (150,000₪)</option>
+                                            <option value="notification">אי-הודעה לרשות (150,000₪)</option>
+                                            <option value="false-info">מסירת פרטים שגויים (150,000₪)</option>
+                                        </select>
+                                    </div>
+                                    <div class="calc-input-group">
+                                        <label>מספר נושאי מידע:</label>
+                                        <input type="number" id="data-subjects" placeholder="הזן מספר">
+                                    </div>
+                                    <div class="calc-input-group">
+                                        <label>
+                                            <input type="checkbox" id="sensitive-data">
+                                            מידע בעל רגישות מיוחדת
+                                        </label>
+                                    </div>
+                                    <button class="btn-calculate" onclick="calculatePenalty()">חשב עיצום</button>
+                                    <div class="calc-result" id="penalty-result"></div>
+                                </div>
+
+                                <div class="calculator-info">
+                                    <h4>📊 טבלת עיצומים מרכזית</h4>
+                                    <table class="penalties-table">
+                                        <thead>
+                                            <tr>
+                                                <th>סוג ההפרה</th>
+                                                <th>עיצום בסיסי</th>
+                                                <th>מידע רגיש</th>
+                                                <th>מעל מיליון נושאים</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>אי-רישום מאגר</td>
+                                                <td>150,000₪</td>
+                                                <td>150,000₪</td>
+                                                <td>x2</td>
+                                            </tr>
+                                            <tr>
+                                                <td>איסוף ללא הודעה</td>
+                                                <td>50₪ לאדם</td>
+                                                <td>100₪ לאדם</td>
+                                                <td>-</td>
+                                            </tr>
+                                            <tr>
+                                                <td>עיבוד שלא כדין</td>
+                                                <td>4₪ לאדם</td>
+                                                <td>8₪ לאדם</td>
+                                                <td>-</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="resource-card">
-                        <h3>🍪 באנר הסכמה לעוגיות</h3>
-                        <p>קוד מוכן להטמעה של באנר הסכמה בעברית</p>
-                        <button class="btn-secondary" onclick="downloadBanner()" aria-label="הורד קוד באנר הסכמה לעוגיות">הורד קוד</button>
-                    </div>
+                </div>
+                <div class="resources-footer">
+                    <p>💡 כל המשאבים מעודכנים לתיקון 13 | עדכון אחרון: ינואר 2025</p>
                 </div>
             </div>
         </section>

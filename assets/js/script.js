@@ -2073,3 +2073,314 @@ window.showCookieBuilderSection = function(scrollToTop = true) {
         CookieBuilder.init();
     }
 };
+
+// Resources Tab Functions
+
+function showResourceTab(tabName) {
+    // Hide all tab panes
+    const panes = document.querySelectorAll('.resource-tab-content');
+    panes.forEach(pane => pane.classList.remove('active'));
+    
+    // Remove active class from all tab buttons
+    const tabs = document.querySelectorAll('.resource-tab');
+    tabs.forEach(tab => tab.classList.remove('active'));
+    
+    // Show selected tab pane
+    const selectedPane = document.getElementById(tabName + '-tab');
+    if (selectedPane) {
+        selectedPane.classList.add('active');
+    }
+    
+    // Add active class to selected tab button
+    const selectedTab = document.querySelector(`[onclick="showResourceTab('${tabName}')"]`);
+    if (selectedTab) {
+        selectedTab.classList.add('active');
+    }
+}
+
+function downloadChecklist(type) {
+    const checklists = {
+        'mapping': {
+            name: 'checklist_data_mapping.pdf',
+            content: `צ'ק ליסט: מיפוי מאגרי מידע
+            
+□ זיהוי כל מאגרי המידע בארגון
+□ תיעוד סוג המידע הנאסף בכל מאגר
+□ סיווג מאגרים לפי רמת רגישות (רגיש/רגיל)
+□ תיעוד מטרות איסוף המידע
+□ מיפוי זרימת המידע בין מערכות
+□ זיהוי צדדים שלישיים עם גישה למידע
+□ תיעוד בסיס החוקי לעיבוד
+□ קביעת תקופות שמירה
+□ רישום המאגרים ברשם מאגרי המידע
+□ עדכון שוטף של המיפוי`
+        },
+        'dpo': {
+            name: 'checklist_dpo_appointment.pdf',
+            content: `צ'ק ליסט: מינוי ממונה הגנת פרטיות (DPO)
+            
+□ האם הארגון מעסיק מעל 50 עובדים?
+□ האם הארגון מחזיק מאגר מידע הכולל מעל 100,000 רשומות?
+□ האם קיים מאגר מידע רגיש (בריאות, גנטי, פלילי)?
+□ האם מונה ממונה הגנת פרטיות?
+□ האם הממונה עבר הכשרה מתאימה?
+□ האם הממונה בעל 5 שנות ניסיון רלוונטי?
+□ האם פרטי הממונה פורסמו באתר?
+□ האם הממונה נרשם ברשם מאגרי המידע?
+□ האם הוגדרו סמכויות הממונה בכתב?
+□ האם הממונה מדווח ישירות להנהלה?`
+        },
+        'security': {
+            name: 'checklist_data_security.pdf',
+            content: `צ'ק ליסט: אבטחת מידע לפי תיקון 13
+            
+□ הצפנת SSL/TLS בכל האתר
+□ מדיניות סיסמאות חזקות
+□ אימות דו-שלבי למערכות רגישות
+□ גיבויים אוטומטיים יומיים
+□ הצפנת מאגרי מידע רגישים
+□ ניטור גישה למאגרי מידע
+□ בדיקות חדירה תקופתיות
+□ תוכנית התאוששות מאסון
+□ הגבלת גישה על בסיס Need-to-Know
+□ רישום כל הפעולות במאגר`
+        },
+        'rights': {
+            name: 'checklist_data_rights.pdf',
+            content: `צ'ק ליסט: מימוש זכויות נושאי המידע
+            
+□ מנגנון עיון במידע אישי
+□ אפשרות תיקון מידע שגוי
+□ אפשרות מחיקת מידע
+□ מנגנון הסרה מרשימות דיוור
+□ ניידות נתונים (Data Portability)
+□ זמן תגובה עד 30 יום
+□ ללא עלות לנושא המידע
+□ אימות זהות לפני מתן מידע
+□ תיעוד כל הבקשות
+□ מענה בשפת הפנייה`
+        }
+    };
+    
+    const checklist = checklists[type];
+    if (checklist) {
+        // Create a blob with the content
+        const blob = new Blob([checklist.content], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        
+        // Create download link
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = checklist.name;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        // Show notification
+        showNotification('הצ\'ק ליסט הורד בהצלחה!');
+    }
+}
+
+function downloadTemplate(type) {
+    const templates = {
+        'privacy': {
+            name: 'privacy_policy_template.docx',
+            content: `תבנית מדיניות פרטיות - תיקון 13
+
+1. מבוא
+[שם החברה] ("החברה", "אנחנו") מכבדת את פרטיותך ומחויבת להגן על המידע האישי שלך בהתאם לחוק הגנת הפרטיות, התשמ"א-1981 ותיקון 13 לחוק.
+
+2. איסוף מידע
+אנו אוספים את סוגי המידע הבאים:
+• מידע שאתה מספק באופן ישיר
+• מידע שנאסף אוטומטית
+• מידע מצדדים שלישיים
+
+3. שימוש במידע
+המידע משמש למטרות הבאות:
+• אספקת השירותים
+• שיפור השירותים
+• תקשורת עימך
+• עמידה בדרישות החוק
+
+4. שיתוף מידע
+איננו מוכרים או משכירים מידע אישי. נשתף מידע רק:
+• בהסכמתך המפורשת
+• לצורך אספקת השירות
+• על פי דרישת החוק
+
+5. אבטחת מידע
+אנו נוקטים באמצעי אבטחה פיזיים, אלקטרוניים ונהליים להגנה על המידע.
+
+6. זכויותיך
+על פי החוק, זכאי אתה:
+• לעיין במידע אודותיך
+• לתקן מידע שגוי
+• למחוק מידע
+• להתנגד לשימושים מסוימים
+
+7. יצירת קשר
+ממונה הגנת הפרטיות: [שם]
+דוא"ל: [כתובת]
+טלפון: [מספר]`
+        },
+        'consent': {
+            name: 'consent_form_template.docx',
+            content: `טופס הסכמה מדעת - תיקון 13
+
+אני, הח"מ _________________ ת.ז. _________________
+
+מאשר/ת בזאת כי:
+
+1. קראתי והבנתי את מדיניות הפרטיות של [שם החברה]
+
+2. הוסבר לי כי:
+   □ המידע ישמש למטרות: _________________
+   □ המידע יישמר לתקופה של: _________________
+   □ המידע עשוי להימסר ל: _________________
+
+3. ידוע לי כי:
+   • ההסכמה ניתנת מרצוני החופשי
+   • אני רשאי/ת לחזור בי מההסכמה בכל עת
+   • אי מתן הסכמה עלולה למנוע קבלת שירותים מסוימים
+
+4. אני מסכים/ה:
+   □ לאיסוף ושמירת המידע האישי שלי
+   □ לקבלת דיוור שיווקי
+   □ לשימוש בעוגיות למטרות שיווק
+   □ להעברת מידע לצדדים שלישיים
+
+תאריך: ___________ חתימה: ___________`
+        }
+    };
+    
+    const template = templates[type];
+    if (template) {
+        const blob = new Blob([template.content], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = template.name;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        showNotification('התבנית הורדה בהצלחה!');
+    }
+}
+
+function copyCode(elementId) {
+    const codeElement = document.getElementById(elementId);
+    if (codeElement) {
+        const code = codeElement.textContent;
+        navigator.clipboard.writeText(code).then(() => {
+            showNotification('הקוד הועתק ללוח!');
+        });
+    }
+}
+
+function calculatePenalty() {
+    const violations = parseInt(document.getElementById('violations').value) || 0;
+    const affected = parseInt(document.getElementById('affected').value) || 0;
+    const severity = document.getElementById('severity').value;
+    
+    let basePenalty = 0;
+    
+    // Base penalty per violation
+    switch(severity) {
+        case 'low':
+            basePenalty = 5000;
+            break;
+        case 'medium':
+            basePenalty = 20000;
+            break;
+        case 'high':
+            basePenalty = 50000;
+            break;
+    }
+    
+    // Calculate total
+    let total = basePenalty * violations;
+    
+    // Multiplier for affected people
+    if (affected > 1000) {
+        total *= 1.5;
+    }
+    if (affected > 10000) {
+        total *= 2;
+    }
+    
+    // Cap at maximum
+    total = Math.min(total, 320000);
+    
+    // Display result
+    const resultDiv = document.getElementById('penaltyResult');
+    resultDiv.innerHTML = `
+        <div class="calculation-result">
+            <h4>סכום הקנס המשוער</h4>
+            <div class="penalty-amount">₪${total.toLocaleString('he-IL')}</div>
+            <p>חישוב זה הינו הערכה בלבד. הקנס בפועל נקבע על ידי רשות הגנת הפרטיות.</p>
+        </div>
+    `;
+}
+
+function showNotification(message) {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = 'notification-toast';
+    notification.textContent = message;
+    notification.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: #28a745;
+        color: white;
+        padding: 15px 25px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        z-index: 10001;
+        animation: slideInRight 0.3s ease-out;
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        notification.style.animation = 'slideOutRight 0.3s ease-out';
+        setTimeout(() => {
+            document.body.removeChild(notification);
+        }, 300);
+    }, 3000);
+}
+
+// Add animation styles if not already present
+if (!document.querySelector('#notificationStyles')) {
+    const style = document.createElement('style');
+    style.id = 'notificationStyles';
+    style.textContent = `
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        @keyframes slideOutRight {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+}
