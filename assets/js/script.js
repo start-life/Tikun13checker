@@ -1232,7 +1232,7 @@ async function checkWebsiteCompliance(url, progressCallback, htmlContent = null)
                 }
             },
             overallScore: 0,
-            error: true
+            error: error.message || error.toString() || 'אירעה שגיאה לא צפויה'
         };
     }
 }
@@ -1299,7 +1299,7 @@ async function checkWebsiteComplianceWithLocalProxy(url, progressCallback, local
             },
             compliance: {},
             overallScore: 0,
-            error: error.message
+            error: error.message || error.toString() || 'אירעה שגיאה לא צפויה'
         };
     }
 }
@@ -1312,11 +1312,12 @@ function displayError(error, url) {
     resultsContainer.style.display = 'block';
     
     // Check if this is a detailed CorsProxy error (contains emoji indicators)
-    const isDetailedError = error?.message && (error.message.includes('❌') || error.message.includes('💡'));
+    const errorMessage = error?.message || error?.toString() || 'אירעה שגיאה לא צפויה';
+    const isDetailedError = typeof errorMessage === 'string' && (errorMessage.includes('❌') || errorMessage.includes('💡'));
     
     if (isDetailedError) {
         // Display the detailed formatted error message
-        const errorMessage = error.message.replace(/\n/g, '<br>');
+        const formattedErrorMessage = errorMessage.replace(/\n/g, '<br>');
         resultsContainer.innerHTML = `
             <div class="error-container proxy-error">
                 <div class="error-icon">🚫</div>
@@ -1324,7 +1325,7 @@ function displayError(error, url) {
                 <p class="error-url">${url ? new URL(url).hostname : 'האתר המבוקש'}</p>
                 
                 <div class="detailed-error-message">
-                    ${errorMessage}
+                    ${formattedErrorMessage}
                 </div>
                 
                 <div class="error-actions">
@@ -1357,7 +1358,7 @@ function displayError(error, url) {
                 
                 <div class="error-details">
                     <h4>מה קרה?</h4>
-                    <p>${error?.message || 'לא הצלחנו לגשת לאתר או לנתח את התוכן שלו'}</p>
+                    <p>${errorMessage}</p>
                     
                     <h4>סיבות אפשריות:</h4>
                     <ul>

@@ -183,14 +183,10 @@ class RealWebsiteScanner {
                 headers: sanitizedHeaders
             });
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
             const html = await response.text();
             
-            if (typeof html === 'string' && html.length > 0) {
-                // Check for CorsProxy.io JSON error responses
+            // Handle non-OK responses, but first check if CorsProxy.io returned JSON error details
+            if (!response.ok) {
                 if (type === 'corsproxy') {
                     try {
                         const errorData = JSON.parse(html);
@@ -198,11 +194,16 @@ class RealWebsiteScanner {
                             throw new Error(this.formatCorsProxyError(errorData.error, url));
                         }
                     } catch (parseError) {
-                        // If it's not JSON, continue with normal checks
-                        if (html.includes('error') && html.includes('proxy') && html.length < 5000) {
-                            throw new Error('CorsProxy.io service error - content may be blocked or service unavailable');
-                        }
+                        // If JSON parse fails, continue with generic HTTP error
                     }
+                }
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            if (typeof html === 'string' && html.length > 0) {
+                // For successful responses, check if it's still an error response in the body
+                if (type === 'corsproxy' && html.includes('error') && html.includes('proxy') && html.length < 5000) {
+                    throw new Error('CorsProxy.io service error - content may be blocked or service unavailable');
                 }
                 return { html, finalUrl: url };
             }
