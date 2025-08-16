@@ -1,6 +1,7 @@
 // Global variables to store scan state
 let latestScanResults = null;
 let lastScannedUrl = null;
+let lastScanMode = 'private'; // Track the scan mode used for the last successful scan
 let currentScan = null;
 let currentScanMode = 'private'; // Default to private mode
 let proxyConsentGiven = false;
@@ -576,6 +577,7 @@ async function handleProxyCheck(e) {
             
             latestScanResults = results;
             lastScannedUrl = url;
+            lastScanMode = currentScanMode;
             
             await new Promise(resolve => setTimeout(resolve, 500));
             displayResults(results);
@@ -603,8 +605,10 @@ async function handleProxyCheck(e) {
 async function handleWebsiteCheck(e) {
     e.preventDefault();
     
-    // Ensure we're in private mode when using this form
-    currentScanMode = 'private';
+    // Only set to private mode if not doing a rescan (preserve the mode for rescans)
+    if (e.type !== 'submit' || !e.isTrusted || !lastScannedUrl) {
+        currentScanMode = 'private';
+    }
     
     // Check consent first
     if (!localStorage.getItem('tikun13_consent')) {
@@ -685,6 +689,7 @@ async function handleWebsiteCheck(e) {
             // Store results and URL globally
             latestScanResults = results;
             lastScannedUrl = url;
+            lastScanMode = currentScanMode;
             
             // Wait a moment to show completion
             await new Promise(resolve => setTimeout(resolve, 500));
@@ -2044,10 +2049,32 @@ window.rescanWebsite = async function() {
     
     // Update UI
     document.getElementById('checker-title').textContent = 'מבצע סריקה חוזרת...';
-    document.getElementById('website-url').value = lastScannedUrl;
     
-    // Trigger form submit
-    document.getElementById('checker-form').dispatchEvent(new Event('submit'));
+    // Restore the previous scan mode
+    currentScanMode = lastScanMode || 'private';
+    
+    // Set appropriate form fields based on scan mode
+    if (currentScanMode === 'proxy') {
+        // For proxy mode, set the proxy URL input and call handleProxyCheck
+        const proxyUrlInput = document.getElementById('proxy-url');
+        if (proxyUrlInput) {
+            proxyUrlInput.value = lastScannedUrl;
+        }
+        
+        // Create a fake event for handleProxyCheck
+        const fakeEvent = { preventDefault: () => {} };
+        await handleProxyCheck(fakeEvent);
+    } else {
+        // For private mode, set the website URL input and call handleWebsiteCheck  
+        const urlInput = document.getElementById('website-url');
+        if (urlInput) {
+            urlInput.value = lastScannedUrl;
+        }
+        
+        // Create a fake event for handleWebsiteCheck
+        const fakeEvent = { preventDefault: () => {} };
+        await handleWebsiteCheck(fakeEvent);
+    }
 };
 
 window.newScan = function() {
