@@ -395,8 +395,176 @@ function hasMarketingConsent() {
     }
 
     function testConsent() {
-        alert('בדיקת הסכמה תתחיל כעת. הבאנר יופיע כפי שיראה באתר שלך.');
-        updatePreview();
+        // Create a test modal overlay
+        const existingTestModal = document.getElementById('cookie-test-modal');
+        if (existingTestModal) {
+            existingTestModal.remove();
+        }
+        
+        // Create test modal with working cookie consent
+        const testModal = document.createElement('div');
+        testModal.id = 'cookie-test-modal';
+        testModal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+        `;
+        
+        const modalContent = document.createElement('div');
+        modalContent.style.cssText = `
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            max-width: 600px;
+            width: 100%;
+            position: relative;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            direction: rtl;
+            text-align: right;
+        `;
+        
+        modalContent.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="margin: 0; color: #333; font-size: 1.4rem;">${currentConfig.texts.title}</h3>
+                <button onclick="this.closest('#cookie-test-modal').remove()" style="
+                    background: transparent;
+                    border: none;
+                    font-size: 1.5rem;
+                    cursor: pointer;
+                    color: #999;
+                    padding: 5px;
+                    line-height: 1;
+                ">&times;</button>
+            </div>
+            
+            <p style="color: #666; margin-bottom: 20px; line-height: 1.6;">${currentConfig.texts.description}</p>
+            
+            ${currentConfig.features.granular ? `
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                    <h4 style="margin: 0 0 10px 0; color: #333;">בחר את סוגי העוגיות שברצונך לאשר:</h4>
+                    ${Object.entries(currentConfig.categories).map(([key, enabled]) => 
+                        enabled ? `
+                            <label style="display: block; margin: 8px 0; cursor: pointer;">
+                                <input type="checkbox" id="test-${key}" ${key === 'necessary' ? 'checked disabled' : 'checked'} style="margin-left: 8px;">
+                                <span>${getCategoryName(key)}</span>
+                                ${key === 'necessary' ? '<small style="color: #999; display: block; margin-right: 28px;">(נדרש לתפקוד האתר)</small>' : ''}
+                            </label>
+                        ` : ''
+                    ).join('')}
+                </div>
+            ` : ''}
+            
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
+                <button onclick="CookieBuilder.handleTestConsent('accept-all')" style="
+                    background: #4caf50;
+                    color: white;
+                    border: none;
+                    padding: 12px 24px;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    font-size: 1rem;
+                    font-weight: 600;
+                    transition: background 0.3s;
+                " onmouseover="this.style.background='#45a049'" onmouseout="this.style.background='#4caf50'">
+                    אשר הכל
+                </button>
+                
+                ${currentConfig.features.granular ? `
+                    <button onclick="CookieBuilder.handleTestConsent('save-preferences')" style="
+                        background: #667eea;
+                        color: white;
+                        border: none;
+                        padding: 12px 24px;
+                        border-radius: 8px;
+                        cursor: pointer;
+                        font-size: 1rem;
+                        font-weight: 600;
+                        transition: background 0.3s;
+                    " onmouseover="this.style.background='#5a6fd8'" onmouseout="this.style.background='#667eea'">
+                        שמור העדפות
+                    </button>
+                ` : ''}
+                
+                <button onclick="CookieBuilder.handleTestConsent('reject-all')" style="
+                    background: #f44336;
+                    color: white;
+                    border: none;
+                    padding: 12px 24px;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    font-size: 1rem;
+                    font-weight: 600;
+                    transition: background 0.3s;
+                " onmouseover="this.style.background='#da190b'" onmouseout="this.style.background='#f44336'">
+                    דחה הכל
+                </button>
+            </div>
+            
+            <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #e0e0e0; font-size: 0.9rem; color: #666; text-align: center;">
+                <a href="${currentConfig.texts.privacyLink}" style="color: #667eea; text-decoration: none; margin: 0 10px;">מדיניות פרטיות</a>
+                |
+                <a href="${currentConfig.texts.termsLink}" style="color: #667eea; text-decoration: none; margin: 0 10px;">תנאי שימוש</a>
+            </div>
+            
+            <div style="margin-top: 15px; padding: 10px; background: #e3f2fd; border-radius: 6px; font-size: 0.85rem; color: #1565c0;">
+                <strong>מצב בדיקה:</strong> זהו דמו לבאנר ההסכמה. בסביבת הייצור, הבחירות ישמרו בעוגיות ויופעלו התוספים המתאימים.
+            </div>
+        `;
+        
+        testModal.appendChild(modalContent);
+        document.body.appendChild(testModal);
+        
+        // Add click outside to close
+        testModal.addEventListener('click', function(e) {
+            if (e.target === testModal) {
+                testModal.remove();
+            }
+        });
+    }
+
+    function handleTestConsent(action) {
+        const modal = document.getElementById('cookie-test-modal');
+        let consentData = {
+            timestamp: new Date().toISOString(),
+            action: action,
+            categories: [],
+            config: currentConfig.siteName
+        };
+        
+        if (action === 'accept-all') {
+            consentData.categories = Object.keys(currentConfig.categories).filter(key => currentConfig.categories[key]);
+            alert('✅ הסכמה מלאה נרשמה!\n\nקטגוריות שאושרו:\n' + 
+                  consentData.categories.map(cat => '• ' + getCategoryName(cat)).join('\n') +
+                  '\n\nבסביבת הייצור, הנתונים ישמרו בעוגיה עם תוקף של ' + currentConfig.cookieExpiry + ' ימים.');
+        } else if (action === 'save-preferences') {
+            // Get selected preferences
+            Object.keys(currentConfig.categories).forEach(key => {
+                if (currentConfig.categories[key]) {
+                    const checkbox = modal.querySelector(`#test-${key}`);
+                    if (checkbox && (checkbox.checked || key === 'necessary')) {
+                        consentData.categories.push(key);
+                    }
+                }
+            });
+            alert('✅ העדפות נשמרו!\n\nקטגוריות שאושרו:\n' + 
+                  consentData.categories.map(cat => '• ' + getCategoryName(cat)).join('\n') +
+                  '\n\nבסביבת הייצור, הנתונים ישמרו בעוגיה עם תוקף של ' + currentConfig.cookieExpiry + ' ימים.');
+        } else if (action === 'reject-all') {
+            consentData.categories = ['necessary']; // Only necessary cookies
+            alert('❌ הסכמה נדחתה!\n\nרק עוגיות חיוניות יופעלו:\n• עוגיות חיוניות\n\nניתן לשנות את ההחלטה בכל עת דרך הגדרות האתר.');
+        }
+        
+        console.log('Test Consent Data:', consentData);
+        modal.remove();
     }
 
     function showExportTab(tabName) {
@@ -481,6 +649,7 @@ For questions: info@ionsec.io
         updateConfig: updateConfig,
         showPreview: showPreview,
         testConsent: testConsent,
+        handleTestConsent: handleTestConsent,
         showExportTab: showExportTab,
         copyCode: copyCode,
         downloadConfig: downloadConfig,
